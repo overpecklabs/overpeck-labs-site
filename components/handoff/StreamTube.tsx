@@ -90,9 +90,10 @@ export default function StreamTube({ points, fill, radius = 0.09, segs = 110, ra
       if (N.lengthSq() < 1e-6) N.crossVectors(T, X);
       N.normalize();
       Bn.crossVectors(T, N).normalize();
-      const wobble = 0.9 + 0.1 * Math.sin(u * 30 - t * 4);
-      const head = Math.min(1, Math.max(0.35, (f - u) / 0.035 + 0.35));
-      const r = radius * wobble * head;
+      const wobble = 0.88 + 0.08 * Math.sin(u * 30 - t * 4) + 0.04 * Math.sin(u * 71 + t * 2.3);
+      const head = Math.min(1, Math.max(0.12, (f - u) / 0.06 + 0.12)); // tapered tip
+      const neck = 0.72 + 0.28 * Math.min(1, u / 0.06); // thinner where it leaves the source
+      const r = radius * wobble * head * neck;
       for (let j = 0; j <= radial; j++) {
         const a = (j / radial) * Math.PI * 2;
         n.copy(N).multiplyScalar(Math.cos(a)).addScaledVector(Bn, Math.sin(a));

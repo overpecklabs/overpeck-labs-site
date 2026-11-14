@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Edges, PerformanceMonitor } from "@react-three/drei";
+import { Edges, Environment, Lightformer, PerformanceMonitor } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { journey } from "@/lib/journey";
@@ -9,6 +9,7 @@ import { anchorRect, smooth } from "@/lib/handoff";
 import StreamTube from "./StreamTube";
 import { anchorPoint, anchorYFrac, bowed, CAM_Z, FOV, headFill, motion, px2w, toWorld } from "./mapping";
 import Label from "../three/Label";
+import RealFlask from "./RealFlask";
 
 /* ------------------------------------------------------------------
    Shared link state: each piece publishes where the stream leaves it,
@@ -50,55 +51,6 @@ function MotionRig() {
     camera.position.set(Math.sin(t * 0.12) * 0.04, Math.cos(t * 0.1) * 0.03, CAM_Z);
   });
   return null;
-}
-
-/* ---------------- 1. hero flask that tips and pours ---------------- */
-function Flask() {
-  const root = useRef<THREE.Group>(null);
-  const liq = useRef<THREE.Mesh>(null);
-  const glass = useMemo(() => new THREE.LatheGeometry([[0.001, 0], [0.36, 0], [0.4, 0.05], [0.14, 0.72], [0.14, 1.0], [0.18, 1.04]].map(([x, y]) => new THREE.Vector2(x, y)), 36), []);
-  const fluid = useMemo(() => new THREE.LatheGeometry([[0.001, 0.02], [0.35, 0.02], [0.38, 0.06], [0.24, 0.36], [0.001, 0.36]].map(([x, y]) => new THREE.Vector2(x, y)), 36), []);
-  const mouthLocal = useMemo(() => new THREE.Vector3(0, 1.04 - 0.52, 0), []);
-
-  useFrame((state) => {
-    const g = root.current;
-    const r = anchorRect("flask");
-    if (!g) return;
-    if (!r) {
-      g.visible = false;
-      link.mouthOk = false;
-      return;
-    }
-    g.visible = true;
-    toWorld(r.left + r.width / 2, r.top + r.height * 0.55, g.position);
-    g.scale.setScalar(px2w(r.height) * 0.78);
-    const pour = motion.reduced ? 1 : smooth(window.scrollY / (window.innerHeight * 0.45));
-    link.pour = pour;
-    const t = motion.reduced ? 0 : state.clock.elapsedTime;
-    g.rotation.set(0.18 * pour, -0.25, -pour * 1.7 + Math.sin(t * 1.2) * 0.015);
-    if (liq.current) liq.current.scale.set(1, Math.max(0.15, 1 - pour * 0.7), 1);
-    g.updateMatrixWorld();
-    g.localToWorld(link.mouth.copy(mouthLocal));
-    link.mouthOk = true;
-  });
-
-  return (
-    <group ref={root}>
-      <group position={[0, -0.52, 0]}>
-        <mesh geometry={glass}>
-          {motion.low ? (
-            <meshStandardMaterial color="#ffffff" transparent opacity={0.3} roughness={0.15} side={THREE.DoubleSide} depthWrite={false} />
-          ) : (
-            <meshPhysicalMaterial color="#ffffff" transmission={1} thickness={0.35} roughness={0.06} ior={1.35} transparent opacity={0.9} side={THREE.DoubleSide} />
-          )}
-          <Edges color="#1a1a1a" threshold={25} />
-        </mesh>
-        <mesh ref={liq} geometry={fluid}>
-          <meshStandardMaterial color={TEAL} emissive={TEAL} emissiveIntensity={0.35} transparent opacity={0.88} roughness={0.25} />
-        </mesh>
-      </group>
-    </group>
-  );
 }
 
 /* ---------------- 2. laptop whose screen fills and "brews" into a mockup ---------------- */
@@ -429,6 +381,7 @@ function Streams() {
 
 export default function HandoffScene({ active }: { active: boolean }) {
   const [dpr, setDpr] = useState(1.5);
+  const [lite, setLite] = useState(false); // slow device: lighter glass (no transmission pass)
   const [ready, setReady] = useState(false);
   useEffect(() => {
     motion.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -441,13 +394,29 @@ export default function HandoffScene({ active }: { active: boolean }) {
       frameloop={active ? "always" : "never"}
       dpr={[1, dpr]}
       camera={{ fov: FOV, position: [0, 0, CAM_Z], near: 0.1, far: 60 }}
-      gl={{ antialias: !motion.low, alpha: true, powerPreference: "high-performance" }}
+      gl={{ antialias: !motion.low, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, outputColorSpace: THREE.SRGBColorSpace }}
     >
-      <PerformanceMonitor onDecline={() => setDpr(1)} />
-      <ambientLight intensity={1.1} />
-      <directionalLight position={[3, 6, 8]} intensity={0.9} />
+      <PerformanceMonitor
+        onDecline={() => {
+          setDpr(1);
+          setLite(true);
+        }}
+      />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[3, 6, 8]} intensity={0.8} />
+      {/* rim light from behind */}
+      <directionalLight position={[-4, 3, -6]} intensity={1.1} color="#eafffb" />
+      {/* soft, neutral studio reflections built from light panels (no external HDR fetch);
+          the tall thin strips give the glass crisp specular streaks */}
+      <Environment resolution={motion.low ? 128 : 256} environmentIntensity={0.7}>
+        <Lightformer form="rect" intensity={2.2} color="#ffffff" position={[0, 5, 2]} scale={[10, 2, 1]} rotation={[Math.PI / 2, 0, 0]} />
+        <Lightformer form="rect" intensity={3} color="#ffffff" position={[-3.2, 1, 3]} scale={[0.35, 6, 1]} rotation={[0, Math.PI / 5, 0]} />
+        <Lightformer form="rect" intensity={1.6} color="#ffffff" position={[3.4, 0.5, 3]} scale={[0.25, 5, 1]} rotation={[0, -Math.PI / 5, 0]} />
+        <Lightformer form="ring" intensity={0.8} color="#dffaf5" position={[0, 0, -6]} scale={6} />
+        <Lightformer form="rect" intensity={0.6} color="#f8f8f5" position={[0, -4, 0]} scale={[10, 10, 1]} rotation={[-Math.PI / 2, 0, 0]} />
+      </Environment>
       <MotionRig />
-      <Flask />
+      <RealFlask link={link} lite={lite} />
       <Laptop />
       <Graph />
       <Droplet />
