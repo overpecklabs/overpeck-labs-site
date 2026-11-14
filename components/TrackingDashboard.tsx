@@ -70,9 +70,9 @@ const Sketch = () => (
   </svg>
 );
 
-function Widget({ k, title, className = "", children }: { k: string; title: string; className?: string; children: React.ReactNode }) {
+function Widget({ k, title, className = "", anchor, children }: { k: string; title: string; className?: string; anchor?: string; children: React.ReactNode }) {
   return (
-    <div data-w={k} className={`relative [transform-style:preserve-3d] ${className}`}>
+    <div data-w={k} data-anchor={anchor} className={`relative [transform-style:preserve-3d] ${className}`}>
       <Sketch />
       <div data-fill className="h-full rounded-xl border border-ink/10 bg-white/90 p-3 shadow-[0_6px_18px_rgba(26,26,26,0.07)]">
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -254,7 +254,7 @@ export default function TrackingDashboard({ standalone = false }: { standalone?:
           </Widget>
 
           {/* line chart */}
-          <Widget k="line" title="Leads over 30 days" className="col-span-6 sm:col-span-4">
+          <Widget k="line" title="Leads over 30 days" className="col-span-6 sm:col-span-4" anchor="chart">
             <svg viewBox="0 0 300 110" className="h-[96px] w-full overflow-visible sm:h-[118px]">
               <defs>
                 <linearGradient id="dash-area" x1="0" y1="0" x2="0" y2="1">
@@ -327,7 +327,7 @@ export default function TrackingDashboard({ standalone = false }: { standalone?:
         </div>
 
         {/* opportunity alert: pops forward in depth */}
-        <div data-alert className="absolute bottom-9 right-2 z-10 rounded-xl sm:bottom-auto sm:-top-7 border-2 border-lab-amber bg-[#fff8eb] px-3 py-2 shadow-[0_14px_30px_rgba(242,169,59,0.28)] sm:-right-6">
+        <div data-alert data-anchor="alert" className="absolute bottom-9 right-2 z-10 rounded-xl sm:bottom-auto sm:-top-7 border-2 border-lab-amber bg-[#fff8eb] px-3 py-2 shadow-[0_14px_30px_rgba(242,169,59,0.28)] sm:-right-6">
           <span className="dash-pulse pointer-events-none absolute -left-1.5 -top-1.5 h-4 w-4 rounded-full bg-lab-amber" />
           <div className="text-[11px] font-bold uppercase tracking-wider text-[#8a4b00]">New opportunity found</div>
           <div className="text-xs text-ink/85">More &ldquo;water heater repair&rdquo; searches nearby · sample</div>

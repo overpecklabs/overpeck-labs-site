@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Annotation from "./Annotation";
 
-/** Copy card for a 3D chapter: a pinned paper card with one optional marker note. */
+/** Chapter copy: an editorial numbered heading ("01. Get Found"), short copy, one optional marker note. */
 export default function ChapterCopy({
+  num,
+  label,
   kicker,
   title,
   points,
@@ -12,6 +14,10 @@ export default function ChapterCopy({
   href,
   children,
 }: {
+  /** "01" */
+  num?: string;
+  /** "Get Found" */
+  label?: string;
   kicker: string;
   title: React.ReactNode;
   points?: string[];
@@ -24,15 +30,21 @@ export default function ChapterCopy({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="paper tilt-l relative max-w-md rounded-md p-5 sm:p-8">
-      <span className="tape" />
+    <div className="relative max-w-md rounded-md bg-board/70 p-1 sm:bg-transparent">
       {annotation && (
-        <Annotation color="#d93f44" showFrom="sm" className="absolute -right-3 -top-8 rotate-[4deg]" size="text-lg">
+        <Annotation color="#d93f44" showFrom="sm" className="absolute -top-7 right-0 rotate-[4deg]" size="text-lg">
           {annotation}
         </Annotation>
       )}
       <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">{kicker}</p>
-      <h2 className="font-display mt-2 text-[1.7rem] font-bold leading-tight text-ink sm:mt-3 sm:text-4xl">{title}</h2>
+      <h2 className="mt-2 text-ink">
+        {num && label && (
+          <span className="block font-[family-name:var(--font-playfair)] text-[2.6rem] font-bold leading-none tracking-tight sm:text-6xl">
+            {num}. {label}
+          </span>
+        )}
+        <span className="font-display mt-3 block text-[1.45rem] font-bold leading-tight sm:text-3xl">{title}</span>
+      </h2>
       {points && (
         <ul className={`mt-4 space-y-2 text-sm text-ink/85 sm:mt-5 sm:space-y-2.5 sm:text-base ${compactMobile ? "hidden sm:block" : ""}`}>
           {points.map((p) => (

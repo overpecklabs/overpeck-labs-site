@@ -144,6 +144,7 @@ function PinnedSequence() {
   return (
     <div ref={root} className="sticky top-0 h-screen overflow-hidden">
       <div data-wash className="pointer-events-none absolute inset-0" />
+      <div data-anchor="gutter-2" aria-hidden className="pointer-events-none absolute right-[2.5%] top-[16%] h-[68%] w-1" />
       <div className="relative mx-auto flex h-full max-w-6xl flex-col px-5 pb-8 pt-24">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">How it works</p>
@@ -208,7 +209,8 @@ function PinnedSequence() {
 
 function StaticList() {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-20">
+    <div className="relative mx-auto max-w-6xl px-5 py-20">
+      <div data-anchor="gutter-2" aria-hidden className="pointer-events-none absolute right-1 top-[8%] h-[84%] w-1" />
       <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">How it works</p>
       <h2 className="font-display mt-2 text-4xl font-bold text-ink sm:text-5xl">The formula, step by step.</h2>
       <ol className="relative mt-10 space-y-6">
@@ -234,7 +236,7 @@ function StaticList() {
 
 export default function Process() {
   return (
-    <section id="process" className="board-bg relative lg:h-[520vh] motion-reduce:lg:h-auto">
+    <section id="process" className="relative lg:h-[520vh] motion-reduce:lg:h-auto">
       <div className="hidden h-full lg:block motion-reduce:lg:hidden">
         <PinnedSequence />
       </div>

@@ -14,9 +14,10 @@ import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import ProgressRail from "@/components/ProgressRail";
 
 /** Thin aluminum whiteboard-frame divider between sections. */
-const Divider = () => <div className="board-bg relative z-10 px-5 py-1"><div className="board-divider" aria-hidden /></div>;
+const Divider = () => <div className="relative z-10 px-5 py-1"><div className="board-divider" aria-hidden /></div>;
 
 export default function Page() {
   return (
@@ -24,6 +25,7 @@ export default function Page() {
       <SmoothScroll />
       <SceneLoader />
       <Nav />
+      <ProgressRail />
       <main className="relative z-10">
         {/* Pinned 3D chapters (data-chapter) are transparent so the fixed canvas shows through; other sections are opaque board. */}
         {/* The journey: problem -> four building blocks -> the complete formula -> proof -> offer */}

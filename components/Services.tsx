@@ -6,7 +6,6 @@ import { SERVICES } from "@/lib/services";
 import { useDrawOn } from "@/lib/useDrawOn";
 import { usePanelIn } from "@/lib/usePanelIn";
 import { ServiceIcon } from "./icons";
-import Annotation from "./Annotation";
 
 const SLUG: Record<string, string> = { websites: "websites", workflows: "workflows-automation", tracking: "track-optimize", ai: "ai" };
 
@@ -24,16 +23,15 @@ export default function Services() {
   usePanelIn(root, "left");
 
   return (
-    <section ref={root} id="services" className="hex-paper relative overflow-hidden px-5 py-24">
-      <div data-panel className="mx-auto max-w-6xl">
+    <section ref={root} id="services" className="relative overflow-hidden px-5 py-24">
+      <div data-panel className="relative mx-auto max-w-6xl">
+        {/* the stream twists into the 3D DNA helix here */}
+        <div data-anchor="helix" aria-hidden className="pointer-events-none mx-auto mb-6 h-52 w-40 lg:absolute lg:-top-6 lg:right-4 lg:mb-0 lg:h-[330px] lg:w-[230px]" />
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">The Complete Formula</p>
         <div className="mt-3 flex flex-wrap items-end gap-x-6 gap-y-2">
           <h2 className="font-display max-w-2xl text-4xl font-bold text-ink sm:text-5xl">
             Four elements. <span className="marker-underline">One system.</span>
           </h2>
-          <Annotation arrow="down" color="#1f6feb" showFrom="md" className="-rotate-2">
-            use one, or combine all four
-          </Annotation>
         </div>
 
         <p className="mt-4 max-w-2xl text-ink/85">We engineer growth: each element builds on the last, so leads get found, followed up, measured and never missed.</p>

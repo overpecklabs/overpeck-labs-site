@@ -42,7 +42,7 @@ export default function ChatDemo({ className = "", standalone = false }: { class
   const booked = shown >= 6;
 
   return (
-    <div ref={rootRef} className={`glass flex w-full flex-col rounded-3xl p-4 ${className}`}>
+    <div ref={rootRef} data-anchor="chat" className={`glass flex w-full flex-col rounded-3xl p-4 ${className}`}>
       <div className="flex items-center justify-between border-b border-ink/10 pb-3">
         <div className="flex items-center gap-2.5">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-teal to-mk-sky text-xs font-bold text-black">AI</span>
