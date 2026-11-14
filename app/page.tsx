@@ -8,6 +8,7 @@ import Websites from "@/components/chapters/Websites";
 import Workflows from "@/components/chapters/Workflows";
 import Tracking from "@/components/chapters/Tracking";
 import AIChapter from "@/components/chapters/AIChapter";
+import Industries from "@/components/Industries";
 import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
@@ -28,6 +29,7 @@ export default function Page() {
         <Workflows />
         <Tracking />
         <AIChapter />
+        <Industries />
         <Process />
         <Pricing />
         <Contact />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CONTACT_OPTIONS, EMAIL, PHONE_DISPLAY, PHONE_TEL, type ServiceKey } from "@/lib/services";
+import { CONTACT_OPTIONS, PHONE_DISPLAY, PHONE_TEL, type ServiceKey } from "@/lib/services";
 
 const field =
   "w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-base text-white placeholder:text-white/35 focus:border-teal focus:outline-none";
@@ -56,10 +56,6 @@ export default function Contact() {
             <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-3 hover:text-teal">
               <span className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5">☎</span>
               {PHONE_DISPLAY}
-            </a>
-            <a href={`mailto:${EMAIL}`} className="flex items-center gap-3 hover:text-teal">
-              <span className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5">✉</span>
-              {EMAIL}
             </a>
           </div>
         </div>
@@ -117,11 +113,11 @@ export default function Contact() {
           </button>
           {sentName && (
             <p role="status" className="rounded-xl border border-teal/40 bg-teal/10 p-3 text-sm text-teal">
-              Thanks, {sentName}. The form isn&apos;t connected to our inbox yet, so please also email{" "}
-              <a className="underline" href={`mailto:${EMAIL}`}>
-                {EMAIL}
+              Thanks, {sentName}. Online requests aren&apos;t connected yet, so please also call{" "}
+              <a className="underline" href={`tel:${PHONE_TEL}`}>
+                {PHONE_DISPLAY}
               </a>{" "}
-              or call {PHONE_DISPLAY} so we don&apos;t miss you.
+              so we don&apos;t miss you.
             </p>
           )}
         </form>
