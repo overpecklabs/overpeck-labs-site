@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { INDUSTRIES } from "@/lib/industries";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
-import { submitMockupRequest, type MockupRequest } from "@/lib/submitMockupRequest";
+import { submitMockupRequest, TIMELINES, type MockupRequest } from "@/lib/submitMockupRequest";
+import HoneypotField from "./HoneypotField";
 
 /* ---------- options ---------- */
 
@@ -36,7 +37,7 @@ const STORAGE_KEY = "overpeck-mockup-v1";
 const EMPTY: MockupRequest = {
   business: { name: "", industry: "", industryOther: "", area: "", years: "", website: "", noWebsite: false, gbp: "" },
   customers: { services: ["", "", ""], ideal: "", jobValue: "", different: "" },
-  goals: { goals: [], headache: "" },
+  goals: { timeline: "", goals: [], headache: "" },
   look: { style: "", primary: "#1d6fe0", accent: "#f08c00", pickForMe: false, logo: null, likes: ["", ""] },
   extras: [],
   contact: { name: "", phone: "", email: "", bestTime: "Anytime", method: "Call", consent: false },
@@ -70,6 +71,7 @@ function validate(step: number, d: MockupRequest): Errors {
     if (!d.customers.jobValue) e.jobValue = "Please choose a range (or “Not sure”).";
   }
   if (step === 2) {
+    if (!d.goals.timeline) e.timeline = "Please choose when you want your site up and running.";
     if (!d.goals.goals.length) e.goals = "Pick at least one goal.";
   }
   if (step === 3) {
@@ -140,6 +142,8 @@ export default function MockupWizard() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [logoFailed, setLogoFailed] = useState(false);
+  const honeypot = useRef<HTMLInputElement>(null);
   const [submitted, setSubmitted] = useState<MockupRequest | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -233,8 +237,16 @@ export default function MockupWizard() {
     if (step < STEPS.length - 1) return goTo(step + 1);
 
     setStatus("sending");
-    const res = await submitMockupRequest(data, logoFile);
+    let res: Awaited<ReturnType<typeof submitMockupRequest>>;
+    try {
+      res = await submitMockupRequest(data, logoFile, honeypot.current?.value ?? "");
+    } catch (err) {
+      console.error("[mockup request] unexpected error", err);
+      res = { ok: false, error: "network" };
+    }
+    // Only show the thank-you screen after a real successful insert (or a silently dropped spam submission).
     if (res.ok) {
+      setLogoFailed(res.logoFailed);
       setSubmitted(data);
       setStatus("done");
       try {
@@ -268,6 +280,7 @@ export default function MockupWizard() {
     removeLogo();
     setData(EMPTY);
     setSubmitted(null);
+    setLogoFailed(false);
     setStatus("idle");
     goTo(0);
   };
@@ -280,12 +293,19 @@ export default function MockupWizard() {
           ✓
         </div>
         <h2 id={fid("done")} ref={heading} tabIndex={-1} className="font-display mt-4 text-3xl font-bold focus:outline-none">
-          Thanks! Your free mockup will be ready in 2–3 business days.
+          {submitted.goals.timeline === "asap"
+            ? "Thanks! We'll prioritize your mockup and reach out within 1 business day."
+            : "Thanks! Your free mockup will be ready in 2–3 business days."}
         </h2>
         <p className="mt-3 text-white/75">
           We&apos;ll reach out to <span className="font-semibold text-white">{submitted.contact.phone}</span> by {submitted.contact.method.toLowerCase()}
           {submitted.contact.bestTime !== "Anytime" ? `, ${submitted.contact.bestTime.toLowerCase()}` : ""}.
         </p>
+        {logoFailed && (
+          <p role="alert" className="mt-4 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-100">
+            Your request was saved, but we couldn&apos;t upload your logo. Please call {PHONE_DISPLAY} about the logo.
+          </p>
+        )}
         <Summary d={submitted} />
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/" className="btn-primary">
@@ -313,7 +333,8 @@ export default function MockupWizard() {
   const pct = Math.round(((step + 1) / STEPS.length) * 100);
 
   return (
-    <form ref={formRef} onSubmit={onNext} noValidate className="mt-8 scroll-mt-24" aria-busy={!ready}>
+    <form ref={formRef} onSubmit={onNext} noValidate className="relative mt-8 scroll-mt-24" aria-busy={!ready}>
+      <HoneypotField ref={honeypot} />
       {/* progress */}
       <div className="mb-4">
         <div className="mb-2 flex items-baseline justify-between text-sm">
@@ -445,6 +466,38 @@ export default function MockupWizard() {
           {/* ---------- 3. goals ---------- */}
           {step === 2 && (
             <>
+              <fieldset aria-describedby={errors.timeline ? fid("timeline-err") : undefined}>
+                <legend className="mb-2 text-sm font-medium text-white/85">How soon do you want your new site up and running?</legend>
+                <div className="grid grid-cols-2 gap-3">
+                  {TIMELINES.map((t, i) => {
+                    const on = data.goals.timeline === t.value;
+                    return (
+                      <label
+                        key={t.value}
+                        className={`relative cursor-pointer rounded-2xl border p-4 transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/10 shadow-[0_0_24px_rgba(25,240,210,0.15)]" : "border-white/15 bg-black/30 hover:border-white/30"}`}
+                      >
+                        <input
+                          type="radio"
+                          name={fid("timeline")}
+                          value={t.value}
+                          checked={on}
+                          onChange={() => set("goals", { timeline: t.value })}
+                          aria-invalid={i === 0 && errors.timeline ? true : undefined}
+                          className="sr-only"
+                        />
+                        <span className="font-display block text-lg font-bold">{t.label}</span>
+                        <span className="mt-0.5 block text-xs text-white/55">{t.d}</span>
+                        {on && (
+                          <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-teal text-[11px] font-bold text-black" aria-hidden>
+                            ✓
+                          </span>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+                <GroupError id={fid("timeline-err")} error={errors.timeline} />
+              </fieldset>
               <fieldset aria-describedby={errors.goals ? fid("goals-err") : undefined}>
                 <legend className="mb-2 text-sm font-medium text-white/85">What do you want your new website to do? Pick all that apply.</legend>
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -644,7 +697,7 @@ export default function MockupWizard() {
               </div>
               {status === "error" && (
                 <p role="alert" className="rounded-xl border border-red-400/50 bg-red-400/10 p-3 text-sm text-red-200">
-                  Something went wrong sending your request. Please try again, or call {PHONE_DISPLAY}.
+                  We couldn&apos;t send your request. Please call {PHONE_DISPLAY}. (You can also try again in a moment.)
                 </p>
               )}
             </>
@@ -696,6 +749,7 @@ function Summary({ d }: { d: MockupRequest }) {
     [
       "Goals",
       [
+        ["Timeline", TIMELINES.find((t) => t.value === d.goals.timeline)?.label ?? ""],
         ["Goals", d.goals.goals.join(", ")],
         ["Biggest headache", d.goals.headache],
       ],
