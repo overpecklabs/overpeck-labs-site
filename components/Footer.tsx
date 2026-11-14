@@ -1,52 +1,183 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 
-const MARKERS = ["#1a1a1a", "#1f6feb", "#d93f44", "#2f9e44", "#19c9b0"];
+/*
+  Site footer: a slim pre-footer CTA band on the board, then a deep-graphite footer.
+  Desktop: 5 columns. Phones: brand block + native <details> accordions (no JS needed).
+  NOTE: Services links point at the homepage sections until the dedicated service
+  pages exist, so nothing links to a page that isn't there yet.
+*/
 
-/** Footer as the whiteboard's marker tray. */
-export default function Footer() {
-  const root = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = root.current;
-    // desktop only: phones keep the footer static (lighter, and it can never end up hidden)
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(min-width: 1024px)").matches) return;
-    gsap.registerPlugin(ScrollTrigger);
-    // slides up once as it enters (not scrubbed, so it always finishes fully visible);
-    // context.revert() restores inline styles on unmount/re-run
-    const ctx = gsap.context(() => {
-      gsap.from(el.firstElementChild, { y: 60, opacity: 0, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 98%", once: true } });
-    }, el);
-    return () => ctx.revert();
-  }, []);
+type LinkItem = { label: string; href: string; sub?: string };
+
+const SERVICES: LinkItem[] = [
+  { label: "Services overview", href: "/#services" },
+  { label: "Websites", href: "/#websites" },
+  { label: "Workflows & Automation", href: "/#workflows" },
+  { label: "Track & Optimize", href: "/#tracking" },
+  { label: "AI Implementation", href: "/#ai", sub: "AI Chatbot · AI Call Receptionist · AI Agents" },
+];
+const COMPANY: LinkItem[] = [
+  { label: "How It Works", href: "/#process" },
+  { label: "Industries", href: "/#industries" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Free Mockup", href: "/free-mockup" },
+  { label: "Contact", href: "/#contact" },
+];
+const INDUSTRIES: LinkItem[] = [
+  ...["Plumbing", "HVAC", "Electricians", "Roofing", "Landscaping", "Contractors"].map((l) => ({ label: l, href: "/#industries" })),
+  { label: "See all →", href: "/#industries" },
+];
+// Plain text for now: no location pages exist yet.
+const AREAS = ["Hackensack", "Paramus", "Fort Lee", "Englewood", "Teaneck", "Fair Lawn", "Ridgewood", "Mahwah"];
+
+// Social accounts: add real profile URLs here when they exist. Nothing renders while this is empty.
+const SOCIAL: { label: string; href: string }[] = [];
+
+const HEX = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'><path d='M28 0 l28 16 v32 l-28 16 l-28 -16 v-32 z M28 64 v33' fill='none' stroke='#ffffff' stroke-width='1' opacity='0.045'/></svg>"
+)}")`;
+
+const linkCls = "text-sm text-[#c9d1d9] transition-colors hover:text-[#19f0d2] focus-visible:text-[#19f0d2]";
+
+const PhoneIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+  </svg>
+);
+
+function LinkList({ items }: { items: LinkItem[] }) {
   return (
-    <footer ref={root} className="relative z-10 px-4 pb-6 pt-4">
-      <div className="mx-auto max-w-6xl">
-        {/* aluminum tray lip */}
-        <div className="board-frame h-3 rounded-t-md" />
-        <div className="rounded-b-lg border border-t-0 border-ink/10 bg-[linear-gradient(180deg,#e9ebee,#dfe2e6)] px-5 py-5 shadow-[0_10px_24px_rgba(26,26,26,0.10)]">
-          <div className="flex flex-col items-start justify-between gap-5 text-sm text-ink/85 sm:flex-row sm:items-center">
-            <div>
-              <div className="font-display text-lg font-bold text-ink">
-                Overpeck<span className="text-teal-ink"> Labs</span>
-              </div>
-              <div>Bergen County, NJ</div>
-            </div>
-            <a href={`tel:${PHONE_TEL}`} className="font-semibold text-ink hover:text-teal-ink">
-              {PHONE_DISPLAY}
-            </a>
-            {/* markers resting in the tray */}
-            <div className="flex items-end gap-2" aria-hidden>
-              {MARKERS.map((c, i) => (
-                <span key={c} className="block h-3 rounded-full shadow-[0_2px_3px_rgba(0,0,0,0.2)]" style={{ width: 54 - i * 3, background: `linear-gradient(90deg, ${c} 0 24%, #fafafa 24% 100%)` }} />
-              ))}
-              <span className="block h-4 w-9 rounded-sm bg-[#3a3a3c] shadow-[0_2px_3px_rgba(0,0,0,0.25)]" />
+    <ul className="space-y-2.5">
+      {items.map((it) => (
+        <li key={it.label}>
+          <Link href={it.href} className={linkCls}>
+            {it.label}
+          </Link>
+          {it.sub && <div className="mt-0.5 text-xs text-[#9aa4ae]">{it.sub}</div>}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function AreaList() {
+  return (
+    <ul className="space-y-2.5 text-sm text-[#c9d1d9]">
+      {AREAS.map((a) => (
+        <li key={a}>{a}</li>
+      ))}
+    </ul>
+  );
+}
+
+const COLUMNS: { title: string; body: React.ReactNode }[] = [
+  { title: "Services", body: <LinkList items={SERVICES} /> },
+  { title: "Company", body: <LinkList items={COMPANY} /> },
+  { title: "Industries we serve", body: <LinkList items={INDUSTRIES} /> },
+  { title: "Areas served", body: <AreaList /> },
+];
+
+export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
+  return (
+    <footer className="relative z-10">
+      {/* pre-footer CTA band */}
+      {!hideCta && (
+        <div className="px-5 pb-12 pt-6">
+          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 rounded-lg border border-ink/10 bg-[linear-gradient(100deg,#e6fbf6,#eef4ff)] px-6 py-6 shadow-[0_10px_28px_rgba(26,26,26,0.08)] sm:px-8 md:flex-row md:items-center">
+            <p className="font-display text-xl font-bold text-ink sm:text-2xl">
+              Ready to see your new site? <span className="font-sans text-base font-normal text-ink/85 sm:text-lg">Get a free mockup, no obligation.</span>
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/free-mockup" className="btn-primary">
+                Get My Free Mockup
+              </Link>
+              <a href={`tel:${PHONE_TEL}`} className="btn-ghost">
+                <PhoneIcon />
+                {PHONE_DISPLAY}
+              </a>
             </div>
           </div>
-          <div className="mt-4 text-xs text-ink/75">© {new Date().getFullYear()} Overpeck Labs</div>
+        </div>
+      )}
+
+      {/* main footer */}
+      <div className="bg-[#1f2328] text-[#c9d1d9]" style={{ backgroundImage: HEX, backgroundSize: "56px 97px" }}>
+        <div className="mx-auto max-w-6xl px-5 pb-8 pt-14">
+          <div className="grid gap-10 lg:grid-cols-[1.5fr_1.15fr_1fr_1fr_0.9fr] lg:gap-8">
+            {/* brand */}
+            <div>
+              <Link href="/" className="font-display text-2xl font-bold text-white">
+                Overpeck<span className="text-[#19f0d2]"> Labs</span>
+              </Link>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#c9d1d9]">Websites, automation, tracking and AI for Bergen County businesses.</p>
+              <Link href="/free-mockup" className="btn-primary mt-5 !px-5 !py-2.5 text-sm">
+                Get My Free Mockup
+              </Link>
+              <a href={`tel:${PHONE_TEL}`} className="mt-5 flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-[#19f0d2]">
+                <PhoneIcon />
+                {PHONE_DISPLAY}
+              </a>
+              <p className="mt-2 flex items-center gap-2 text-sm text-[#9aa4ae]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Serving Bergen County, NJ
+              </p>
+              {SOCIAL.length > 0 && (
+                <ul className="mt-5 flex gap-3">
+                  {SOCIAL.map((s) => (
+                    <li key={s.label}>
+                      <a href={s.href} className={linkCls} rel="noopener noreferrer" target="_blank">
+                        {s.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* desktop columns */}
+            {COLUMNS.map((c) => (
+              <nav key={c.title} aria-label={c.title} className="hidden lg:block">
+                <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">{c.title}</h2>
+                {c.body}
+              </nav>
+            ))}
+
+            {/* phone accordions */}
+            <div className="divide-y divide-white/10 border-y border-white/10 lg:hidden">
+              {COLUMNS.map((c) => (
+                <details key={c.title} className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-bold uppercase tracking-widest text-white [&::-webkit-details-marker]:hidden">
+                    {c.title}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="transition-transform group-open:rotate-180" aria-hidden>
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </summary>
+                  <div className="pb-5">{c.body}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+
+          {/* bottom bar */}
+          <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-[#9aa4ae] sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} Overpeck Labs. All rights reserved.</p>
+            <ul className="flex gap-6">
+              <li>
+                <Link href="/privacy" className={linkCls}>
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className={linkCls}>
+                  Terms
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </footer>

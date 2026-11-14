@@ -22,7 +22,7 @@ export default function FreeMockupPage() {
           <MockupWizard />
         </div>
       </main>
-      <Footer />
+      <Footer hideCta />
     </>
   );
 }
