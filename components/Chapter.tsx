@@ -15,6 +15,8 @@ type Props = {
   className?: string;
   /** marker-font line at the bottom that bridges to the next chapter */
   bridge?: string;
+  /** hide the bridge line on phones (when the set-piece needs the room) */
+  bridgeDesktopOnly?: boolean;
   children: React.ReactNode;
 };
 
@@ -22,7 +24,7 @@ type Props = {
  * A pinned chapter: a tall section with a sticky 100vh stage inside.
  * Its scroll progress drives the shared 3D scene (see lib/journey.ts).
  */
-export default function Chapter({ index, id, length = 3, fadeIn = true, fadeOutAt = 0.8, className = "", bridge, children }: Props) {
+export default function Chapter({ index, id, length = 3, fadeIn = true, fadeOutAt = 0.8, className = "", bridge, bridgeDesktopOnly, children }: Props) {
   const root = useRef<HTMLElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const bridgeEl = useRef<HTMLParagraphElement>(null);
@@ -56,7 +58,7 @@ export default function Chapter({ index, id, length = 3, fadeIn = true, fadeOutA
           {children}
         </div>
         {bridge && (
-          <p ref={bridgeEl} className="font-marker pointer-events-none absolute inset-x-0 bottom-5 px-6 text-center text-base text-ink/85 opacity-0 motion-reduce:opacity-100 sm:bottom-9 sm:text-2xl">
+          <p ref={bridgeEl} className={`font-marker pointer-events-none absolute inset-x-0 bottom-5 px-6 ${bridgeDesktopOnly ? "hidden sm:block" : ""} text-center text-base text-ink/85 opacity-0 motion-reduce:opacity-100 sm:bottom-9 sm:text-2xl`}>
             {bridge}
           </p>
         )}

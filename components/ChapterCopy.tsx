@@ -7,6 +7,7 @@ export default function ChapterCopy({
   points,
   note,
   annotation,
+  compactMobile,
   children,
 }: {
   kicker: string;
@@ -14,6 +15,8 @@ export default function ChapterCopy({
   points?: string[];
   note?: string;
   annotation?: string;
+  /** phones: show only kicker + title (room for a big set-piece below) */
+  compactMobile?: boolean;
   children?: React.ReactNode;
 }) {
   return (
@@ -27,7 +30,7 @@ export default function ChapterCopy({
       <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">{kicker}</p>
       <h2 className="font-display mt-2 text-[1.7rem] font-bold leading-tight text-ink sm:mt-3 sm:text-4xl">{title}</h2>
       {points && (
-        <ul className="mt-4 space-y-2 text-sm text-ink/85 sm:mt-5 sm:space-y-2.5 sm:text-base">
+        <ul className={`mt-4 space-y-2 text-sm text-ink/85 sm:mt-5 sm:space-y-2.5 sm:text-base ${compactMobile ? "hidden sm:block" : ""}`}>
           {points.map((p) => (
             <li key={p} className="flex gap-3">
               <svg width="14" height="14" viewBox="0 0 24 24" className="mt-1 shrink-0" fill="none" stroke="#1f6feb" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -39,7 +42,7 @@ export default function ChapterCopy({
         </ul>
       )}
       {children}
-      {note && <p className="mt-4 text-xs text-ink/75 sm:mt-5">{note}</p>}
+      {note && <p className={`mt-4 text-xs text-ink/75 sm:mt-5 ${compactMobile ? "hidden sm:block" : ""}`}>{note}</p>}
     </div>
   );
 }

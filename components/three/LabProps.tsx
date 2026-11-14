@@ -34,25 +34,6 @@ export function Flask({ position = [0, 0, 0], scale = 1, liquid = "#19f0d2" }: P
   );
 }
 
-/** Graduated beaker with a liquid fill. */
-export function Beaker({ position = [0, 0, 0], scale = 1, liquid = "#4caf6e" }: Props) {
-  return (
-    <group position={position} scale={scale}>
-      <Glass>
-        <cylinderGeometry args={[0.6, 0.6, 1.4, 28, 1, true]} />
-      </Glass>
-      <mesh position={[0, -0.7, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.6, 28]} />
-        <meshStandardMaterial color="#ffffff" transparent opacity={0.3} />
-      </mesh>
-      <mesh position={[0, -0.35, 0]}>
-        <cylinderGeometry args={[0.57, 0.57, 0.7, 28]} />
-        <meshStandardMaterial color={liquid} transparent opacity={0.72} roughness={0.4} />
-      </mesh>
-    </group>
-  );
-}
-
 /** Three test tubes in a wooden-ish rack. */
 export function TubeRack({ position = [0, 0, 0], scale = 1 }: Props) {
   const liquids = ["#1f6feb", "#f2a93b", "#4caf6e"];
