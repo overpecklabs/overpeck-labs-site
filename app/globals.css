@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #05060d;
+  --color-ink-2: #0a0c18;
+  --color-teal: #19f0d2;
+  --color-violet: #9b6bff;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+}
+
+html {
+  background: var(--color-ink);
+  color: #e8ebf5;
+  -webkit-text-size-adjust: 100%;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-ink);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(25, 240, 210, 0.3);
+}
+
+.glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.text-gradient {
+  background: linear-gradient(95deg, var(--color-teal), var(--color-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #04110f;
+  background: linear-gradient(95deg, var(--color-teal), #7be9ff 60%, var(--color-violet));
+  box-shadow: 0 0 28px rgba(25, 240, 210, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 44px rgba(25, 240, 210, 0.55);
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(25, 240, 210, 0.6);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 3px;
+}
+
+/* 3D flip cards */
+.flip-scene {
+  perspective: 1200px;
+}
+.flip-card {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
