@@ -17,7 +17,7 @@ The businesses shown on the cards are fictional.
 | `landscaping/thumb1.webp` | Patio with fire pit and planters | Julia A. Keirns | https://unsplash.com/photos/0Dw2xI3GLbI |
 | `landscaping/thumb2.webp` | Pergola deck with outdoor dining | sozina hope | https://unsplash.com/photos/dp7onL03wjY |
 | `cleaning/hero.webp` | Bright kitchen with marble island | Zac Gudakov | https://unsplash.com/photos/o-uPDNNSsDA |
-| `auto-repair/hero.webp` | Mechanic working in a clean shop bay | Dextar Studio | https://unsplash.com/photos/XP8o9_Arwqg |
+| `auto-repair/hero.webp` | Mechanic's hands working on an engine | Christian Buehner | https://unsplash.com/photos/Fd6osyVbtG4 |
 | `salon/hero.webp` | Barber chairs in a dimly lit shop | T | https://unsplash.com/photos/fa0DqQ91dWU |
 | `restaurant/hero.webp` | Spaghetti being lifted from a plate | Ati Nabaut | https://unsplash.com/photos/Uiro__CkZMs |
 | `restaurant/thumb1.webp` | Pasta with ragù in a bowl | Emanuel Ekström | https://unsplash.com/photos/KJOUnsGXq58 |

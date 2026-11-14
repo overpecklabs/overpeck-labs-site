@@ -262,7 +262,7 @@ export const INDUSTRIES: Industry[] = [
     navCta: "Book Service",
     hero: {
       img: img("auto-repair", "hero"),
-      alt: "Mechanic working in a clean shop bay",
+      alt: "Mechanic's hands working on an engine with a wrench",
       headline: "Honest Repairs. Done Right.",
       sub: "Diagnostics, brakes, maintenance and more for all makes.",
       cta: "Book Service",
