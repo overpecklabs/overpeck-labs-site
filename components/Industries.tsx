@@ -4,9 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { INDUSTRIES } from "@/lib/industries";
-import { scrollToId } from "@/lib/journey";
-import { prefillContact } from "@/lib/services";
+import Link from "next/link";
 import MockSite from "./MockSite";
+
+const mockupHref = (industry: string) => `/free-mockup?industry=${encodeURIComponent(industry)}`;
+
+/** Industry card that starts a free-mockup request with that industry prefilled. */
+function CardLink({ d, hidden }: { d: (typeof INDUSTRIES)[number]; hidden?: boolean }) {
+  return (
+    <Link
+      href={mockupHref(d.industry)}
+      tabIndex={hidden ? -1 : undefined}
+      aria-label={`Start a free ${d.industry.toLowerCase()} website mockup (sample design: ${d.name}, fictional)`}
+      className="block rounded-xl transition hover:-translate-y-1 focus-visible:-translate-y-1"
+    >
+      <MockSite d={d} />
+    </Link>
+  );
+}
 
 type Mode = "marquee" | "swipe" | "grid";
 
@@ -74,7 +89,7 @@ function MarqueeRow({ items, dir, velocity, visible }: { items: typeof INDUSTRIE
       <div ref={track} className="flex w-max gap-6 will-change-transform [transform-style:preserve-3d]">
         {[...items, ...items].map((d, i) => (
           <div key={i} className="[transform-style:preserve-3d]" aria-hidden={i >= items.length || undefined}>
-            <MockSite d={d} />
+            <CardLink d={d} hidden={i >= items.length} />
           </div>
         ))}
       </div>
@@ -114,7 +129,7 @@ function SwipeRow() {
       >
         {INDUSTRIES.map((d) => (
           <div key={d.name} className="snap-center transition-transform duration-75">
-            <MockSite d={d} />
+            <CardLink d={d} />
           </div>
         ))}
       </div>
@@ -185,14 +200,14 @@ export default function Industries() {
           <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
             <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} />
             <MarqueeRow items={ROW_B} dir={-1} velocity={velocity} visible={visible} />
-            <p className="mt-2 text-center text-xs text-white/35">Hover to pause</p>
+            <p className="mt-2 text-center text-xs text-white/35">Hover to pause · click a design to start yours</p>
           </div>
         )}
         {mode === "swipe" && <SwipeRow />}
         {mode === "grid" && (
           <div className="mx-auto grid max-w-6xl justify-items-center gap-6 px-5 sm:grid-cols-2 lg:grid-cols-3">
             {INDUSTRIES.map((d) => (
-              <MockSite key={d.name} d={d} />
+              <CardLink key={d.name} d={d} />
             ))}
           </div>
         )}
@@ -200,15 +215,9 @@ export default function Industries() {
 
       <div className="relative mt-14 flex flex-col items-center gap-3 px-5 text-center">
         <p className="font-display text-2xl font-bold sm:text-3xl">Want to see yours?</p>
-        <button
-          className="btn-primary"
-          onClick={() => {
-            prefillContact(["mockup"]);
-            scrollToId("contact");
-          }}
-        >
+        <Link href="/free-mockup" className="btn-primary">
           Get My Free Mockup
-        </button>
+        </Link>
       </div>
     </section>
   );

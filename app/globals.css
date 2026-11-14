@@ -83,9 +83,12 @@ body {
   border-color: rgba(25, 240, 210, 0.6);
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-teal);
-  outline-offset: 3px;
+/* In the base layer so utilities (e.g. focus:outline-none on script-focused headings) can override it. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 3px;
+  }
 }
 
 /* 3D flip cards */

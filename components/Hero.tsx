@@ -2,7 +2,7 @@
 
 import Chapter from "./Chapter";
 import { scrollToId } from "@/lib/journey";
-import { prefillContact } from "@/lib/services";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -19,15 +19,9 @@ export default function Hero() {
             We build websites that win business, automate the busywork, track what&apos;s working and add AI that never misses a lead. Made for local plumbers, HVAC pros, electricians and remodelers.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              className="btn-primary"
-              onClick={() => {
-                prefillContact(["mockup"]);
-                scrollToId("contact");
-              }}
-            >
+            <Link href="/free-mockup" className="btn-primary">
               Get My Free Mockup
-            </button>
+            </Link>
             <button className="btn-ghost" onClick={() => scrollToId("services")}>
               See our services
             </button>

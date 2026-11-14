@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { scrollToId } from "@/lib/journey";
 import { prefillContact, type ServiceKey } from "@/lib/services";
 
@@ -86,15 +87,21 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <button
-                className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7`}
-                onClick={() => {
-                  prefillContact(p.prefill);
-                  scrollToId("contact");
-                }}
-              >
-                {p.cta}
-              </button>
+              {p.featured ? (
+                <Link href="/free-mockup" className="btn-primary mt-7">
+                  {p.cta}
+                </Link>
+              ) : (
+                <button
+                  className="btn-ghost mt-7"
+                  onClick={() => {
+                    prefillContact(p.prefill);
+                    scrollToId("contact");
+                  }}
+                >
+                  {p.cta}
+                </button>
+              )}
             </div>
           ))}
         </div>

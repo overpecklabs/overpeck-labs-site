@@ -1,7 +1,6 @@
 "use client";
 
-import { scrollToId } from "@/lib/journey";
-import { prefillContact } from "@/lib/services";
+import Link from "next/link";
 
 const STEPS = [
   { n: "1", t: "Tell us about your business", d: "Your services, your towns, what you want more of." },
@@ -27,15 +26,9 @@ export default function MockupOffer() {
               <p className="mt-4 max-w-lg text-white/70">
                 We&apos;ll design a free, custom mockup of your new website, built around your business and the towns you serve. No obligation, no credit card.
               </p>
-              <button
-                className="btn-primary mt-7"
-                onClick={() => {
-                  prefillContact(["mockup"]);
-                  scrollToId("contact");
-                }}
-              >
+              <Link href="/free-mockup" className="btn-primary mt-7">
                 Get My Free Mockup
-              </button>
+              </Link>
             </div>
             <ol className="space-y-3">
               {STEPS.map((s) => (

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CONTACT_OPTIONS, PHONE_DISPLAY, PHONE_TEL, type ServiceKey } from "@/lib/services";
 
@@ -7,7 +8,7 @@ const field =
   "w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-base text-white placeholder:text-white/35 focus:border-teal focus:outline-none";
 
 export default function Contact() {
-  const [checked, setChecked] = useState<Set<ServiceKey>>(() => new Set(["mockup"]));
+  const [checked, setChecked] = useState<Set<ServiceKey>>(() => new Set());
   const [sentName, setSentName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function Contact() {
     console.log("[contact form]", data);
     setSentName(String(data.name || "there"));
     e.currentTarget.reset();
-    setChecked(new Set(["mockup"]));
+    setChecked(new Set());
   };
 
   return (
@@ -49,9 +50,12 @@ export default function Contact() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-teal">Contact</p>
           <h2 className="font-display mt-3 text-4xl font-bold sm:text-5xl">
-            Get your <span className="text-gradient">free website mockup.</span>
+            Let&apos;s <span className="text-gradient">talk.</span>
           </h2>
-          <p className="mt-4 max-w-md text-white/70">Tell us about your business. We&apos;ll reply with next steps and a time to talk. No obligation.</p>
+          <p className="mt-4 max-w-md text-white/70">Questions, or ready to grow? Send a quick message and we&apos;ll reply with next steps. No obligation.</p>
+          <Link href="/free-mockup" className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-teal/40 bg-teal/10 px-4 py-3 text-sm font-semibold text-teal hover:bg-teal/20">
+            Want a free mockup? Take the 3-minute questionnaire →
+          </Link>
           <div className="mt-8 space-y-3 text-white/80">
             <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-3 hover:text-teal">
               <span className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5">☎</span>
