@@ -17,7 +17,6 @@ export default function MockupOffer() {
   usePanelIn(root, "right");
   return (
     <section ref={root} id="mockup" className="relative overflow-hidden px-5 py-24">
-      <div data-anchor="gutter-3" aria-hidden className="pointer-events-none absolute right-[2.5%] top-[12%] h-[76%] w-1" />
       <div data-panel className="relative mx-auto max-w-5xl">
         <div className="sticky-note tilt-l relative rounded-[4px] p-7 sm:p-12">
           <span className="tape" style={{ left: "18%" }} />

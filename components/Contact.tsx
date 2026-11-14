@@ -105,25 +105,8 @@ export default function Contact() {
   };
 
   return (
-    <section ref={root} id="contact" className="relative overflow-hidden px-5 pb-24 pt-10">
+    <section ref={root} id="contact" className="relative overflow-hidden px-5 py-24">
       {/* Bright accent section #3: a marker-blue band behind the copy, with an arrow to the form */}
-      {/* the last of the liquid pours in here and settles */}
-      <div className="relative mx-auto mb-14 flex max-w-6xl items-end gap-3">
-        <svg data-anchor="beaker" width="70" height="92" viewBox="0 0 70 92" className="shrink-0" aria-hidden>
-          <defs>
-            <clipPath id="contact-beaker">
-              <path d="M12 8 V80 Q12 86 18 86 H52 Q58 86 58 80 V8 Z" />
-            </clipPath>
-          </defs>
-          <g clipPath="url(#contact-beaker)">
-            <rect x="0" y="8" width="70" height="80" fill="#19f0d2" opacity="0.75" style={{ transformBox: "fill-box", transformOrigin: "50% 100%", transform: "scaleY(var(--fill, 1))" }} />
-          </g>
-          <path d="M12 8 V80 Q12 86 18 86 H52 Q58 86 58 80 V8 M6 8 H16 M54 8 H64 M14 30 H22 M14 50 H22 M14 70 H22" fill="none" stroke="#1a1a1a" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <p className="font-marker pb-3 text-xl text-mk-blue" aria-hidden>
-          your next step, ready to pour
-        </p>
-      </div>
       <div data-panel className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-12">
         {/* Bright accent: a marker-blue band behind the copy (lives in the grid so it always sits behind it) */}
         <div className="absolute -inset-y-10 left-1/2 w-screen -translate-x-1/2 -skew-y-2 bg-mk-blue shadow-[0_14px_40px_rgba(31,111,235,0.25)]" aria-hidden />

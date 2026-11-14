@@ -198,7 +198,6 @@ export default function Industries({ workflowTags = {} }: { workflowTags?: Recor
 
   return (
     <section ref={section} id="industries" className="relative overflow-hidden py-24">
-      <div data-anchor="gutter-1" aria-hidden className="pointer-events-none absolute right-[2.5%] top-[12%] h-[76%] w-1" />
             <div className="relative mx-auto max-w-6xl px-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Industries we build for</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">

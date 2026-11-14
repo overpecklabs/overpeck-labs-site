@@ -43,6 +43,7 @@ export default function Services() {
               <Link
                 key={s.key}
                 href={`/services/${SLUG[s.key]}`}
+                data-anchor={s.key === "ai" ? "formula-ai" : undefined}
                 className={`element-tile group flex flex-col p-5 pt-8 text-left shadow-[0_10px_26px_rgba(26,26,26,0.09)] ${e.tilt}`}
                 style={{ background: `linear-gradient(180deg, ${e.bg} 0 132px, #fffefb 132px)` }}
               >

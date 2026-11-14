@@ -5,7 +5,7 @@ import { Edges, PerformanceMonitor } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { journey } from "@/lib/journey";
-import { anchorRect, setAnchorVar, smooth } from "@/lib/handoff";
+import { anchorRect, smooth } from "@/lib/handoff";
 import StreamTube from "./StreamTube";
 import { anchorPoint, anchorYFrac, bowed, CAM_Z, FOV, headFill, motion, px2w, toWorld } from "./mapping";
 import Label from "../three/Label";
@@ -30,6 +30,8 @@ const link = {
   helixOk: false,
   s1: { fill: 0 },
   s2: { fill: 0 },
+  /** final segment: helix -> AI tile; when full, everything holds still */
+  s5: { fill: 0 },
 };
 
 const TEAL = "#19f0d2";
@@ -341,7 +343,7 @@ function Helix() {
   };
   const strand = (phase: number) => (H.ok ? Array.from({ length: 25 }, (_, k) => strandPoint(k, phase, new THREE.Vector3())) : null);
 
-  useFrame((state) => {
+  useFrame((_state, delta) => {
     const r = anchorRect("helix");
     if (!r) {
       H.ok = link.helixOk = false;
@@ -351,10 +353,11 @@ function Helix() {
     toWorld(r.left + r.width / 2, r.top + r.height / 2, H.c);
     H.w = px2w(r.width);
     H.h = px2w(r.height);
-    H.rot = motion.reduced ? 0.6 : state.clock.elapsedTime * 0.5;
-    const py = anchorYFrac("pricing-top");
-    const unzip = motion.reduced || py === null ? 0 : smooth((0.9 - py) / 0.5);
-    H.spread = 1 + unzip * 1.6;
+    // spins gently while forming, then eases to a stop once the stream has settled on the AI tile
+    const spin = motion.reduced ? 0 : 1 - smooth((link.s5.fill - 0.85) / 0.15);
+    H.rot = motion.reduced ? 0.6 : H.rot + Math.min(0.05, delta) * 0.5 * spin;
+    const unzip = 0;
+    H.spread = 1;
     H.ok = link.helixOk = true;
     link.helixTop.set(H.c.x, H.c.y + H.h / 2 + px2w(10), 0);
     link.helixBottom.set(H.c.x, H.c.y - H.h / 2, 0);
@@ -392,52 +395,6 @@ function Helix() {
   );
 }
 
-/* ---------------- 7. drops into each pricing tile ---------------- */
-const TIER_COLORS = ["#f7c948", "#19f0d2", "#5b9cf5", "#4caf6e"];
-function PricingDrops() {
-  const drops = useRef<(THREE.Mesh | null)[]>([]);
-  const from = useMemo(() => new THREE.Vector3(), []);
-  const to = useMemo(() => new THREE.Vector3(), []);
-  useFrame(() => {
-    const start = anchorPoint("pricing-top", 0.5, 0.5, from);
-    for (let i = 0; i < 4; i++) {
-      const m = drops.current[i];
-      const yf = anchorYFrac(`price-${i}`, 0);
-      const end = anchorPoint(`price-${i}`, 0.5, 0.0, to);
-      const t = motion.reduced || yf === null ? 1 : smooth((0.95 - yf) / 0.35 - i * 0.07);
-      setAnchorVar(`price-${i}`, "--fill", String(motion.reduced ? 1 : smooth((t - 0.7) / 0.3)));
-      if (!m) continue;
-      if (!start || !end || t <= 0.01 || t >= 0.99 || motion.reduced) {
-        m.visible = false;
-        continue;
-      }
-      m.visible = true;
-      m.position.lerpVectors(start, end, t);
-      m.position.y += Math.sin(t * Math.PI) * px2w(70);
-      m.scale.setScalar(px2w(13));
-    }
-  });
-  return (
-    <group>
-      {TIER_COLORS.map((c, i) => (
-        <mesh key={c} ref={(m) => { drops.current[i] = m; }}>
-          <icosahedronGeometry args={[1, 2]} />
-          <meshStandardMaterial color={c} emissive={c} emissiveIntensity={0.35} roughness={0.25} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-/* ---------------- DOM responders that aren't tied to a piece ---------------- */
-function DomSync() {
-  useFrame(() => {
-    const by = anchorYFrac("beaker");
-    setAnchorVar("beaker", "--fill", String(motion.reduced || by === null ? 1 : smooth((0.85 - by) / 0.35)));
-  });
-  return null;
-}
-
 /* ---------------- the stream segments that hand off between pieces ---------------- */
 function Streams() {
   const low = motion.low;
@@ -459,18 +416,13 @@ function Streams() {
         const c = pt("chat", 0.92, 0.04);
         return c && link.helixOk ? bowed(c, link.helixTop.clone(), 1) : null;
       }} fill={(c) => (link.dropAtChat ? headFill(c) : 0)} />
-      {/* 5. helix -> down the gutter -> pricing */}
-      <StreamTube segs={low ? 120 : 220} radius={0.07} bubbles={low ? 3 : 10} points={() => {
-        const g1a = pt("gutter-1", 0.5, 0), g1b = pt("gutter-1", 0.5, 1), g2a = pt("gutter-2", 0.5, 0), g2b = pt("gutter-2", 0.5, 1), p = pt("pricing-top", 0.5, 0.5);
-        if (!link.helixOk || !p) return null;
-        return [link.helixBottom.clone(), ...[g1a, g1b, g2a, g2b].filter((x): x is THREE.Vector3 => !!x), p];
-      }} fill={(c) => headFill(c, 160)} />
-      {/* 6. leftover -> beaker by the form */}
-      <StreamTube segs={low ? 80 : 140} radius={0.07} bubbles={low ? 2 : 6} points={() => {
-        const a = pt("pricing-end", 0.5, 0.5), g3a = pt("gutter-3", 0.5, 0), g3b = pt("gutter-3", 0.5, 1), b = pt("beaker", 0.5, 0.05);
-        if (!a || !b) return null;
-        return [a, ...[g3a, g3b].filter((x): x is THREE.Vector3 => !!x), b];
-      }} fill={(c) => headFill(c, 120)} />
+      {/* 5. helix -> settles onto the AI tile (the last element). No splash: it lands and stops. */}
+      <StreamTube out={link.s5} segs={low ? 60 : 90} radius={0.07} bubbles={low ? 2 : 5} splash={false} points={() => {
+        const ai = pt("formula-ai", 0.5, 0);
+        if (!link.helixOk || !ai) return null;
+        ai.y += px2w(4);
+        return bowed(link.helixBottom.clone(), ai, 0.35);
+      }} fill={(c) => headFill(c)} />
     </>
   );
 }
@@ -500,8 +452,6 @@ export default function HandoffScene({ active }: { active: boolean }) {
       <Graph />
       <Droplet />
       <Helix />
-      <PricingDrops />
-      <DomSync />
       <Streams />
     </Canvas>
   );

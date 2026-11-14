@@ -181,18 +181,15 @@ export default function Pricing() {
           Results, not experiments on your budget. See your design before you spend anything; Growth and Operator are quoted to fit your business.
         </p>
 
-        {/* the helix unzips here and drops a strand into each tier */}
-        <div data-anchor="pricing-top" aria-hidden className="mx-auto mt-6 h-2 w-2" />
-        <div ref={grid} className="mt-16 grid gap-x-7 gap-y-20 [perspective:1600px] sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={grid} className="mt-24 grid gap-x-7 gap-y-20 [perspective:1600px] sm:grid-cols-2 lg:grid-cols-4">
           {PLANS.map((p) => (
             <div
               key={p.name}
               data-card
-              data-anchor={`price-${PLANS.indexOf(p)}`}
               className={`relative flex flex-col rounded-[4px] p-6 shadow-[0_2px_3px_rgba(26,26,26,0.06),0_14px_30px_rgba(26,26,26,0.10)] transition-shadow duration-300 hover:shadow-[0_6px_10px_rgba(26,26,26,0.06),0_30px_60px_var(--glow)] ${p.tilt} ${
                 p.featured ? "outline outline-[3px] outline-offset-0 outline-[#0f766e] max-lg:mt-4 lg:-my-2 lg:py-8" : ""
               }`}
-              style={{ background: `linear-gradient(to top, ${p.card} calc(var(--fill, 1) * 100%), #fffefb calc(var(--fill, 1) * 100%))`, ["--glow" as string]: p.glow }}
+              style={{ background: p.card, ["--glow" as string]: p.glow }}
             >
               {/* the tier's molecule, floating above the card */}
               <div className="float-y absolute -top-14 left-1/2 -translate-x-1/2" title={p.mol.length ? `Combines: ${p.mol.join(", ")}` : "Your mockup"}>
@@ -254,8 +251,7 @@ export default function Pricing() {
             </div>
           ))}
         </div>
-        <div data-anchor="pricing-end" aria-hidden className="ml-auto mr-[3%] mt-6 h-2 w-2" />
-        <p className="mt-10 text-xs text-ink/75">Final pricing depends on site size and features. We confirm it with you before any work begins.</p>
+        <p className="mt-16 text-xs text-ink/75">Final pricing depends on site size and features. We confirm it with you before any work begins.</p>
       </div>
     </section>
   );
