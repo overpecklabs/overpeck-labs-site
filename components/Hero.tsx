@@ -6,8 +6,6 @@ import gsap from "gsap";
 import { scrollToId } from "@/lib/journey";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 
-const MARKERS = ["#1a1a1a", "#1f6feb", "#d93f44", "#2f9e44"];
-
 /**
  * Hero board. The 3D flask (in the fixed handoff canvas) sits on the [data-anchor="flask"]
  * placeholder and starts pouring as you scroll; the stream flows straight into section 01.
@@ -80,15 +78,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* marker tray */}
-        <div className="absolute inset-x-0 bottom-0 h-7">
-          <div className="board-frame absolute inset-x-0 bottom-0 h-4" />
-          <div className="absolute bottom-3 right-[8%] flex items-end gap-3" aria-hidden>
-            {MARKERS.map((c, i) => (
-              <span key={c} className="block h-3 rounded-full shadow-[0_2px_3px_rgba(0,0,0,0.25)]" style={{ width: 64 - i * 4, background: `linear-gradient(90deg, ${c} 0 22%, #f1f1f1 22% 100%)` }} />
-            ))}
-          </div>
-        </div>
 
         <button onClick={() => scrollToId("websites")} className="sr-only focus:not-sr-only focus:absolute focus:bottom-10 focus:left-1/2">
           Skip to services
