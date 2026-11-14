@@ -18,8 +18,21 @@ const SCRIPT: Msg[] = [
   { from: "ai", typing: true, text: "Thanks! A confirmation text is on its way. We'll also send a quick review request after the job." },
 ];
 
-export default function ChatDemo({ className = "" }: { className?: string }) {
-  const { shown, typing, play } = useScriptPlayer(SCRIPT, 4);
+export default function ChatDemo({ className = "", standalone = false }: { className?: string; standalone?: boolean }) {
+  const { shown, typing, play } = useScriptPlayer(SCRIPT, standalone ? -1 : 4);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // standalone pages: start playing once the demo scrolls into view
+  useEffect(() => {
+    if (!standalone || !rootRef.current) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        play();
+        io.disconnect();
+      }
+    }, { threshold: 0.4 });
+    io.observe(rootRef.current);
+    return () => io.disconnect();
+  }, [standalone, play]);
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,7 +42,7 @@ export default function ChatDemo({ className = "" }: { className?: string }) {
   const booked = shown >= 6;
 
   return (
-    <div className={`glass flex w-full flex-col rounded-3xl p-4 ${className}`}>
+    <div ref={rootRef} className={`glass flex w-full flex-col rounded-3xl p-4 ${className}`}>
       <div className="flex items-center justify-between border-b border-ink/10 pb-3">
         <div className="flex items-center gap-2.5">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-teal to-mk-sky text-xs font-bold text-black">AI</span>

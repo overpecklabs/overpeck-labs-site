@@ -48,6 +48,7 @@ export function useScriptPlayer(steps: Step[], chapter: number, startAt = 0.2, p
   }, [steps, pace]);
 
   useEffect(() => {
+    if (chapter < 0) return () => clear(); // standalone: the component starts it (e.g. when in view)
     const check = () => {
       if (!started.current && journey.p[chapter] > startAt) play();
     };

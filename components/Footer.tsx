@@ -1,21 +1,20 @@
 import Link from "next/link";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
+import { AREA_SLUGS, INDUSTRY_SLUGS } from "@/lib/slugs";
 
 /*
   Site footer: a slim pre-footer CTA band on the board, then a deep-graphite footer.
   Desktop: 5 columns. Phones: brand block + native <details> accordions (no JS needed).
-  NOTE: Services links point at the homepage sections until the dedicated service
-  pages exist, so nothing links to a page that isn't there yet.
 */
 
 type LinkItem = { label: string; href: string; sub?: string };
 
 const SERVICES: LinkItem[] = [
-  { label: "Services overview", href: "/#services" },
-  { label: "Websites", href: "/#websites" },
-  { label: "Workflows & Automation", href: "/#workflows" },
-  { label: "Track & Optimize", href: "/#tracking" },
-  { label: "AI Implementation", href: "/#ai", sub: "AI Chatbot · AI Call Receptionist · AI Agents" },
+  { label: "Services overview", href: "/services" },
+  { label: "Websites", href: "/services/websites" },
+  { label: "Workflows & Automation", href: "/services/workflows-automation" },
+  { label: "Track & Optimize", href: "/services/track-optimize" },
+  { label: "AI Implementation", href: "/services/ai", sub: "AI Chatbot · AI Call Receptionist · AI Agents" },
 ];
 const COMPANY: LinkItem[] = [
   { label: "How It Works", href: "/#process" },
@@ -24,12 +23,15 @@ const COMPANY: LinkItem[] = [
   { label: "Free Mockup", href: "/free-mockup" },
   { label: "Contact", href: "/#contact" },
 ];
+const FOOTER_INDUSTRIES = ["plumbing", "hvac", "electricians", "roofing", "landscaping", "contractors"];
 const INDUSTRIES: LinkItem[] = [
-  ...["Plumbing", "HVAC", "Electricians", "Roofing", "Landscaping", "Contractors"].map((l) => ({ label: l, href: "/#industries" })),
-  { label: "See all →", href: "/#industries" },
+  ...FOOTER_INDUSTRIES.map((slug) => {
+    const i = INDUSTRY_SLUGS.find((x) => x.slug === slug)!;
+    return { label: slug === "contractors" ? "Contractors" : i.name, href: `/industries/${slug}` };
+  }),
+  { label: "See all →", href: "/industries" },
 ];
-// Plain text for now: no location pages exist yet.
-const AREAS = ["Hackensack", "Paramus", "Fort Lee", "Englewood", "Teaneck", "Fair Lawn", "Ridgewood", "Mahwah"];
+const AREAS: LinkItem[] = [...AREA_SLUGS.map((a) => ({ label: a.name, href: `/areas/${a.slug}` })), { label: "See all →", href: "/areas" }];
 
 // Social accounts: add real profile URLs here when they exist. Nothing renders while this is empty.
 const SOCIAL: { label: string; href: string }[] = [];
@@ -61,21 +63,11 @@ function LinkList({ items }: { items: LinkItem[] }) {
   );
 }
 
-function AreaList() {
-  return (
-    <ul className="space-y-2.5 text-sm text-[#c9d1d9]">
-      {AREAS.map((a) => (
-        <li key={a}>{a}</li>
-      ))}
-    </ul>
-  );
-}
-
 const COLUMNS: { title: string; body: React.ReactNode }[] = [
   { title: "Services", body: <LinkList items={SERVICES} /> },
   { title: "Company", body: <LinkList items={COMPANY} /> },
   { title: "Industries we serve", body: <LinkList items={INDUSTRIES} /> },
-  { title: "Areas served", body: <AreaList /> },
+  { title: "Areas served", body: <LinkList items={AREAS} /> },
 ];
 
 export default function Footer({ hideCta = false }: { hideCta?: boolean }) {

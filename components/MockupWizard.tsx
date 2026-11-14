@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { INDUSTRIES } from "@/lib/industries";
+import { INDUSTRY_SLUGS } from "@/lib/slugs";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 import { submitMockupRequest, TIMELINES, type MockupRequest } from "@/lib/submitMockupRequest";
 import HoneypotField from "./HoneypotField";
@@ -173,7 +174,8 @@ export default function MockupWizard() {
     }
     const q = new URLSearchParams(window.location.search).get("industry");
     if (q) {
-      const match = INDUSTRY_OPTIONS.find((o) => o.toLowerCase() === q.toLowerCase());
+      const bySlug = INDUSTRY_SLUGS.find((x) => x.slug === q.toLowerCase())?.mockup;
+      const match = bySlug ?? INDUSTRY_OPTIONS.find((o) => o.toLowerCase() === q.toLowerCase());
       next = { ...next, business: { ...next.business, industry: match ?? "Other", industryOther: match ? next.business.industryOther : q.slice(0, 60) } };
     }
     setData(next);

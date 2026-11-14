@@ -85,7 +85,7 @@ function Widget({ k, title, className = "", children }: { k: string; title: stri
   );
 }
 
-export default function TrackingDashboard() {
+export default function TrackingDashboard({ standalone = false }: { standalone?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const { d, area } = useLineChart();
@@ -190,7 +190,8 @@ export default function TrackingDashboard() {
       last = p;
     };
 
-    if (reduced) {
+    // standalone pages and reduced motion: the completed dashboard, static
+    if (reduced || standalone) {
       render(1);
       return;
     }
@@ -217,7 +218,7 @@ export default function TrackingDashboard() {
       panelEl.removeEventListener("pointermove", onMove);
       panelEl.removeEventListener("pointerleave", onLeave);
     };
-  }, []);
+  }, [standalone]);
 
   return (
     <div ref={root} className="relative [perspective:1400px]" role="img" aria-label="Sample growth dashboard: new leads, AI-answered calls, quotes sent, booked jobs, cost per lead, leads over 30 days, leads by source, conversion rate, recent activity and a new opportunity alert. All figures are sample data.">

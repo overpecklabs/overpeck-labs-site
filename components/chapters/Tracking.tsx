@@ -15,6 +15,7 @@ export default function Tracking() {
     >
       <div className="mx-auto grid w-full max-w-6xl items-center gap-5 px-5 pt-[4.5rem] lg:grid-cols-[minmax(0,370px)_1fr] lg:gap-12 lg:pt-0">
         <ChapterCopy
+          href="/services/track-optimize"
           kicker="03 · Track, Monitor & Optimize"
           annotation="no guesswork"
           compactMobile

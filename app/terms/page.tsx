@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
 import LegalPage from "@/components/LegalPage";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Terms of Use | Overpeck Labs",
   description: "Terms for using the Overpeck Labs website and requesting a free website mockup.",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

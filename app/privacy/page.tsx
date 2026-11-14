@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
 import LegalPage from "@/components/LegalPage";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Privacy Policy | Overpeck Labs",
   description: "How Overpeck Labs collects, stores and uses information you submit through our website forms.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

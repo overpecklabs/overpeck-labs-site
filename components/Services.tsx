@@ -1,12 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import { scrollToId } from "@/lib/journey";
+import Link from "next/link";
 import { SERVICES } from "@/lib/services";
 import { useDrawOn } from "@/lib/useDrawOn";
 import { usePanelIn } from "@/lib/usePanelIn";
 import { ServiceIcon } from "./icons";
 import Annotation from "./Annotation";
+
+const SLUG: Record<string, string> = { websites: "websites", workflows: "workflows-automation", tracking: "track-optimize", ai: "ai" };
 
 // Periodic-table styling for each service.
 const ELEMENT: Record<string, { sym: string; el: string; bg: string; ink: string; tilt: string }> = {
@@ -40,9 +42,9 @@ export default function Services() {
           {SERVICES.map((s) => {
             const e = ELEMENT[s.key];
             return (
-              <button
+              <Link
                 key={s.key}
-                onClick={() => scrollToId(s.anchor)}
+                href={`/services/${SLUG[s.key]}`}
                 className={`element-tile group flex flex-col p-5 pt-8 text-left shadow-[0_10px_26px_rgba(26,26,26,0.09)] ${e.tilt}`}
                 style={{ background: `linear-gradient(180deg, ${e.bg} 0 132px, #fffefb 132px)` }}
               >
@@ -55,9 +57,9 @@ export default function Services() {
                 <span className="font-display mt-8 text-lg font-bold leading-snug text-ink">{s.name}</span>
                 <span className="mt-2 flex-1 text-sm text-ink/80">{s.line}</span>
                 <span className="mt-5 text-sm font-semibold" style={{ color: e.ink }}>
-                  See how it works ↑
+                  Learn more →
                 </span>
-              </button>
+              </Link>
             );
           })}
         </div>

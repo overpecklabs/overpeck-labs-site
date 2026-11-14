@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useScriptPlayer } from "@/lib/useScriptPlayer";
 
 type Step = { kind: "event" | "ai" | "caller" | "booked"; text: string; tone?: "warn" | "ai" | "ok"; typing?: boolean };
@@ -23,12 +24,25 @@ const tone = {
   ok: "border-teal/40 bg-teal/10 text-teal-ink",
 };
 
-export default function ReceptionistDemo({ className = "" }: { className?: string }) {
-  const { shown, typing, play } = useScriptPlayer(STEPS, 4, 0.2, 0.9);
+export default function ReceptionistDemo({ className = "", standalone = false }: { className?: string; standalone?: boolean }) {
+  const { shown, typing, play } = useScriptPlayer(STEPS, standalone ? -1 : 4, 0.2, 0.9);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // standalone pages: start playing once the demo scrolls into view
+  useEffect(() => {
+    if (!standalone || !rootRef.current) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        play();
+        io.disconnect();
+      }
+    }, { threshold: 0.4 });
+    io.observe(rootRef.current);
+    return () => io.disconnect();
+  }, [standalone, play]);
   const ringing = shown < 2;
 
   return (
-    <div className={`mx-auto flex w-full max-w-[250px] flex-col rounded-[2.2rem] border border-ink/30 bg-ink p-2.5 shadow-[0_8px_24px_rgba(26,26,26,0.10)] ${className}`}>
+    <div ref={rootRef} className={`mx-auto flex w-full max-w-[250px] flex-col rounded-[2.2rem] border border-ink/30 bg-ink p-2.5 shadow-[0_8px_24px_rgba(26,26,26,0.10)] ${className}`}>
       <div className="flex min-h-0 flex-1 flex-col rounded-[1.8rem] border border-ink/10 bg-gradient-to-b from-white to-[#f3f6fb] px-3 pb-3 pt-2">
         <div className="mx-auto mb-2 h-1.5 w-16 rounded-full bg-ink/15" />
         <div className="flex items-center justify-between">

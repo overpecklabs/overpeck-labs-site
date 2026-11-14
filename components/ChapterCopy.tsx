@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Annotation from "./Annotation";
 
 /** Copy card for a 3D chapter: a pinned paper card with one optional marker note. */
@@ -8,6 +9,7 @@ export default function ChapterCopy({
   note,
   annotation,
   compactMobile,
+  href,
   children,
 }: {
   kicker: string;
@@ -17,6 +19,8 @@ export default function ChapterCopy({
   annotation?: string;
   /** phones: show only kicker + title (room for a big set-piece below) */
   compactMobile?: boolean;
+  /** "Learn more" link to the service page */
+  href?: string;
   children?: React.ReactNode;
 }) {
   return (
@@ -42,6 +46,11 @@ export default function ChapterCopy({
         </ul>
       )}
       {children}
+      {href && (
+        <Link href={href} className="mt-4 inline-block text-sm font-semibold text-teal-ink underline-offset-4 hover:underline">
+          Learn more →
+        </Link>
+      )}
       {note && <p className={`mt-4 text-xs text-ink/75 sm:mt-5 ${compactMobile ? "hidden sm:block" : ""}`}>{note}</p>}
     </div>
   );

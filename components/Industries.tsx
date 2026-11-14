@@ -203,6 +203,9 @@ export default function Industries() {
         <p className="mt-4 max-w-xl text-ink/80">
           Plumbers, HVAC, electricians, roofers, salons, restaurants and more. Every design is custom to the business. These are examples we made up to show the range.
         </p>
+        <Link href="/industries" className="mt-4 inline-block text-sm font-semibold text-teal-ink underline-offset-4 hover:underline">
+          Explore every industry we serve →
+        </Link>
       </div>
 
       <div data-panel className="relative mt-12">

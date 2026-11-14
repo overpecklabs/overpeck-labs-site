@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import MockupWizard from "@/components/MockupWizard";
 
-export const metadata: Metadata = {
-  title: "Free Website Mockup · Overpeck Labs",
+export const metadata: Metadata = pageMeta({
+  title: "Free Website Mockup for Bergen County Businesses | Overpeck Labs",
   description: "Answer a few quick questions and we'll design a free custom mockup of your new website. No obligation.",
-};
+  path: "/free-mockup",
+});
 
 export default function FreeMockupPage() {
   return (
