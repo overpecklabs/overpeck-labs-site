@@ -1,8 +1,10 @@
 "use client";
 
 import { scrollToId } from "@/lib/journey";
+import { prefillContact } from "@/lib/services";
 
 const links = [
+  { id: "services", label: "Services" },
   { id: "process", label: "Process" },
   { id: "pricing", label: "Pricing" },
   { id: "contact", label: "Contact" },
@@ -28,7 +30,7 @@ export default function Nav() {
             </li>
           ))}
           <li>
-            <a href="#contact" onClick={go("contact")} className="rounded-full bg-white/10 px-4 py-1.5 font-semibold hover:bg-white/20">
+            <a href="#contact" onClick={(e) => { prefillContact(["mockup"]); go("contact")(e); }} className="rounded-full bg-white/10 px-4 py-1.5 font-semibold hover:bg-white/20">
               Free mockup
             </a>
           </li>

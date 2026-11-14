@@ -1,26 +1,45 @@
 "use client";
 
 import { scrollToId } from "@/lib/journey";
+import { prefillContact, type ServiceKey } from "@/lib/services";
 
-const PLANS = [
+type Plan = {
+  name: string;
+  tag: string;
+  blurb: string;
+  items: string[];
+  prefill: ServiceKey[];
+  price?: { from: string; monthly: string };
+  cta: string;
+  featured?: boolean;
+};
+
+const PLANS: Plan[] = [
   {
-    name: "Starter Site",
-    tag: "Websites",
-    blurb: "A fast, custom website that makes it easy to call or request a quote.",
-    items: ["Custom design", "Mobile-first build", "Click-to-call + quote form", "Local SEO foundations"],
-  },
-  {
-    name: "Lead Engine",
-    tag: "Lead generation",
-    blurb: "Everything in Starter, plus a system that brings in and tracks new leads.",
-    items: ["Local landing pages", "Lead tracking", "Ad and search campaign setup", "Monthly reporting"],
+    name: "Launch",
+    tag: "Websites That Win Business",
+    blurb: "A custom website built to bring in calls and jobs.",
+    price: { from: "$500", monthly: "$50/month" },
+    items: ["Custom, mobile-friendly website", "Hosting and SSL included", "Basic SEO setup", "Contact / lead form", "Small monthly edits"],
+    prefill: ["mockup", "websites"],
+    cta: "Get My Free Mockup",
     featured: true,
   },
   {
-    name: "AI Operator",
-    tag: "AI implementation",
-    blurb: "An assistant that books jobs, follows up and asks for reviews.",
-    items: ["AI chat + booking assistant", "Automated follow-ups", "Review requests", "Set up around your schedule"],
+    name: "Growth",
+    tag: "Website + Automation + Tracking",
+    blurb: "Everything in Launch, plus systems that follow up for you and show what's working.",
+    items: ["Everything in Launch", "Workflows & Automation", "Track, Monitor & Optimize", "Ongoing improvements"],
+    prefill: ["websites", "workflows", "tracking"],
+    cta: "Book a call",
+  },
+  {
+    name: "Operator",
+    tag: "Everything, including AI",
+    blurb: "The full system, with AI covering calls, chats and overflow.",
+    items: ["Everything in Growth", "AI Chat Bot", "AI Call Receptionist", "AI Agents for overflow tasks"],
+    prefill: ["websites", "workflows", "tracking", "ai"],
+    cta: "Book a call",
   },
 ];
 
@@ -30,13 +49,35 @@ export default function Pricing() {
       <div className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal">Pricing</p>
         <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold sm:text-5xl">Start small. Add what you need.</h2>
-        <p className="mt-4 max-w-xl text-white/65">Pricing depends on your business and goals. Book a quick call and we'll scope it together.</p>
+        <p className="mt-4 max-w-xl text-white/65">Every plan starts with a free website mockup. Growth and Operator are quoted to fit your business.</p>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {PLANS.map((p) => (
             <div key={p.name} className={`glass flex flex-col rounded-3xl p-7 ${p.featured ? "border-teal/50 shadow-[0_0_60px_rgba(25,240,210,0.15)]" : ""}`}>
               <p className="text-xs font-semibold uppercase tracking-widest text-violet">{p.tag}</p>
               <h3 className="font-display mt-2 text-3xl font-bold">{p.name}</h3>
-              <p className="mt-3 text-sm text-white/70">{p.blurb}</p>
+
+              <div className="mt-4 min-h-[5.5rem]">
+                {p.price ? (
+                  <>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-white/55">Websites starting at</div>
+                    <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                      <span className="font-display text-5xl font-bold text-gradient">{p.price.from}</span>
+                      <span className="text-sm text-white/70">upfront</span>
+                    </div>
+                    <div className="text-sm text-white/80">
+                      + as low as <span className="font-semibold text-white">{p.price.monthly}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-white/55">Pricing</div>
+                    <div className="font-display mt-1 text-3xl font-bold">Custom quote</div>
+                    <div className="text-sm text-white/60">Scoped on a quick call</div>
+                  </>
+                )}
+              </div>
+
+              <p className="mt-4 text-sm text-white/70">{p.blurb}</p>
               <ul className="mt-5 flex-1 space-y-2 text-sm text-white/80">
                 {p.items.map((i) => (
                   <li key={i} className="flex gap-2">
@@ -48,15 +89,18 @@ export default function Pricing() {
               <button
                 className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7`}
                 onClick={() => {
-                  window.dispatchEvent(new CustomEvent("plan-select", { detail: p.name }));
+                  prefillContact(p.prefill);
                   scrollToId("contact");
                 }}
               >
-                Book a call
+                {p.cta}
               </button>
             </div>
           ))}
         </div>
+        <p className="mt-6 text-xs text-white/45">
+          &quot;Starting at&quot; prices are for a standard small-business site. Final pricing depends on size and features, and we confirm it before any work begins.
+        </p>
       </div>
     </section>
   );

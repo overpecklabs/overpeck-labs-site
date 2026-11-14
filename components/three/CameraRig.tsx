@@ -22,16 +22,18 @@ export default function CameraRig() {
 
     let z = 7;
     let sway = 0;
-    for (let k = 0; k < 4; k++) {
-      if (k < 3) z -= (SPACING - 1.5) * ease(clamp((p[k] - 0.65) / 0.35));
+    for (let k = 0; k < 5; k++) {
+      if (k < 4) z -= (SPACING - 1.5) * ease(clamp((p[k] - 0.65) / 0.35));
       z -= 1.5 * clamp(p[k] / 0.65);
       sway += Math.sin(p[k] * Math.PI) * 0.7 * (k % 2 ? -1 : 1);
     }
 
     // Layout: copy on the left, 3D on the right (desktop); 3D lower half (portrait).
-    const toAI = ease(clamp((p[2] - 0.65) / 0.35));
+    const toAI = ease(clamp((p[3] - 0.65) / 0.35));
     const ox = portrait ? 0 : 2.3 * (1 - toAI);
-    const oy = portrait ? 1.5 : 0;
+    // portrait: hero object sits low, under the headline; later pieces in the lower half
+    const leaveHero = ease(clamp((p[0] - 0.65) / 0.35));
+    const oy = portrait ? lerp(3.8, 1.5, leaveHero) : 0;
     const extra = portrait ? 3 + (1 / aspect - 1) * 2.2 : 0;
 
     const tx = sway - ox;

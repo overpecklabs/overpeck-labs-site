@@ -1,3 +1,5 @@
+import { EMAIL, PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
+
 export default function Footer() {
   return (
     <footer className="relative z-10 border-t border-white/10 bg-ink px-5 py-10">
@@ -8,9 +10,14 @@ export default function Footer() {
           </div>
           <div>Bergen County, NJ</div>
         </div>
-        <a href="mailto:MarkQsAi@gmail.com" className="hover:text-teal">
-          MarkQsAi@gmail.com
-        </a>
+        <div className="flex flex-col gap-1 sm:flex-row sm:gap-6">
+          <a href={`tel:${PHONE_TEL}`} className="hover:text-teal">
+            {PHONE_DISPLAY}
+          </a>
+          <a href={`mailto:${EMAIL}`} className="hover:text-teal">
+            {EMAIL}
+          </a>
+        </div>
         <div className="text-xs text-white/40">© {new Date().getFullYear()} Overpeck Labs</div>
       </div>
     </footer>

@@ -8,7 +8,7 @@ const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", 
 export const metadata: Metadata = {
   title: "Overpeck Labs — Websites, leads & AI for Bergen County businesses",
   description:
-    "Overpeck Labs is a Bergen County, NJ agency building custom websites, lead generation and AI assistants for plumbers, HVAC, electricians and remodelers.",
+    "Overpeck Labs, Bergen County NJ: websites that win business, workflow automation, tracking & optimization, and AI that never misses a lead. Free website mockup before you pay anything.",
 };
 
 export const viewport: Viewport = {

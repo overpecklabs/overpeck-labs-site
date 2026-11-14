@@ -21,7 +21,7 @@ export default function AIOrb({ low }: { low: boolean }) {
   const orbit = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
-    const p = journey.p[3];
+    const p = journey.p[4];
     const t = journey.reduced ? 0 : clock.elapsedTime;
     if (orb.current) {
       orb.current.rotation.y = t * 0.3 + p * 3;

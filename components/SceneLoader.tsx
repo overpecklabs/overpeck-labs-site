@@ -26,12 +26,16 @@ export default function SceneLoader() {
     else setTimeout(() => setReady(true), 200);
   }, []);
 
-  // Stop rendering once the pinned journey has scrolled out of view.
+  // Only render while one of the pinned 3D chapters is on screen.
   useEffect(() => {
-    const el = document.getElementById("journey");
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting));
-    io.observe(el);
+    const els = Array.from(document.querySelectorAll("[data-chapter]"));
+    if (!els.length) return;
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+      setActive(visible.size > 0);
+    });
+    els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
 

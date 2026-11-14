@@ -2,8 +2,11 @@ import SmoothScroll from "@/components/SmoothScroll";
 import SceneLoader from "@/components/SceneLoader";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import MockupOffer from "@/components/MockupOffer";
+import Services from "@/components/Services";
 import Websites from "@/components/chapters/Websites";
-import LeadGen from "@/components/chapters/LeadGen";
+import Workflows from "@/components/chapters/Workflows";
+import Tracking from "@/components/chapters/Tracking";
 import AIChapter from "@/components/chapters/AIChapter";
 import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
@@ -17,13 +20,14 @@ export default function Page() {
       <SceneLoader />
       <Nav />
       <main className="relative z-10">
-        {/* The fixed 3D canvas shows through these four pinned chapters */}
-        <div id="journey">
-          <Hero />
-          <Websites />
-          <LeadGen />
-          <AIChapter />
-        </div>
+        {/* Pinned chapters (data-chapter) are transparent so the fixed 3D canvas shows through. */}
+        <Hero />
+        <MockupOffer />
+        <Services />
+        <Websites />
+        <Workflows />
+        <Tracking />
+        <AIChapter />
         <Process />
         <Pricing />
         <Contact />
