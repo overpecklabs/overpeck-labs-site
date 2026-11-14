@@ -8,7 +8,7 @@ import { journey } from "@/lib/journey";
 type Style = { color?: string; bg?: string; border?: string };
 
 /** Draws a pill label to a canvas texture: no font files are fetched, and it hides with its parent group. */
-function makeLabel(text: string, { color = "#e8ebf5", bg = "rgba(10,14,30,0.85)", border = "rgba(25,240,210,0.55)" }: Style) {
+function makeLabel(text: string, { color = "#1a1a1a", bg = "rgba(255,254,251,0.97)", border = "rgba(15,118,110,0.7)" }: Style) {
   const H = 112;
   const pad = 40;
   const font = "600 46px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";

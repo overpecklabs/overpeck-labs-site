@@ -6,6 +6,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { clamp, ease, journey } from "@/lib/journey";
 import Label from "./Label";
+import { Edges } from "@react-three/drei";
 
 const CH = 3;
 const BARS = 7;
@@ -23,8 +24,8 @@ export default function Dashboard({ low }: { low: boolean }) {
   const bars = useRef<(THREE.Mesh | null)[]>([]);
   const dot = useRef<THREE.Mesh>(null);
   const alert = useRef<THREE.Group>(null);
-  const rank = useMemo(() => makeLine(LINE_PTS, "#19f0d2"), []);
-  const pulse = useMemo(() => makeLine(60, "#5dff9e"), []);
+  const rank = useMemo(() => makeLine(LINE_PTS, "#1f6feb"), []);
+  const pulse = useMemo(() => makeLine(60, "#2f9e44"), []);
 
   useFrame(({ clock }) => {
     const p = journey.p[CH];
@@ -79,21 +80,22 @@ export default function Dashboard({ low }: { low: boolean }) {
     <group scale={0.56} position={[-0.9, -0.1, 0]}>
       <group ref={root}>
         <RoundedBox args={[6.2, 4.0, 0.12]} radius={0.15} smoothness={low ? 2 : 4} position={[0, 0, -0.08]}>
-          <meshStandardMaterial color="#0b1226" transparent opacity={0.82} metalness={0.4} roughness={0.35} />
+          <meshStandardMaterial color="#fffefb" roughness={0.95} />
+          <Edges color="#1a1a1a" threshold={30} />
         </RoundedBox>
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[6.0, 3.8]} />
-          <meshBasicMaterial color="#19f0d2" wireframe transparent opacity={0.04} toneMapped={false} />
+          <meshBasicMaterial color="#1f6feb" wireframe transparent opacity={0.07} toneMapped={false} />
         </mesh>
 
-        <Label text="Example dashboard · sample data" position={[-1.45, 1.6, 0.06]} height={0.26} style={{ border: "rgba(255,255,255,0.2)" }} />
+        <Label text="Example dashboard · sample data" position={[-1.45, 1.6, 0.06]} height={0.26} style={{ border: "rgba(26,26,26,0.25)" }} />
 
         {/* Calls & forms bar chart */}
-        <Label text="Calls & forms (example)" position={[-1.6, 0.55, 0.06]} height={0.22} style={{ border: "rgba(155,107,255,0.6)" }} />
+        <Label text="Calls & forms (example)" position={[-1.6, 0.55, 0.06]} height={0.22} style={{ border: "rgba(31,111,235,0.6)" }} />
         {Array.from({ length: BARS }, (_, i) => (
           <mesh key={i} ref={(m) => { bars.current[i] = m; }} position={[-2.65 + i * 0.36, -1.45, 0.05]}>
             <boxGeometry args={[0.22, 1, 0.08]} />
-            <meshBasicMaterial color={i % 2 ? "#9b6bff" : "#19f0d2"} toneMapped={false} />
+            <meshBasicMaterial color={i % 2 ? "#1f6feb" : "#2f9e44"} toneMapped={false} />
           </mesh>
         ))}
 
@@ -102,17 +104,17 @@ export default function Dashboard({ low }: { low: boolean }) {
         <primitive object={rank} />
 
         {/* Uptime pulse */}
-        <Label text="Site uptime (example)" position={[1.0, 1.35, 0.06]} height={0.22} style={{ border: "rgba(93,255,158,0.6)" }} />
+        <Label text="Site uptime (example)" position={[1.0, 1.35, 0.06]} height={0.22} style={{ border: "rgba(47,158,68,0.6)" }} />
         <primitive object={pulse} />
         <mesh ref={dot} position={[2.55, 1.35, 0.08]}>
           <circleGeometry args={[0.07, 16]} />
-          <meshBasicMaterial color="#5dff9e" toneMapped={false} />
+          <meshBasicMaterial color="#2f9e44" toneMapped={false} />
         </mesh>
 
         {/* opportunity alert */}
         <group ref={alert} scale={0.0001}>
-          <Label text="● New opportunity found (example)" height={0.34} style={{ bg: "rgba(70,35,140,0.95)", border: "rgba(190,160,255,1)", color: "#fff" }} />
-          <Label text="More “water heater repair” searches nearby" position={[0, -0.36, 0]} height={0.24} style={{ bg: "rgba(10,14,30,0.9)", border: "rgba(155,107,255,0.6)", color: "#cfd5ee" }} />
+          <Label text="● New opportunity found (example)" height={0.34} style={{ bg: "#fde9c4", border: "#f2a93b", color: "#1a1a1a" }} />
+          <Label text="More “water heater repair” searches nearby" position={[0, -0.36, 0]} height={0.24} style={{ bg: "#fffefb", border: "rgba(242,169,59,0.7)", color: "#3a3a3a" }} />
         </group>
       </group>
     </group>

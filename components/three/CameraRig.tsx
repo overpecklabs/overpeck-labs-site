@@ -52,8 +52,8 @@ export default function CameraRig() {
 
   return (
     <group ref={lights}>
-      <pointLight color="#19f0d2" intensity={90} distance={30} position={[-4, 3, 2]} />
-      <pointLight color="#9b6bff" intensity={90} distance={30} position={[4, -2, 3]} />
+      <pointLight color="#ffffff" intensity={70} distance={30} position={[-4, 4, 3]} />
+      <pointLight color="#fff7e8" intensity={40} distance={30} position={[4, -2, 4]} />
     </group>
   );
 }

@@ -3,16 +3,23 @@
 import Link from "next/link";
 import { scrollToId } from "@/lib/journey";
 import { prefillContact, type ServiceKey } from "@/lib/services";
+import ElementBadge from "./ElementBadge";
+import Annotation from "./Annotation";
 
 type Price = { kind: "free" } | { kind: "fixed"; upfront: string; monthly: string } | { kind: "quote" };
 
 type Plan = {
   name: string;
+  el: { num: string; sym: string };
   tag: string;
   blurb: string;
   items: string[];
   price: Price;
   cta: { label: string } & ({ href: string } | { prefill: ServiceKey[] });
+  mol: string[]; // the matching molecule (which elements this tier combines)
+  card: string; // index-card color
+  tile: string; // element tile color
+  tilt: string;
   badge?: string;
   featured?: boolean;
 };
@@ -21,100 +28,165 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     name: "Free Mockup",
+    el: { num: "01", sym: "Fm" },
     tag: "Start here",
     blurb: "A custom design of your new homepage, no cost, no obligation.",
     price: { kind: "free" },
     items: ["Custom homepage design", "Built around your trade and towns", "Ready in 2–3 business days", "No credit card needed"],
     cta: { label: "Get My Free Mockup", href: "/free-mockup" },
+    mol: [],
+    card: "#fff6b8",
+    tile: "#fffbe0",
+    tilt: "tilt-l",
   },
   {
     name: "Launch",
+    el: { num: "02", sym: "Ln" },
     tag: "Websites That Win Business",
     blurb: "A custom website built to bring in calls and jobs.",
     price: { kind: "fixed", upfront: "$500", monthly: "+ $50/month" },
     items: ["Custom, mobile-friendly website", "Hosting and SSL included", "Basic SEO setup", "Contact / lead form", "Small monthly edits"],
     cta: { label: "Get Started", href: "/free-mockup" },
-    badge: "Most Popular",
+    mol: ["Ws"],
+    card: "#c8f5ec",
+    tile: "#e8fbf7",
+    tilt: "tilt-r",
+    badge: "Recommended",
     featured: true,
   },
   {
     name: "Growth",
+    el: { num: "03", sym: "Gr" },
     tag: "Automation + Tracking",
     blurb: "Everything in Launch, plus systems that follow up for you and show what's working.",
     price: { kind: "quote" },
     items: ["Everything in Launch", "Workflows & Automation", "Track, Monitor & Optimize", "Ongoing improvements"],
     cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking"] },
+    mol: ["Ws", "Au", "Op"],
+    card: "#dbe8ff",
+    tile: "#eef4ff",
+    tilt: "tilt-l",
   },
   {
     name: "Operator",
+    el: { num: "04", sym: "Or" },
     tag: "Everything, including AI",
     blurb: "The full system, with AI covering calls, chats and overflow.",
     price: { kind: "quote" },
     items: ["Everything in Growth", "AI Chat Bot", "AI Call Receptionist", "AI Agents for overflow tasks"],
     cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking", "ai"] },
+    mol: ["Ws", "Au", "Op", "Ai"],
+    card: "#dcf3df",
+    tile: "#eefaef",
+    tilt: "tilt-r",
   },
 ];
+
+const ATOM: Record<string, string> = { Ws: "#19f0d2", Au: "#8ab4f8", Op: "#7fd18f", Ai: "#f5c26b" };
+
+/** Ball-and-stick sketch of the elements a tier combines (decorative). */
+function Molecule({ atoms }: { atoms: string[] }) {
+  if (!atoms.length)
+    return (
+      <svg width="58" height="44" viewBox="0 0 58 44" aria-hidden>
+        <circle cx="29" cy="22" r="15" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeDasharray="4 4" />
+        <text x="29" y="26" textAnchor="middle" fontSize="11" fontWeight="700" fill="#1a1a1a">?</text>
+      </svg>
+    );
+  const pts = atoms.map((_, i) => ({ x: 18 + i * 30, y: i % 2 ? 30 : 14 }));
+  const w = 36 + (atoms.length - 1) * 30;
+  return (
+    <svg width={w} height="44" viewBox={`0 0 ${w} 44`} aria-hidden>
+      {pts.slice(1).map((p, i) => (
+        <line key={i} x1={pts[i].x} y1={pts[i].y} x2={p.x} y2={p.y} stroke="#1a1a1a" strokeWidth="2.5" />
+      ))}
+      {atoms.map((a, i) => (
+        <g key={a}>
+          <circle cx={pts[i].x} cy={pts[i].y} r="12" fill={ATOM[a]} stroke="#1a1a1a" strokeWidth="2" />
+          <text x={pts[i].x} y={pts[i].y + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="#1a1a1a">
+            {a}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
 
 function PriceBlock({ price }: { price: Price }) {
   if (price.kind === "free")
     return (
       <>
-        <div className="font-display text-5xl font-bold text-gradient">Free</div>
-        <div className="mt-1 text-sm text-white/60">No obligation</div>
+        <div className="font-display text-5xl font-bold text-ink">Free</div>
+        <div className="mt-1 text-sm text-ink/80">No obligation</div>
       </>
     );
   if (price.kind === "fixed")
     return (
       <>
-        <div className="font-display text-5xl font-bold text-gradient">{price.upfront}</div>
-        <div className="mt-1 text-sm font-medium text-white/70">{price.monthly}</div>
+        <div className="font-display text-5xl font-bold text-ink">{price.upfront}</div>
+        <div className="mt-1 text-sm font-semibold text-ink/85">{price.monthly}</div>
       </>
     );
   return (
     <>
-      <div className="font-display text-3xl font-bold leading-[3rem]">Custom quote</div>
-      <div className="mt-1 text-sm text-white/60">Book a call</div>
+      <div className="font-display text-3xl font-bold leading-[3rem] text-ink">Custom quote</div>
+      <div className="mt-1 text-sm text-ink/80">Book a call</div>
     </>
   );
 }
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="relative bg-ink px-5 py-28">
+    <section id="pricing" className="graph-paper relative px-5 py-24">
       <div className="mx-auto max-w-6xl">
-        <p className="text-xs font-semibold uppercase tracking-widest text-teal">Pricing</p>
-        <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold sm:text-5xl">Start free. Add what you need.</h2>
-        <p className="mt-4 max-w-xl text-white/65">See your design before you spend anything. Growth and Operator are quoted to fit your business.</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Pricing</p>
+        <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold text-ink sm:text-5xl">Start free. Add what you need.</h2>
+        <p className="mt-4 max-w-xl text-ink/85">
+          Results, not experiments on your budget. See your design before you spend anything; Growth and Operator are quoted to fit your business.
+        </p>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
           {PLANS.map((p) => (
             <div
               key={p.name}
-              className={`glass relative flex flex-col rounded-3xl p-6 ${p.featured ? "max-lg:mt-3 border-teal/60 shadow-[0_0_60px_rgba(25,240,210,0.18)] lg:-my-2 lg:py-8" : ""}`}
+              className={`relative flex flex-col rounded-[4px] p-6 shadow-[0_2px_3px_rgba(26,26,26,0.06),0_14px_30px_rgba(26,26,26,0.10)] ${p.tilt} ${
+                p.featured ? "outline outline-[3px] outline-offset-0 outline-[#0f766e] max-lg:mt-4 lg:-my-2 lg:py-8" : ""
+              }`}
+              style={{ background: p.card }}
             >
+              <span className="tape" />
               {p.badge && (
-                <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-teal to-violet px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-black shadow-[0_0_20px_rgba(25,240,210,0.4)]">
+                <span className="absolute -top-3.5 right-5 rotate-[3deg] rounded-sm border-2 border-[#0f766e] bg-white px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#0f766e] shadow-sm">
                   {p.badge}
                 </span>
               )}
-              <p className="text-xs font-semibold uppercase tracking-widest text-violet">{p.tag}</p>
-              <h3 className="font-display mt-2 text-2xl font-bold">{p.name}</h3>
-              <div className="mt-4 min-h-[5rem]">
+              <div className="flex items-start gap-4">
+                <ElementBadge num={p.el.num} symbol={p.el.sym} name={p.name.split(" ")[0]} bg={p.tile} />
+                <div className="min-w-0 pt-1">
+                  <p className="text-[11px] font-bold uppercase leading-tight tracking-widest text-ink/80">{p.tag}</p>
+                  <h3 className="font-display mt-1 text-2xl font-bold text-ink">{p.name}</h3>
+                </div>
+              </div>
+              <div className="mt-5 min-h-[5rem]">
                 <PriceBlock price={p.price} />
               </div>
-              <p className="mt-3 text-sm text-white/70">{p.blurb}</p>
-              <ul className="mt-5 flex-1 space-y-2 text-sm text-white/80">
+              <div className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink/75">
+                <Molecule atoms={p.mol} />
+                <span>{p.mol.length ? (p.mol.length === 4 ? "Full formula" : `${p.mol.length} element${p.mol.length > 1 ? "s" : ""}`) : "Your design"}</span>
+              </div>
+              <p className="mt-3 text-sm text-ink/85">{p.blurb}</p>
+              <ul className="mt-5 flex-1 space-y-2 text-sm text-ink/90">
                 {p.items.map((i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="text-teal" aria-hidden>
-                      ✓
-                    </span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" className="mt-0.5 shrink-0" fill="none" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M4 13 l5 5 L20 6" />
+                    </svg>
                     {i}
                   </li>
                 ))}
               </ul>
               {"href" in p.cta ? (
-                <Link href={p.cta.href} className={`${p.featured || p.price.kind === "free" ? "btn-primary" : "btn-ghost"} mt-7`}>
+                <Link href={p.cta.href} className="btn-primary mt-7">
                   {p.cta.label}
                 </Link>
               ) : (
@@ -128,10 +200,15 @@ export default function Pricing() {
                   {p.cta.label}
                 </button>
               )}
+              {p.price.kind === "free" && (
+                <Annotation arrow="up" color="#d93f44" size="text-lg" showFrom="lg" className="absolute -bottom-14 left-6 rotate-[-3deg]">
+                  start here
+                </Annotation>
+              )}
             </div>
           ))}
         </div>
-        <p className="mt-6 text-xs text-white/45">Final pricing depends on site size and features. We confirm it with you before any work begins.</p>
+        <p className="mt-16 text-xs text-ink/75">Final pricing depends on site size and features. We confirm it with you before any work begins.</p>
       </div>
     </section>
   );

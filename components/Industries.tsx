@@ -11,13 +11,17 @@ const mockupHref = (industry: string) => `/free-mockup?industry=${encodeURICompo
 
 /** Industry card that starts a free-mockup request with that industry prefilled. */
 function CardLink({ d, hidden }: { d: (typeof INDUSTRIES)[number]; hidden?: boolean }) {
+  // printouts taped to the board, alternating a slight tilt
+  const tilt = INDUSTRIES.indexOf(d) % 2 ? "1.2deg" : "-1.2deg";
   return (
     <Link
       href={mockupHref(d.industry)}
       tabIndex={hidden ? -1 : undefined}
       aria-label={`Start a free ${d.industry.toLowerCase()} website mockup (sample design: ${d.name}, fictional)`}
-      className="block rounded-xl transition hover:-translate-y-1 focus-visible:-translate-y-1"
+      className="relative mt-3 block transition-[translate,rotate] duration-300 hover:-translate-y-1 hover:!rotate-0 focus-visible:-translate-y-1"
+      style={{ rotate: tilt }}
     >
+      <span className="tape" />
       <MockSite d={d} />
     </Link>
   );
@@ -133,7 +137,7 @@ function SwipeRow() {
           </div>
         ))}
       </div>
-      <p className="mt-1 text-center text-xs text-white/40">Swipe to see more →</p>
+      <p className="mt-1 text-center text-xs text-ink/70">Swipe to see more →</p>
     </div>
   );
 }
@@ -180,17 +184,16 @@ export default function Industries() {
   }, [mode]);
 
   return (
-    <section ref={section} id="industries" className="relative overflow-hidden bg-ink py-28">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_40%_at_50%_45%,rgba(155,107,255,0.12),transparent_70%)]" />
-      <div className="relative mx-auto max-w-6xl px-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-teal">Industries we build for</p>
+    <section ref={section} id="industries" className="board-bg relative overflow-hidden py-24">
+            <div className="relative mx-auto max-w-6xl px-5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Industries we build for</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
           <h2 className="font-display max-w-2xl text-4xl font-bold sm:text-5xl">Built for local businesses like yours.</h2>
           <span className="rounded-full border border-violet/50 bg-violet/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-violet">
             Sample designs · fictional businesses
           </span>
         </div>
-        <p className="mt-4 max-w-xl text-white/65">
+        <p className="mt-4 max-w-xl text-ink/80">
           Plumbers, HVAC, electricians, roofers, salons, restaurants and more. Every design is custom to the business. These are examples we made up to show the range.
         </p>
       </div>
@@ -200,7 +203,7 @@ export default function Industries() {
           <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
             <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} />
             <MarqueeRow items={ROW_B} dir={-1} velocity={velocity} visible={visible} />
-            <p className="mt-2 text-center text-xs text-white/35">Hover to pause · click a design to start yours</p>
+            <p className="mt-2 text-center text-xs text-ink/70">Hover to pause · click a design to start yours</p>
           </div>
         )}
         {mode === "swipe" && <SwipeRow />}

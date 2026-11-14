@@ -137,20 +137,20 @@ export default function MockSite({ d }: { d: Industry }) {
 
   return (
     <div
-      className="mock-card @container w-[300px] shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:w-[340px]"
+      className="mock-card @container w-[300px] shrink-0 overflow-hidden rounded-[3px] border border-ink/15 bg-white shadow-[0_2px_3px_rgba(26,26,26,0.08),0_14px_30px_rgba(26,26,26,0.12)] sm:w-[340px]"
       role="img"
       aria-label={`Sample homepage design for ${d.name}, a fictional ${d.industry.toLowerCase()} business`}
     >
       {/* browser chrome: business name only, never a URL */}
-      <div className="flex h-7 items-center gap-1.5 bg-[#1b1e2b] px-3">
+      <div className="flex h-7 items-center gap-1.5 border-b border-ink/10 bg-[#eceef1] px-3">
         <span className="h-2 w-2 rounded-full bg-[#ff5f57]" />
         <span className="h-2 w-2 rounded-full bg-[#febc2e]" />
         <span className="h-2 w-2 rounded-full bg-[#28c840]" />
-        <span className="ml-2 flex min-w-0 items-center gap-1.5 rounded-t-md bg-[#2a2e3f] px-2 py-0.5 text-[9px] text-white/70">
+        <span className="ml-2 flex min-w-0 items-center gap-1.5 rounded-t-md bg-white px-2 py-0.5 text-[9px] text-ink/80">
           <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: c.accent }} />
           <span className="truncate">{d.name}</span>
         </span>
-        <span className="ml-auto max-w-[96px] truncate whitespace-nowrap rounded bg-white/10 px-1.5 text-[8px] uppercase tracking-wider text-white/50">{d.industry}</span>
+        <span className="ml-auto max-w-[96px] truncate whitespace-nowrap rounded bg-ink/5 px-1.5 text-[8px] uppercase tracking-wider text-ink/75">{d.industry}</span>
       </div>
 
       <div className="flex h-[290px] flex-col" style={{ background: c.bg, color: c.fg, fontFamily: FONTS[d.body] }}>

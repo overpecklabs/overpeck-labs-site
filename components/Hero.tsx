@@ -1,58 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { scrollToId } from "@/lib/journey";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 import { DesktopSketch, INK, MobileSketch } from "./HeroSketch";
 
-// Avoid the SSR warning while still applying before paint in the browser.
-const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
-
 const MARKERS = [INK.black, INK.blue, INK.red, INK.green];
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
-  const board = useRef<HTMLDivElement>(null);
-  const fade = useRef<HTMLDivElement>(null);
   const sketch = useRef<HTMLDivElement>(null);
-
-  // Nav switches to its light style while it sits over the whiteboard.
-  useIsoLayoutEffect(() => {
-    document.documentElement.setAttribute("data-hero-light", "");
-    return () => document.documentElement.removeAttribute("data-hero-light");
-  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const el = root.current!;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const desktop = window.matchMedia("(min-width: 768px)").matches;
-    const html = document.documentElement;
-    const setNav = (light: boolean) => (light ? html.setAttribute("data-hero-light", "") : html.removeAttribute("data-hero-light"));
 
     const ctx = gsap.context(() => {
-      // Nav theme follows the board (light) vs the dark sections.
-      ScrollTrigger.create({
-        trigger: el,
-        start: "top top",
-        end: "bottom top+=80",
-        onUpdate: (self) => setNav(self.isActive && self.progress < 0.8),
-        onLeave: () => setNav(false),
-        onEnterBack: () => setNav(true),
-      });
-
       // Reduced motion: everything stays fully drawn and still. Phones: static sketch, no pinning.
       if (reduced || !desktop) return;
-
-      // Board zooms + fades into the dark sections below.
-      gsap
-        .timeline({ scrollTrigger: { trigger: el, start: "top top", end: "bottom bottom", scrub: 0.5 } })
-        .to({}, { duration: 0.55 })
-        .to(board.current, { scale: 1.12, ease: "power1.in", duration: 0.45 })
-        .to(fade.current, { opacity: 1, ease: "none", duration: 0.45 }, "<");
 
       if (!sketch.current) return;
 
@@ -79,7 +49,7 @@ export default function Hero() {
         strokeDashoffset: 0,
         ease: "none",
         stagger: 0.2,
-        scrollTrigger: { trigger: el, start: "top top", end: "35% top", scrub: 0.4 },
+        scrollTrigger: { trigger: el, start: "top top", end: "20% top", scrub: 0.4 },
       });
 
       // Mouse parallax: layers move by their depth, the stage tilts slightly.
@@ -103,16 +73,13 @@ export default function Hero() {
       return () => el.removeEventListener("pointermove", onMove);
     }, el);
 
-    return () => {
-      ctx.revert();
-      setNav(false);
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={root} id="top" className="relative md:h-[165vh] motion-reduce:md:h-auto">
+    <section ref={root} id="top" className="relative md:h-[125vh] motion-reduce:md:h-auto">
       <div className="relative overflow-hidden md:sticky md:top-0 md:h-[100svh] md:min-h-[640px] motion-reduce:md:relative">
-        <div ref={board} className="board-surface relative origin-[50%_40%] will-change-transform md:absolute md:inset-0">
+        <div className="board-surface relative md:absolute md:inset-0">
           {/* aluminum frame edge */}
           <div className="board-frame absolute inset-x-0 top-0 h-3" />
 
@@ -178,9 +145,6 @@ export default function Hero() {
             </div>
           </div>
         </div>
-
-        {/* fades the board into the dark site below */}
-        <div ref={fade} className="pointer-events-none absolute inset-0 bg-ink opacity-0" />
 
         <button
           onClick={() => scrollToId("mockup")}

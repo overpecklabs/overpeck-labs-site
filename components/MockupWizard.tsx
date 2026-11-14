@@ -94,23 +94,23 @@ function validate(step: number, d: MockupRequest): Errors {
 /* ---------- small field helpers ---------- */
 
 const inputCls =
-  "w-full rounded-xl border bg-black/30 px-4 py-3 text-base text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal/60 disabled:opacity-40";
-const border = (err?: string) => (err ? "border-red-400/70" : "border-white/15 focus:border-teal");
+  "w-full rounded-xl border bg-white px-4 py-3 text-base text-ink placeholder:text-ink/55 focus:outline-none focus:ring-2 focus:ring-teal/60 disabled:opacity-40";
+const border = (err?: string) => (err ? "border-red-400/70" : "border-ink/15 focus:border-teal");
 
 function Field({ id, label, error, hint, optional, children }: { id: string; label: string; error?: string; hint?: string; optional?: boolean; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-white/85">
-        {label} {optional && <span className="font-normal text-white/40">(optional)</span>}
+      <label htmlFor={id} className="block text-sm font-medium text-ink/90">
+        {label} {optional && <span className="font-normal text-ink/70">(optional)</span>}
       </label>
       {children}
       {hint && !error && (
-        <p id={`${id}-hint`} className="text-xs text-white/45">
+        <p id={`${id}-hint`} className="text-xs text-ink/70">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-err`} className="text-xs font-medium text-red-300" role="alert">
+        <p id={`${id}-err`} className="text-xs font-medium text-red-700" role="alert">
           {error}
         </p>
       )}
@@ -126,7 +126,7 @@ const describe = (id: string, err?: string, hint?: string) => ({
 
 function GroupError({ id, error }: { id: string; error?: string }) {
   return error ? (
-    <p id={id} className="mt-2 text-xs font-medium text-red-300" role="alert">
+    <p id={id} className="mt-2 text-xs font-medium text-red-700" role="alert">
       {error}
     </p>
   ) : null;
@@ -289,7 +289,7 @@ export default function MockupWizard() {
   if (status === "done" && submitted) {
     return (
       <section className="glass mt-8 rounded-3xl p-6 sm:p-8" aria-labelledby={fid("done")}>
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-teal/15 text-2xl text-teal" aria-hidden>
+        <div className="grid h-12 w-12 place-items-center rounded-full bg-teal/15 text-2xl text-teal-ink" aria-hidden>
           ✓
         </div>
         <h2 id={fid("done")} ref={heading} tabIndex={-1} className="font-display mt-4 text-3xl font-bold focus:outline-none">
@@ -297,12 +297,12 @@ export default function MockupWizard() {
             ? "Thanks! We'll prioritize your mockup and reach out within 1 business day."
             : "Thanks! Your free mockup will be ready in 2–3 business days."}
         </h2>
-        <p className="mt-3 text-white/75">
-          We&apos;ll reach out to <span className="font-semibold text-white">{submitted.contact.phone}</span> by {submitted.contact.method.toLowerCase()}
+        <p className="mt-3 text-ink/85">
+          We&apos;ll reach out to <span className="font-semibold text-ink">{submitted.contact.phone}</span> by {submitted.contact.method.toLowerCase()}
           {submitted.contact.bestTime !== "Anytime" ? `, ${submitted.contact.bestTime.toLowerCase()}` : ""}.
         </p>
         {logoFailed && (
-          <p role="alert" className="mt-4 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-100">
+          <p role="alert" className="mt-4 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-800">
             Your request was saved, but we couldn&apos;t upload your logo. Please call {PHONE_DISPLAY} about the logo.
           </p>
         )}
@@ -315,9 +315,9 @@ export default function MockupWizard() {
             Start another request
           </button>
         </div>
-        <p className="mt-5 text-sm text-white/50">
+        <p className="mt-5 text-sm text-ink/70">
           Questions? Call{" "}
-          <a href={`tel:${PHONE_TEL}`} className="text-teal underline">
+          <a href={`tel:${PHONE_TEL}`} className="text-teal-ink underline">
             {PHONE_DISPLAY}
           </a>
           .
@@ -335,21 +335,61 @@ export default function MockupWizard() {
   return (
     <form ref={formRef} onSubmit={onNext} noValidate className="relative mt-8 scroll-mt-24" aria-busy={!ready}>
       <HoneypotField ref={honeypot} />
-      {/* progress */}
-      <div className="mb-4">
-        <div className="mb-2 flex items-baseline justify-between text-sm">
-          <span className="font-semibold text-teal">
-            Step {step + 1} of {STEPS.length}
-          </span>
-          <span className="text-white/50">{STEPS[step]}</span>
+      {/* progress: a filling beaker + "Trial" sticky notes */}
+      <div className="mb-6 flex items-end gap-4">
+        <div
+          role="progressbar"
+          aria-label="Questionnaire progress"
+          aria-valuemin={1}
+          aria-valuemax={STEPS.length}
+          aria-valuenow={step + 1}
+          aria-valuetext={`Trial ${step + 1} of ${STEPS.length}: ${STEPS[step]}`}
+          className="shrink-0"
+        >
+          <svg width="46" height="58" viewBox="0 0 46 58" aria-hidden>
+            <defs>
+              <clipPath id="beaker-clip">
+                <path d="M7 6 V50 Q7 54 11 54 H35 Q39 54 39 50 V6 Z" />
+              </clipPath>
+            </defs>
+            <g clipPath="url(#beaker-clip)">
+              <rect x="0" y={54 - 48 * (pct / 100)} width="46" height="60" fill="#19f0d2" opacity="0.7" className="transition-[y] duration-500" />
+            </g>
+            <path d="M7 6 V50 Q7 54 11 54 H35 Q39 54 39 50 V6 M3 6 H11 M35 6 H43 M9 18 H15 M9 30 H15 M9 42 H15" fill="none" stroke="#1a1a1a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Questionnaire progress" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1} aria-valuetext={`Step ${step + 1} of ${STEPS.length}: ${STEPS[step]}`}>
-          <div className="h-full rounded-full bg-gradient-to-r from-teal to-violet transition-[width] duration-500" style={{ width: `${pct}%` }} />
-        </div>
+        <ol className="flex flex-1 flex-wrap gap-1.5">
+          {STEPS.map((name, i) => {
+            const done = i < step;
+            const current = i === step;
+            const note = (
+              <>
+                <span className="block text-[10px] font-bold uppercase tracking-wider">Trial {i + 1}</span>
+                <span className="hidden truncate text-[11px] sm:block">{name}</span>
+              </>
+            );
+            const cls = `block w-full rounded-[3px] px-2 py-1.5 text-left text-ink shadow-[0_1px_2px_rgba(26,26,26,0.08),0_4px_10px_rgba(26,26,26,0.06)] ${
+              current ? "bg-note-yellow -rotate-2 ring-2 ring-ink/70" : done ? "bg-note-green" : "bg-white/80 text-ink/75"
+            }`;
+            return (
+              <li key={name} className="min-w-[3.6rem] flex-1 sm:min-w-0" aria-current={current ? "step" : undefined}>
+                {done ? (
+                  <button type="button" onClick={() => goTo(i)} className={cls} aria-label={`Back to trial ${i + 1}: ${name}`}>
+                    {note}
+                  </button>
+                ) : (
+                  <span className={cls}>{note}</span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
-      <div className="glass rounded-3xl p-5 sm:p-8">
-        <h2 ref={heading} tabIndex={-1} className="font-display text-2xl font-bold focus:outline-none sm:text-3xl">
+      <div className="notebook relative rounded-sm p-5 pl-7 sm:p-8 sm:pl-20">
+        <span className="tape" style={{ left: "20%" }} />
+        <p className="text-xs font-bold uppercase tracking-widest text-ink/75">Trial {step + 1} of {STEPS.length}</p>
+        <h2 ref={heading} tabIndex={-1} className="font-display mt-1 text-2xl font-bold text-ink focus:outline-none sm:text-3xl">
           {STEPS[step]}
         </h2>
 
@@ -363,11 +403,11 @@ export default function MockupWizard() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field id={fid("industry")} label="Industry" error={errors.industry}>
                   <select {...describe(fid("industry"), errors.industry)} className={`${inputCls} ${border(errors.industry)}`} value={b.industry} onChange={(e) => set("business", { industry: e.target.value })}>
-                    <option value="" className="bg-ink">
+                    <option value="" className="">
                       Choose one…
                     </option>
                     {INDUSTRY_OPTIONS.map((o) => (
-                      <option key={o} className="bg-ink">
+                      <option key={o} className="">
                         {o}
                       </option>
                     ))}
@@ -375,11 +415,11 @@ export default function MockupWizard() {
                 </Field>
                 <Field id={fid("years")} label="Years in business" error={errors.years}>
                   <select {...describe(fid("years"), errors.years)} className={`${inputCls} ${border(errors.years)}`} value={b.years} onChange={(e) => set("business", { years: e.target.value })}>
-                    <option value="" className="bg-ink">
+                    <option value="" className="">
                       Choose one…
                     </option>
                     {YEARS.map((o) => (
-                      <option key={o} className="bg-ink">
+                      <option key={o} className="">
                         {o}
                       </option>
                     ))}
@@ -396,8 +436,8 @@ export default function MockupWizard() {
               </Field>
               <Field id={fid("website")} label="Current website" optional error={errors.website}>
                 <input {...describe(fid("website"), errors.website)} className={`${inputCls} ${border(errors.website)}`} value={b.noWebsite ? "" : b.website} disabled={b.noWebsite} onChange={(e) => set("business", { website: e.target.value })} inputMode="url" placeholder="yoursite.com" />
-                <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-sm text-white/70">
-                  <input type="checkbox" className="h-4 w-4 accent-[#19f0d2]" checked={b.noWebsite} onChange={(e) => set("business", { noWebsite: e.target.checked })} />
+                <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-sm text-ink/80">
+                  <input type="checkbox" className="h-4 w-4 accent-[#0f766e]" checked={b.noWebsite} onChange={(e) => set("business", { noWebsite: e.target.checked })} />
                   I don&apos;t have one
                 </label>
               </Field>
@@ -411,7 +451,7 @@ export default function MockupWizard() {
           {step === 1 && (
             <>
               <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-sm font-medium text-white/85">Top 3 services you want more of</legend>
+                <legend className="mb-1.5 text-sm font-medium text-ink/90">Top 3 services you want more of</legend>
                 {[0, 1, 2].map((i) => (
                   <div key={i}>
                     <label htmlFor={fid(`service${i}`)} className="sr-only">
@@ -419,7 +459,7 @@ export default function MockupWizard() {
                       {i > 0 ? " (optional)" : ""}
                     </label>
                     <div className="flex items-center gap-3">
-                      <span className="font-display grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/10 text-sm font-bold" aria-hidden>
+                      <span className="font-display grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink/5 text-sm font-bold" aria-hidden>
                         {i + 1}
                       </span>
                       <input
@@ -435,7 +475,7 @@ export default function MockupWizard() {
                       />
                     </div>
                     {errors[`service${i}`] && (
-                      <p id={`${fid(`service${i}`)}-err`} className="ml-11 mt-1 text-xs font-medium text-red-300" role="alert">
+                      <p id={`${fid(`service${i}`)}-err`} className="ml-11 mt-1 text-xs font-medium text-red-700" role="alert">
                         {errors[`service${i}`]}
                       </p>
                     )}
@@ -447,11 +487,11 @@ export default function MockupWizard() {
               </Field>
               <Field id={fid("jobValue")} label="Average job value" error={errors.jobValue}>
                 <select {...describe(fid("jobValue"), errors.jobValue)} className={`${inputCls} ${border(errors.jobValue)}`} value={c.jobValue} onChange={(e) => set("customers", { jobValue: e.target.value })}>
-                  <option value="" className="bg-ink">
+                  <option value="" className="">
                     Choose a range…
                   </option>
                   {JOB_VALUES.map((o) => (
-                    <option key={o} className="bg-ink">
+                    <option key={o} className="">
                       {o}
                     </option>
                   ))}
@@ -467,14 +507,14 @@ export default function MockupWizard() {
           {step === 2 && (
             <>
               <fieldset aria-describedby={errors.timeline ? fid("timeline-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-white/85">How soon do you want your new site up and running?</legend>
+                <legend className="mb-2 text-sm font-medium text-ink/90">How soon do you want your new site up and running?</legend>
                 <div className="grid grid-cols-2 gap-3">
                   {TIMELINES.map((t, i) => {
                     const on = data.goals.timeline === t.value;
                     return (
                       <label
                         key={t.value}
-                        className={`relative cursor-pointer rounded-2xl border p-4 transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/10 shadow-[0_0_24px_rgba(25,240,210,0.15)]" : "border-white/15 bg-black/30 hover:border-white/30"}`}
+                        className={`relative cursor-pointer rounded-2xl border p-4 transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/10 shadow-[0_8px_24px_rgba(26,26,26,0.10)]" : "border-ink/15 bg-white hover:border-ink/30"}`}
                       >
                         <input
                           type="radio"
@@ -486,7 +526,7 @@ export default function MockupWizard() {
                           className="sr-only"
                         />
                         <span className="font-display block text-lg font-bold">{t.label}</span>
-                        <span className="mt-0.5 block text-xs text-white/55">{t.d}</span>
+                        <span className="mt-0.5 block text-xs text-ink/75">{t.d}</span>
                         {on && (
                           <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-teal text-[11px] font-bold text-black" aria-hidden>
                             ✓
@@ -499,13 +539,13 @@ export default function MockupWizard() {
                 <GroupError id={fid("timeline-err")} error={errors.timeline} />
               </fieldset>
               <fieldset aria-describedby={errors.goals ? fid("goals-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-white/85">What do you want your new website to do? Pick all that apply.</legend>
+                <legend className="mb-2 text-sm font-medium text-ink/90">What do you want your new website to do? Pick all that apply.</legend>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {GOALS.map((g, i) => {
                     const on = data.goals.goals.includes(g);
                     return (
-                      <label key={g} className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-teal/60 bg-teal/10" : "border-white/15 bg-black/30 hover:border-white/30"}`}>
-                        <input type="checkbox" className="h-4 w-4 shrink-0 accent-[#19f0d2]" checked={on} aria-invalid={i === 0 && errors.goals ? true : undefined} onChange={() => set("goals", { goals: toggleIn(data.goals.goals, g) })} />
+                      <label key={g} className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-teal/60 bg-teal/10" : "border-ink/15 bg-white hover:border-ink/30"}`}>
+                        <input type="checkbox" className="h-4 w-4 shrink-0 accent-[#0f766e]" checked={on} aria-invalid={i === 0 && errors.goals ? true : undefined} onChange={() => set("goals", { goals: toggleIn(data.goals.goals, g) })} />
                         <span className="text-sm">{g}</span>
                       </label>
                     );
@@ -523,12 +563,12 @@ export default function MockupWizard() {
           {step === 3 && (
             <>
               <fieldset aria-describedby={errors.style ? fid("style-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-white/85">Which style feels most like you?</legend>
+                <legend className="mb-2 text-sm font-medium text-ink/90">Which style feels most like you?</legend>
                 <div className="grid grid-cols-2 gap-3">
                   {STYLES.map((s, i) => {
                     const on = l.style === s.key;
                     return (
-                      <label key={s.key} className={`relative cursor-pointer rounded-2xl border p-3 transition focus-within:ring-2 focus-within:ring-teal/70 sm:p-4 ${on ? "border-teal bg-teal/10 shadow-[0_0_24px_rgba(25,240,210,0.15)]" : "border-white/15 bg-black/30 hover:border-white/30"}`}>
+                      <label key={s.key} className={`relative cursor-pointer rounded-2xl border p-3 transition focus-within:ring-2 focus-within:ring-teal/70 sm:p-4 ${on ? "border-teal bg-teal/10 shadow-[0_8px_24px_rgba(26,26,26,0.10)]" : "border-ink/15 bg-white hover:border-ink/30"}`}>
                         <input type="radio" name={fid("style")} value={s.key} checked={on} onChange={() => set("look", { style: s.key })} aria-invalid={i === 0 && errors.style ? true : undefined} className="sr-only" />
                         <span className="flex h-12 overflow-hidden rounded-lg" aria-hidden>
                           {s.sw.map((c2) => (
@@ -536,7 +576,7 @@ export default function MockupWizard() {
                           ))}
                         </span>
                         <span className="mt-2 block text-sm font-semibold">{s.key}</span>
-                        <span className="mt-0.5 block text-xs leading-snug text-white/55">{s.d}</span>
+                        <span className="mt-0.5 block text-xs leading-snug text-ink/75">{s.d}</span>
                         {on && (
                           <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-teal text-[11px] font-bold text-black" aria-hidden>
                             ✓
@@ -550,7 +590,7 @@ export default function MockupWizard() {
               </fieldset>
 
               <fieldset>
-                <legend className="mb-2 text-sm font-medium text-white/85">Brand colors</legend>
+                <legend className="mb-2 text-sm font-medium text-ink/90">Brand colors</legend>
                 <div className="flex flex-wrap items-center gap-4">
                   {(
                     [
@@ -559,12 +599,12 @@ export default function MockupWizard() {
                     ] as const
                   ).map(([k, label]) => (
                     <label key={k} className={`flex items-center gap-2 text-sm ${l.pickForMe ? "opacity-40" : ""}`}>
-                      <input type="color" disabled={l.pickForMe} value={l[k]} onChange={(e) => set("look", { [k]: e.target.value })} className="h-10 w-12 cursor-pointer rounded-lg border border-white/20 bg-transparent p-0.5 disabled:cursor-not-allowed" />
+                      <input type="color" disabled={l.pickForMe} value={l[k]} onChange={(e) => set("look", { [k]: e.target.value })} className="h-10 w-12 cursor-pointer rounded-lg border border-ink/20 bg-transparent p-0.5 disabled:cursor-not-allowed" />
                       {label}
                     </label>
                   ))}
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-white/80">
-                    <input type="checkbox" className="h-4 w-4 accent-[#19f0d2]" checked={l.pickForMe} onChange={(e) => set("look", { pickForMe: e.target.checked })} />
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-ink/85">
+                    <input type="checkbox" className="h-4 w-4 accent-[#0f766e]" checked={l.pickForMe} onChange={(e) => set("look", { pickForMe: e.target.checked })} />
                     Pick for me
                   </label>
                 </div>
@@ -572,18 +612,18 @@ export default function MockupWizard() {
 
               <Field id={fid("logo")} label="Logo" optional error={errors.logo} hint="Image files only, up to 5MB.">
                 {l.logo ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-black/30 p-3">
+                  <div className="flex items-center gap-3 rounded-xl border border-ink/15 bg-white p-3">
                     {logoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={logoUrl} alt="Your uploaded logo" className="h-12 w-12 rounded-lg bg-white object-contain p-1" />
                     ) : (
-                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/10 text-xs text-white/50">IMG</span>
+                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-ink/5 text-xs text-ink/70">IMG</span>
                     )}
                     <div className="min-w-0 flex-1 text-sm">
                       <div className="truncate">{l.logo.name}</div>
-                      {!logoFile && <div className="text-xs text-amber-200">Please re-attach after a page refresh.</div>}
+                      {!logoFile && <div className="text-xs text-amber-800">Please re-attach after a page refresh.</div>}
                     </div>
-                    <button type="button" onClick={removeLogo} className="rounded-full border border-white/15 px-3 py-1 text-xs hover:bg-white/10">
+                    <button type="button" onClick={removeLogo} className="rounded-full border border-ink/15 px-3 py-1 text-xs hover:bg-ink/5">
                       Remove
                     </button>
                   </div>
@@ -593,14 +633,14 @@ export default function MockupWizard() {
                     type="file"
                     accept="image/*"
                     onChange={(e) => onLogo(e.target.files?.[0])}
-                    className="block w-full cursor-pointer rounded-xl border border-dashed border-white/20 bg-black/30 p-3 text-sm text-white/60 file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:border-teal/50"
+                    className="block w-full cursor-pointer rounded-xl border border-dashed border-ink/20 bg-white p-3 text-sm text-ink/75 file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink/5 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-ink hover:border-teal/50"
                   />
                 )}
               </Field>
 
               <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-sm font-medium text-white/85">
-                  1–2 websites you like <span className="font-normal text-white/40">(optional)</span>
+                <legend className="mb-1.5 text-sm font-medium text-ink/90">
+                  1–2 websites you like <span className="font-normal text-ink/70">(optional)</span>
                 </legend>
                 {[0, 1].map((i) => (
                   <div key={i}>
@@ -620,7 +660,7 @@ export default function MockupWizard() {
                       placeholder="https://…"
                     />
                     {errors[`like${i}`] && (
-                      <p id={`${fid(`like${i}`)}-err`} className="mt-1 text-xs font-medium text-red-300" role="alert">
+                      <p id={`${fid(`like${i}`)}-err`} className="mt-1 text-xs font-medium text-red-700" role="alert">
                         {errors[`like${i}`]}
                       </p>
                     )}
@@ -633,16 +673,16 @@ export default function MockupWizard() {
           {/* ---------- 5. extras ---------- */}
           {step === 4 && (
             <fieldset>
-              <legend className="mb-3 text-sm text-white/70">Optional add-ons. Check anything you&apos;d like us to include in your mockup or talk about.</legend>
+              <legend className="mb-3 text-sm text-ink/80">Optional add-ons. Check anything you&apos;d like us to include in your mockup or talk about.</legend>
               <div className="space-y-2">
                 {EXTRAS.map((x) => {
                   const on = data.extras.includes(x.key);
                   return (
-                    <label key={x.key} className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-violet/60 bg-violet/10" : "border-white/15 bg-black/30 hover:border-white/30"}`}>
-                      <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[#9b6bff]" checked={on} onChange={() => setData((d) => ({ ...d, extras: toggleIn(d.extras, x.key) }))} />
+                    <label key={x.key} className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-violet/60 bg-violet/10" : "border-ink/15 bg-white hover:border-ink/30"}`}>
+                      <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[#1f6feb]" checked={on} onChange={() => setData((d) => ({ ...d, extras: toggleIn(d.extras, x.key) }))} />
                       <span>
                         <span className="block text-sm font-semibold">{x.key}</span>
-                        <span className="block text-xs text-white/55">{x.d}</span>
+                        <span className="block text-xs text-ink/75">{x.d}</span>
                       </span>
                     </label>
                   );
@@ -668,19 +708,19 @@ export default function MockupWizard() {
               <Field id={fid("bestTime")} label="Best time to reach you">
                 <select id={fid("bestTime")} className={`${inputCls} ${border()}`} value={ct.bestTime} onChange={(e) => set("contact", { bestTime: e.target.value })}>
                   {BEST_TIMES.map((o) => (
-                    <option key={o} className="bg-ink">
+                    <option key={o} className="">
                       {o}
                     </option>
                   ))}
                 </select>
               </Field>
               <fieldset>
-                <legend className="mb-2 text-sm font-medium text-white/85">How should we contact you?</legend>
+                <legend className="mb-2 text-sm font-medium text-ink/90">How should we contact you?</legend>
                 <div className="flex gap-2">
                   {METHODS.map((m) => {
                     const on = ct.method === m;
                     return (
-                      <label key={m} className={`flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-center text-sm font-semibold transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/15 text-teal" : "border-white/15 bg-black/30 text-white/75 hover:border-white/30"}`}>
+                      <label key={m} className={`flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-center text-sm font-semibold transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/15 text-teal-ink" : "border-ink/15 bg-white text-ink/85 hover:border-ink/30"}`}>
                         <input type="radio" name={fid("method")} value={m} checked={on} onChange={() => set("contact", { method: m })} className="sr-only" />
                         {m}
                       </label>
@@ -689,14 +729,14 @@ export default function MockupWizard() {
                 </div>
               </fieldset>
               <div>
-                <label className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 ${errors.consent ? "border-red-400/70" : "border-white/15"} bg-black/30`}>
-                  <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-[#19f0d2]" checked={ct.consent} aria-invalid={errors.consent ? true : undefined} aria-describedby={errors.consent ? fid("consent-err") : undefined} onChange={(e) => set("contact", { consent: e.target.checked })} />
-                  <span className="text-sm text-white/80">Yes, Overpeck Labs can contact me about my free mockup by phone, text or email. No spam, and no obligation.</span>
+                <label className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 ${errors.consent ? "border-red-400/70" : "border-ink/15"} bg-white`}>
+                  <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-[#0f766e]" checked={ct.consent} aria-invalid={errors.consent ? true : undefined} aria-describedby={errors.consent ? fid("consent-err") : undefined} onChange={(e) => set("contact", { consent: e.target.checked })} />
+                  <span className="text-sm text-ink/85">Yes, Overpeck Labs can contact me about my free mockup by phone, text or email. No spam, and no obligation.</span>
                 </label>
                 <GroupError id={fid("consent-err")} error={errors.consent} />
               </div>
               {status === "error" && (
-                <p role="alert" className="rounded-xl border border-red-400/50 bg-red-400/10 p-3 text-sm text-red-200">
+                <p role="alert" className="rounded-xl border border-red-400/50 bg-red-400/10 p-3 text-sm text-red-700">
                   We couldn&apos;t send your request. Please call {PHONE_DISPLAY}. (You can also try again in a moment.)
                 </p>
               )}
@@ -705,7 +745,7 @@ export default function MockupWizard() {
         </div>
 
         {/* nav buttons */}
-        <div className="mt-8 flex items-center justify-between gap-3 border-t border-white/10 pt-6">
+        <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink/10 pt-6">
           {step > 0 ? (
             <button type="button" onClick={() => goTo(step - 1)} className="btn-ghost">
               ← Back
@@ -777,21 +817,21 @@ function Summary({ d }: { d: MockupRequest }) {
   ];
   return (
     <div className="mt-8 space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-teal">Your answers</h3>
+      <h3 className="text-sm font-semibold uppercase tracking-widest text-teal-ink">Your answers</h3>
       {rows.map(([title, items]) => (
-        <div key={title} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div key={title} className="rounded-2xl border border-ink/10 bg-white p-4">
           <h4 className="mb-2 text-sm font-semibold">{title}</h4>
           <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
             {items
               .filter(([, v]) => v)
               .map(([k, v]) => (
                 <div key={k} className="contents">
-                  <dt className="text-white/50">{k}</dt>
-                  <dd className="break-words text-white/85">
+                  <dt className="text-ink/70">{k}</dt>
+                  <dd className="break-words text-ink/90">
                     {k === "Colors" && !d.look.pickForMe ? (
                       <span className="inline-flex items-center gap-2">
-                        <span className="h-3.5 w-3.5 rounded-full border border-white/20" style={{ background: d.look.primary }} />
-                        <span className="h-3.5 w-3.5 rounded-full border border-white/20" style={{ background: d.look.accent }} />
+                        <span className="h-3.5 w-3.5 rounded-full border border-ink/20" style={{ background: d.look.primary }} />
+                        <span className="h-3.5 w-3.5 rounded-full border border-ink/20" style={{ background: d.look.accent }} />
                         {v}
                       </span>
                     ) : (

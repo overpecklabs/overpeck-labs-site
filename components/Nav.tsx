@@ -30,18 +30,18 @@ export default function Nav() {
           }}
           className="font-display text-lg font-bold tracking-tight"
         >
-          Overpeck<span className="text-teal"> Labs</span>
+          Overpeck<span className="text-teal-ink"> Labs</span>
         </Link>
         <ul className="flex items-center gap-1 text-sm">
           {links.map((l) => (
             <li key={l.id} className="hidden sm:block">
-              <a href={`/#${l.id}`} onClick={go(l.id)} className="rounded-full px-3 py-1.5 text-white/70 hover:text-white">
+              <a href={`/#${l.id}`} onClick={go(l.id)} className="rounded-full px-3 py-1.5 text-ink/80 hover:text-ink">
                 {l.label}
               </a>
             </li>
           ))}
           <li>
-            <Link href="/free-mockup" className="nav-cta rounded-full bg-white/10 px-4 py-1.5 font-semibold hover:bg-white/20">
+            <Link href="/free-mockup" className="nav-cta rounded-full bg-ink/5 px-4 py-1.5 font-semibold hover:bg-ink/10">
               Free mockup
             </Link>
           </li>

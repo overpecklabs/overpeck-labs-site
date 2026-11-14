@@ -42,12 +42,8 @@ export default function SceneLoader() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-0"
-      style={{
-        visibility: active ? "visible" : "hidden",
-        background:
-          "radial-gradient(60% 50% at 70% 40%, rgba(155,107,255,0.18), transparent 70%), radial-gradient(50% 40% at 20% 70%, rgba(25,240,210,0.10), transparent 70%), #05060d",
-      }}
+      className="board-bg pointer-events-none fixed inset-0 z-0"
+      style={{ visibility: active ? "visible" : "hidden" }}
     >
       {ready && <Scene active={active} />}
     </div>

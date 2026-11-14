@@ -1,17 +1,33 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Overpeck Labs design system: "whiteboard strategy session"
+   with a subtle university-chemistry-lab undertone.
+   ============================================================ */
 @theme {
-  --color-ink: #05060d;
-  --color-ink-2: #0a0c18;
-  --color-teal: #19f0d2;
-  --color-violet: #9b6bff;
+  --color-ink: #1a1a1a; /* near-black text */
+  --color-board: #f8f8f5; /* whiteboard surface */
+  --color-paper: #fffefb; /* cards / index cards */
+  --color-teal: #19f0d2; /* brand teal: CTA fills only, never body text */
+  --color-teal-ink: #0f766e; /* teal for text, AA on white */
+  --color-violet: #1f6feb; /* legacy token -> marker blue */
+  --color-mk-blue: #1f6feb;
+  --color-mk-red: #d93f44; /* slightly deepened for AA text */
+  --color-mk-green: #2f9e44;
+  --color-mk-sky: #8ab4f8;
+  --color-lab-green: #4caf6e;
+  --color-lab-amber: #f2a93b;
+  --color-note-yellow: #fff3a3;
+  --color-note-blue: #dbe8ff;
+  --color-note-green: #dcf3df;
+  --color-note-teal: #c8f5ec;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
 }
 
 html {
-  background: var(--color-ink);
-  color: #e8ebf5;
+  background: var(--color-board);
+  color: var(--color-ink);
   -webkit-text-size-adjust: 100%;
 }
 html.lenis,
@@ -27,139 +43,148 @@ html.lenis body {
 
 body {
   font-family: var(--font-sans);
-  background: var(--color-ink);
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(25, 240, 210, 0.3);
+  background: rgba(25, 240, 210, 0.35);
 }
 
-.glass {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-
-.text-gradient {
-  background: linear-gradient(95deg, var(--color-teal), var(--color-violet));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.9rem 1.5rem;
-  border-radius: 999px;
-  font-weight: 700;
-  color: #04110f;
-  background: linear-gradient(95deg, var(--color-teal), #7be9ff 60%, var(--color-violet));
-  box-shadow: 0 0 28px rgba(25, 240, 210, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 44px rgba(25, 240, 210, 0.55);
-}
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.9rem 1.5rem;
-  border-radius: 999px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  transition: background 0.2s, border-color 0.2s;
-}
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(25, 240, 210, 0.6);
-}
-
-/* In the base layer so utilities (e.g. focus:outline-none on script-focused headings) can override it. */
-@layer base {
-  :focus-visible {
-    outline: 2px solid var(--color-teal);
-    outline-offset: 3px;
-  }
-}
-
-/* 3D flip cards */
-.flip-scene {
-  perspective: 1200px;
-}
-.flip-card {
-  position: relative;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-.flip-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-.flip-back {
-  transform: rotateY(180deg);
-}
-
-@keyframes blink {
-  0%, 80%, 100% { opacity: 0.25; }
-  40% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Nav over the light whiteboard hero (Hero sets html[data-hero-light]). Unlayered, so it beats utilities. */
-.nav-shell {
-  transition: background-color 0.35s, border-color 0.35s, box-shadow 0.35s, color 0.35s;
-}
-html[data-hero-light] .nav-shell {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(17, 17, 17, 0.08);
-  box-shadow: 0 6px 24px rgba(17, 17, 17, 0.08);
-  color: #111;
-}
-html[data-hero-light] .nav-shell a {
-  color: #2b2b2b;
-}
-html[data-hero-light] .nav-shell .text-teal {
-  color: #0d9488;
-}
-html[data-hero-light] .nav-shell .nav-cta {
-  background: #19f0d2;
-  color: #06201c;
-}
-
-/* Whiteboard */
-.board-surface {
-  background-color: #f8f8f5;
+/* ---------- surfaces ---------- */
+/* Whiteboard: grid + marker smudges + very faint lab doodles. */
+.board-bg,
+.board-surface,
+body {
+  background-color: var(--color-board);
   background-image:
-    radial-gradient(ellipse 30% 22% at 18% 28%, rgba(110, 120, 130, 0.07), transparent 70%),
-    radial-gradient(ellipse 26% 18% at 78% 72%, rgba(31, 111, 235, 0.045), transparent 70%),
-    radial-gradient(ellipse 22% 14% at 62% 18%, rgba(229, 72, 77, 0.03), transparent 70%),
-    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px);
-  background-size: auto, auto, auto, 40px 40px, 40px 40px;
+    url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27560%27 height=%27560%27 viewBox=%270 0 560 560%27%3E%0A%3Cg fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 opacity=%270.06%27%3E%0A%3Cpath d=%27M70 60 l26 15 v30 l-26 15 l-26 -15 v-30 z%27/%3E%3Ccircle cx=%2770%27 cy=%2790%27 r=%2714%27/%3E%0A%3Cpath d=%27M96 75 l30 -10 M126 65 l20 18 M146 83 l-6 28 M126 65 v-24%27/%3E%0A%3Cpath d=%27M380 120 l22 13 v26 l-22 13 l-22 -13 v-26 z M402 133 l22 -13 l22 13 v26 l-22 13 l-22 -13%27/%3E%0A%3Cpath d=%27M300 330 q30 -20 60 0 t60 0%27/%3E%3Cpath d=%27M412 324 l10 6 l-11 5%27/%3E%0A%3Cpath d=%27M90 400 l20 12 v24 l-20 12 l-20 -12 v-24 z M74 417 v14 M106 417 v14%27/%3E%0A%3Cpath d=%27M210 470 c20 -30 60 -30 80 0%27/%3E%3Cpath d=%27M282 462 l9 9 l-12 2%27/%3E%0A%3Cpath d=%27M470 420 l-14 24 h28 z M470 444 v20%27/%3E%0A%3C/g%3E%0A%3Cg fill=%27%231a1a1a%27 opacity=%270.055%27 font-family=%27Georgia, serif%27 font-size=%2717%27 font-style=%27italic%27%3E%0A%3Ctext x=%27180%27 y=%27215%27%3EC6H12O6 %2B 6O2 %26%238594; 6CO2 %2B 6H2O%3C/text%3E%0A%3Ctext x=%27330%27 y=%27520%27%3E%26%23916;G = %26%23916;H %26%238722; T%26%23916;S%3C/text%3E%0A%3Ctext x=%2740%27 y=%27300%27%3EpV = nRT%3C/text%3E%0A%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse 30% 22% at 18% 28%, rgba(110, 120, 130, 0.06), transparent 70%),
+    radial-gradient(ellipse 26% 18% at 78% 72%, rgba(31, 111, 235, 0.04), transparent 70%),
+    linear-gradient(rgba(26, 26, 26, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px);
+  background-size: 560px 560px, auto, auto, 40px 40px, 40px 40px;
+}
+/* Graph paper (used in a couple of sections). */
+.graph-paper {
+  background-color: #fbfbf8;
+  background-image:
+    linear-gradient(rgba(31, 111, 235, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 111, 235, 0.09) 1px, transparent 1px),
+    linear-gradient(rgba(31, 111, 235, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 111, 235, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+}
+/* Benzene hex grid. */
+.hex-paper {
+  background-color: var(--color-board);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2756%27 height=%2797%27 viewBox=%270 0 56 97%27%3E%0A%3Cpath d=%27M28 0 l28 16 v32 l-28 16 l-28 -16 v-32 z M28 64 v33%27 fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%271%27 opacity=%270.05%27/%3E%3C/svg%3E");
+  background-size: 56px 97px;
+}
+
+/* Aluminum frame divider between sections. */
+.board-divider {
+  height: 10px;
+  margin: 0 auto;
+  max-width: 72rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f4f5f7 0%, #c9ccd1 45%, #9ea3aa 55%, #d9dce0 100%);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 .board-frame {
   background: linear-gradient(180deg, #f4f5f7 0%, #c9ccd1 45%, #9ea3aa 55%, #d9dce0 100%);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
+
+/* Paper card (replaces the old dark glass). */
+.glass,
+.paper {
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 26, 26, 0.09);
+  box-shadow: 0 1px 2px rgba(26, 26, 26, 0.06), 0 10px 28px rgba(26, 26, 26, 0.08);
+}
+/* Slight pinned-paper rotation that straightens on hover. */
+.tilt-l,
+.tilt-r,
+.tilt-l2,
+.tilt-r2 {
+  transition: rotate 0.35s ease, translate 0.35s ease, box-shadow 0.35s ease;
+}
+.tilt-l { rotate: -1.2deg; }
+.tilt-r { rotate: 1.1deg; }
+.tilt-l2 { rotate: -2deg; }
+.tilt-r2 { rotate: 1.8deg; }
+.tilt-l:hover,
+.tilt-r:hover,
+.tilt-l2:hover,
+.tilt-r2:hover {
+  rotate: 0deg;
+  translate: 0 -3px;
+}
+/* Strip of translucent tape. */
+.tape {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 92px;
+  height: 24px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background: rgba(255, 244, 196, 0.72);
+  border: 1px solid rgba(26, 26, 26, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+  z-index: 2;
+}
+.sticky-note {
+  background: var(--color-note-yellow);
+  box-shadow: 0 2px 3px rgba(26, 26, 26, 0.08), 0 16px 32px rgba(120, 100, 0, 0.14);
+}
+
+/* Lined lab-notebook page with a red margin rule. */
+.notebook {
+  background-color: #fffefb;
+  background-image:
+    linear-gradient(90deg, transparent 52px, rgba(217, 63, 68, 0.35) 52px, rgba(217, 63, 68, 0.35) 54px, transparent 54px),
+    repeating-linear-gradient(180deg, transparent 0 31px, rgba(31, 111, 235, 0.13) 31px 32px);
+  border: 1px solid rgba(26, 26, 26, 0.09);
+  box-shadow: 0 1px 2px rgba(26, 26, 26, 0.06), 0 14px 36px rgba(26, 26, 26, 0.09);
+}
+
+/* Periodic-table element tile. */
+.element-tile {
+  position: relative;
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+}
+.element-num {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.element-symbol {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- text ---------- */
+.text-gradient {
+  color: var(--color-teal-ink);
+}
+.font-marker {
+  font-family: var(--font-marker), "Comic Sans MS", cursive;
+}
+/* Highlighter swipe behind a word (decorative). */
+.marker-underline {
+  background-image: linear-gradient(transparent 62%, rgba(25, 240, 210, 0.55) 62%, rgba(25, 240, 210, 0.55) 90%, transparent 90%);
+}
+
+/* ---------- buttons ---------- */
+.btn-primary,
 .btn-board {
   display: inline-flex;
   align-items: center;
@@ -169,33 +194,84 @@ html[data-hero-light] .nav-shell .nav-cta {
   border-radius: 999px;
   font-weight: 700;
   color: #06201c;
-  background: #19f0d2;
-  border: 1px solid rgba(6, 32, 28, 0.15);
-  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.28);
+  background: var(--color-teal);
+  border: 1.5px solid rgba(6, 32, 28, 0.22);
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.25);
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
+.btn-primary:hover,
 .btn-board:hover {
   transform: translateY(-2px);
-  background: #2ff5da;
-  box-shadow: 0 10px 26px rgba(13, 148, 136, 0.36);
+  background: #3ff6dd;
+  box-shadow: 0 10px 26px rgba(13, 148, 136, 0.33);
 }
+.btn-primary:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+/* Marker-outline secondary button. */
+.btn-ghost,
 .btn-board-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.9rem 1.4rem;
+  padding: 0.85rem 1.4rem;
   border-radius: 999px;
   font-weight: 600;
-  color: #111;
-  border: 1.5px solid rgba(17, 17, 17, 0.22);
-  background: rgba(255, 255, 255, 0.6);
-  transition: border-color 0.2s, background-color 0.2s;
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  background: rgba(255, 255, 255, 0.55);
+  transition: background-color 0.2s, transform 0.2s;
 }
+.btn-ghost:hover,
 .btn-board-ghost:hover {
-  border-color: #111;
   background: #fff;
+  transform: translateY(-1px);
 }
-.font-marker {
-  font-family: var(--font-marker), "Comic Sans MS", cursive;
+
+/* ---------- nav (always light) ---------- */
+.nav-shell {
+  background: rgba(255, 254, 251, 0.88) !important;
+  border-color: rgba(26, 26, 26, 0.08) !important;
+  box-shadow: 0 6px 24px rgba(26, 26, 26, 0.08) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--color-ink);
+}
+.nav-shell a {
+  color: #2b2b2b;
+}
+.nav-shell .text-teal {
+  color: var(--color-teal-ink);
+}
+.nav-shell .nav-cta {
+  background: var(--color-teal);
+  color: #06201c;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-teal-ink);
+    outline-offset: 3px;
+  }
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  /* lighter effects on phones */
+  .tilt-l, .tilt-r, .tilt-l2, .tilt-r2 { rotate: 0deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

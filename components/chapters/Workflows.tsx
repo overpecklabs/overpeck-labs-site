@@ -3,10 +3,11 @@ import ChapterCopy from "../ChapterCopy";
 
 export default function Workflows() {
   return (
-    <Chapter index={2} id="workflows" className="items-start sm:items-center">
+    <Chapter index={2} id="workflows" bridge="Now that it runs itself… let’s measure what’s working." className="items-start sm:items-center">
       <div className="mx-auto w-full max-w-6xl px-5 pt-20 sm:pt-0">
         <ChapterCopy
           kicker="02 · Workflows & Automation"
+          annotation="lab-tested systems"
           title={<>The busywork runs itself.</>}
           points={[
             "Instant follow-ups for every call and form",

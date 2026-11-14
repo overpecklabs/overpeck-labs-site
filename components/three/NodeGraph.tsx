@@ -5,6 +5,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { clamp, journey } from "@/lib/journey";
 import Label from "./Label";
+import { Edges } from "@react-three/drei";
 
 const CH = 2;
 const X = 3.3;
@@ -17,8 +18,8 @@ const OUTPUTS = [
   { text: "Review request", done: "✓ Review requested", at: 0.54 },
 ];
 
-const TEAL = "#19f0d2";
-const VIOLET = "#9b6bff";
+const TEAL = "#2f9e44"; // outputs: marker green
+const VIOLET = "#1f6feb"; // inputs: marker blue
 
 /** Tasks flow from inputs through an automation hub to outputs, which check themselves off. */
 export default function NodeGraph({ low }: { low: boolean }) {
@@ -90,13 +91,14 @@ export default function NodeGraph({ low }: { low: boolean }) {
 
       <mesh ref={hub}>
         <icosahedronGeometry args={[0.65, low ? 0 : 1]} />
-        <meshStandardMaterial color="#12304a" emissive="#19f0d2" emissiveIntensity={0.45} metalness={0.6} roughness={0.3} flatShading />
+        <meshStandardMaterial color="#fffefb" roughness={0.9} flatShading />
+        <Edges color="#1a1a1a" />
       </mesh>
       <mesh ref={ring} rotation={[0, 0, 0]}>
         <torusGeometry args={[1.0, 0.025, 8, 64]} />
         <meshBasicMaterial color={TEAL} toneMapped={false} />
       </mesh>
-      <Label text="Automation" position={[0, -1.4, 0.2]} height={0.34} style={{ border: "rgba(155,107,255,0.7)" }} />
+      <Label text="Automation" position={[0, -1.4, 0.2]} height={0.34} style={{ border: "rgba(31,111,235,0.8)" }} />
 
       {INPUTS.map((txt, i) => (
         <Label
@@ -104,9 +106,9 @@ export default function NodeGraph({ low }: { low: boolean }) {
           text={txt}
           position={[-X, Y[i], 0]}
           height={0.42}
-          style={{ border: "rgba(155,107,255,0.4)", color: "#aab2d0" }}
+          style={{ border: "rgba(31,111,235,0.35)", color: "#4a4a4a" }}
           altText={txt}
-          altStyle={{ border: "rgba(155,107,255,1)", bg: "rgba(60,30,120,0.85)" }}
+          altStyle={{ border: "#1f6feb", bg: "#dbe8ff", color: "#1a1a1a" }}
           alt={(p) => p[CH] > 0.06 + i * 0.04}
         />
       ))}
@@ -116,9 +118,9 @@ export default function NodeGraph({ low }: { low: boolean }) {
           text={o.text}
           position={[X, Y[i], 0]}
           height={0.42}
-          style={{ border: "rgba(25,240,210,0.35)", color: "#aab2d0" }}
+          style={{ border: "rgba(47,158,68,0.35)", color: "#4a4a4a" }}
           altText={o.done}
-          altStyle={{ border: "rgba(25,240,210,1)", bg: "rgba(10,70,64,0.9)", color: "#c9fff6" }}
+          altStyle={{ border: "#2f9e44", bg: "#dcf3df", color: "#1a1a1a" }}
           alt={(p) => p[CH] > o.at}
         />
       ))}

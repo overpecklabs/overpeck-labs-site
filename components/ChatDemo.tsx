@@ -29,16 +29,16 @@ export default function ChatDemo({ className = "" }: { className?: string }) {
   const booked = shown >= 6;
 
   return (
-    <div className={`glass flex w-full flex-col rounded-3xl !bg-[#0a0d1c]/85 p-4 ${className}`}>
-      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+    <div className={`glass flex w-full flex-col rounded-3xl p-4 ${className}`}>
+      <div className="flex items-center justify-between border-b border-ink/10 pb-3">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-teal to-violet text-xs font-bold text-black">AI</span>
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-teal to-mk-sky text-xs font-bold text-black">AI</span>
           <div>
             <div className="text-sm font-semibold">AI Chat Bot</div>
-            <div className="text-[11px] text-teal">Sample Plumbing Co. · website chat</div>
+            <div className="text-[11px] text-teal-ink">Sample Plumbing Co. · website chat</div>
           </div>
         </div>
-        <button onClick={play} className="rounded-full border border-white/15 px-3 py-1 text-xs hover:bg-white/10">
+        <button onClick={play} className="rounded-full border border-ink/15 px-3 py-1 text-xs hover:bg-ink/5">
           Replay
         </button>
       </div>
@@ -48,7 +48,7 @@ export default function ChatDemo({ className = "" }: { className?: string }) {
           <div key={i} className={`flex ${m.from === "customer" ? "justify-end" : "justify-start"}`}>
             <div
               className={`max-w-[85%] rounded-2xl px-3.5 py-2 leading-snug ${
-                m.from === "customer" ? "rounded-br-sm bg-violet/80 text-white" : "rounded-bl-sm bg-white/10 text-white/90"
+                m.from === "customer" ? "rounded-br-sm bg-mk-blue text-white" : "rounded-bl-sm bg-ink/5 text-ink/90"
               }`}
             >
               {m.text}
@@ -57,19 +57,19 @@ export default function ChatDemo({ className = "" }: { className?: string }) {
         ))}
         {typing && (
           <div className="flex justify-start">
-            <div className="flex gap-1 rounded-2xl rounded-bl-sm bg-white/10 px-4 py-3">
+            <div className="flex gap-1 rounded-2xl rounded-bl-sm bg-ink/5 px-4 py-3">
               {[0, 1, 2].map((d) => (
-                <span key={d} className="h-1.5 w-1.5 rounded-full bg-white/80" style={{ animation: `blink 1s ${d * 0.2}s infinite` }} />
+                <span key={d} className="h-1.5 w-1.5 rounded-full bg-ink/60" style={{ animation: `blink 1s ${d * 0.2}s infinite` }} />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      <div className={`rounded-xl border border-teal/40 bg-teal/10 px-3 py-2 text-xs font-semibold text-teal transition-opacity ${booked ? "opacity-100" : "opacity-0"}`}>
+      <div className={`rounded-xl border border-teal/40 bg-teal/10 px-3 py-2 text-xs font-semibold text-teal-ink transition-opacity ${booked ? "opacity-100" : "opacity-0"}`}>
         ✓ Job booked · today 3:30 PM · Leaking sink
       </div>
-      <p className="mt-2 text-center text-[10px] uppercase tracking-wider text-white/45">Demo · scripted · not a real customer</p>
+      <p className="mt-2 text-center text-[10px] uppercase tracking-wider text-ink/70">Demo · scripted · not a real customer</p>
     </div>
   );
 }
