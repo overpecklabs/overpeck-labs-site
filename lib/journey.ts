@@ -4,8 +4,10 @@ import type Lenis from "lenis";
 type Listener = () => void;
 
 export const journey = {
-  /** local progress (0..1) of [hero, websites, workflows, tracking, ai] chapters */
-  p: [0, 0, 0, 0, 0] as number[],
+  /** local progress (0..1) of [hero, websites, workflows, tracking, ai] chapters.
+   *  The hero is a 2D whiteboard now (not part of the 3D journey), so slot 0 is fixed at 1:
+   *  the camera starts at the first 3D set-piece (the laptop). */
+  p: [1, 0, 0, 0, 0] as number[],
   reduced: false,
   lenis: null as Lenis | null,
   listeners: new Set<Listener>(),

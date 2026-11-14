@@ -123,3 +123,79 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Nav over the light whiteboard hero (Hero sets html[data-hero-light]). Unlayered, so it beats utilities. */
+.nav-shell {
+  transition: background-color 0.35s, border-color 0.35s, box-shadow 0.35s, color 0.35s;
+}
+html[data-hero-light] .nav-shell {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(17, 17, 17, 0.08);
+  box-shadow: 0 6px 24px rgba(17, 17, 17, 0.08);
+  color: #111;
+}
+html[data-hero-light] .nav-shell a {
+  color: #2b2b2b;
+}
+html[data-hero-light] .nav-shell .text-teal {
+  color: #0d9488;
+}
+html[data-hero-light] .nav-shell .nav-cta {
+  background: #19f0d2;
+  color: #06201c;
+}
+
+/* Whiteboard */
+.board-surface {
+  background-color: #f8f8f5;
+  background-image:
+    radial-gradient(ellipse 30% 22% at 18% 28%, rgba(110, 120, 130, 0.07), transparent 70%),
+    radial-gradient(ellipse 26% 18% at 78% 72%, rgba(31, 111, 235, 0.045), transparent 70%),
+    radial-gradient(ellipse 22% 14% at 62% 18%, rgba(229, 72, 77, 0.03), transparent 70%),
+    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px);
+  background-size: auto, auto, auto, 40px 40px, 40px 40px;
+}
+.board-frame {
+  background: linear-gradient(180deg, #f4f5f7 0%, #c9ccd1 45%, #9ea3aa 55%, #d9dce0 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+.btn-board {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #06201c;
+  background: #19f0d2;
+  border: 1px solid rgba(6, 32, 28, 0.15);
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.28);
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.btn-board:hover {
+  transform: translateY(-2px);
+  background: #2ff5da;
+  box-shadow: 0 10px 26px rgba(13, 148, 136, 0.36);
+}
+.btn-board-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #111;
+  border: 1.5px solid rgba(17, 17, 17, 0.22);
+  background: rgba(255, 255, 255, 0.6);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.btn-board-ghost:hover {
+  border-color: #111;
+  background: #fff;
+}
+.font-marker {
+  font-family: var(--font-marker), "Comic Sans MS", cursive;
+}

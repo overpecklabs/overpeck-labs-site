@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { PerformanceMonitor, Sparkles } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import CameraRig from "./CameraRig";
-import HeroObject from "./HeroObject";
 import LaptopRig from "./LaptopRig";
 import NodeGraph from "./NodeGraph";
 import Dashboard from "./Dashboard";
@@ -12,7 +11,7 @@ import AIOrb from "./AIOrb";
 import Reveal from "./Reveal";
 import { SPACING } from "@/lib/journey";
 
-// Progress slots: p[0] hero, p[1] websites, p[2] workflows, p[3] tracking, p[4] AI
+// Progress slots: p[0] hero (fixed at 1, the hero is 2D), p[1] websites, p[2] workflows, p[3] tracking, p[4] AI
 export default function Scene({ active }: { active: boolean }) {
   const [low, setLow] = useState(false);
   const [dprMax, setDprMax] = useState(2);
@@ -42,9 +41,6 @@ export default function Scene({ active }: { active: boolean }) {
       <ambientLight intensity={0.5} />
       <CameraRig />
 
-      <Reveal when={(p) => p[0] < 0.97} position={[0, 0, 0]}>
-        <HeroObject low={low} />
-      </Reveal>
       <Reveal when={(p) => p[0] > 0.62 && p[1] < 0.97} position={[0, 0, -SPACING]}>
         <LaptopRig low={low} />
       </Reveal>

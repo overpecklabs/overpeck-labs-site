@@ -19,7 +19,7 @@ export default function Nav() {
   };
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3">
-      <nav aria-label="Main" className="glass mx-auto flex max-w-6xl items-center justify-between rounded-full px-5 py-2.5">
+      <nav aria-label="Main" className="nav-shell glass mx-auto flex max-w-6xl items-center justify-between rounded-full px-5 py-2.5">
         <Link
           href="/"
           onClick={(e) => {
@@ -41,7 +41,7 @@ export default function Nav() {
             </li>
           ))}
           <li>
-            <Link href="/free-mockup" className="rounded-full bg-white/10 px-4 py-1.5 font-semibold hover:bg-white/20">
+            <Link href="/free-mockup" className="nav-cta rounded-full bg-white/10 px-4 py-1.5 font-semibold hover:bg-white/20">
               Free mockup
             </Link>
           </li>
