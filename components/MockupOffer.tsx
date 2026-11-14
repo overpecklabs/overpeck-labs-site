@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
+import { usePanelIn } from "@/lib/usePanelIn";
 import Annotation from "./Annotation";
 
 const STEPS = [
@@ -9,9 +13,11 @@ const STEPS = [
 
 /** Bright accent section #1: a big yellow sticky note. */
 export default function MockupOffer() {
+  const root = useRef<HTMLElement>(null);
+  usePanelIn(root, "right");
   return (
-    <section id="mockup" className="board-bg relative px-5 py-24">
-      <div className="relative mx-auto max-w-5xl">
+    <section ref={root} id="mockup" className="board-bg relative overflow-hidden px-5 py-24">
+      <div data-panel className="relative mx-auto max-w-5xl">
         <div className="sticky-note tilt-l relative rounded-[4px] p-7 sm:p-12">
           <span className="tape" style={{ left: "18%" }} />
           <span className="tape" style={{ left: "82%", rotate: "4deg" }} />

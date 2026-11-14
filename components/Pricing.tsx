@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { scrollToId } from "@/lib/journey";
 import { prefillContact, type ServiceKey } from "@/lib/services";
@@ -17,6 +20,7 @@ type Plan = {
   price: Price;
   cta: { label: string } & ({ href: string } | { prefill: ServiceKey[] });
   mol: string[]; // the matching molecule (which elements this tier combines)
+  glow: string; // hover glow
   card: string; // index-card color
   tile: string; // element tile color
   tilt: string;
@@ -35,6 +39,7 @@ const PLANS: Plan[] = [
     items: ["Custom homepage design", "Built around your trade and towns", "Ready in 2–3 business days", "No credit card needed"],
     cta: { label: "Get My Free Mockup", href: "/free-mockup" },
     mol: [],
+    glow: "rgba(247,201,72,0.35)",
     card: "#fff6b8",
     tile: "#fffbe0",
     tilt: "tilt-l",
@@ -48,6 +53,7 @@ const PLANS: Plan[] = [
     items: ["Custom, mobile-friendly website", "Hosting and SSL included", "Basic SEO setup", "Contact / lead form", "Small monthly edits"],
     cta: { label: "Get Started", href: "/free-mockup" },
     mol: ["Ws"],
+    glow: "rgba(15,118,110,0.28)",
     card: "#c8f5ec",
     tile: "#e8fbf7",
     tilt: "tilt-r",
@@ -63,6 +69,7 @@ const PLANS: Plan[] = [
     items: ["Everything in Launch", "Workflows & Automation", "Track, Monitor & Optimize", "Ongoing improvements"],
     cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking"] },
     mol: ["Ws", "Au", "Op"],
+    glow: "rgba(31,111,235,0.25)",
     card: "#dbe8ff",
     tile: "#eef4ff",
     tilt: "tilt-l",
@@ -76,6 +83,7 @@ const PLANS: Plan[] = [
     items: ["Everything in Growth", "AI Chat Bot", "AI Call Receptionist", "AI Agents for overflow tasks"],
     cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking", "ai"] },
     mol: ["Ws", "Au", "Op", "Ai"],
+    glow: "rgba(47,158,68,0.25)",
     card: "#dcf3df",
     tile: "#eefaef",
     tilt: "tilt-r",
@@ -136,6 +144,34 @@ function PriceBlock({ price }: { price: Price }) {
 }
 
 export default function Pricing() {
+  const grid = useRef<HTMLDivElement>(null);
+
+  // Desktop: cards start stacked in depth like lab tiles, fan out into a row as you scroll,
+  // then "Recommended" gets circled in red marker as they land. Phones / reduced motion: static.
+  useEffect(() => {
+    const el = grid.current;
+    if (!el) return;
+    if (!window.matchMedia("(min-width: 1024px)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLElement>("[data-card]", el);
+      const w = cards[0].offsetWidth + 28;
+      gsap.set("[data-circle]", { strokeDashoffset: 1 });
+      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: "top 88%", end: "top 30%", scrub: 0.6 } });
+      cards.forEach((c, i) => {
+        const off = 1.5 - i; // distance from the center of the row
+        tl.fromTo(
+          c,
+          { x: off * w, z: -120 - i * 70, rotationY: 32, rotationZ: -off * 3, opacity: 0.35 },
+          { x: 0, z: 0, rotationY: 0, rotationZ: 0, opacity: 1, ease: "power2.out", duration: 1 },
+          0
+        );
+      });
+      tl.to("[data-circle]", { strokeDashoffset: 0, ease: "power1.inOut", duration: 0.35 }, 0.95);
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="pricing" className="graph-paper relative px-5 py-24">
       <div className="mx-auto max-w-6xl">
@@ -145,19 +181,27 @@ export default function Pricing() {
           Results, not experiments on your budget. See your design before you spend anything; Growth and Operator are quoted to fit your business.
         </p>
 
-        <div className="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={grid} className="mt-24 grid gap-x-7 gap-y-20 [perspective:1600px] sm:grid-cols-2 lg:grid-cols-4">
           {PLANS.map((p) => (
             <div
               key={p.name}
-              className={`relative flex flex-col rounded-[4px] p-6 shadow-[0_2px_3px_rgba(26,26,26,0.06),0_14px_30px_rgba(26,26,26,0.10)] ${p.tilt} ${
+              data-card
+              className={`relative flex flex-col rounded-[4px] p-6 shadow-[0_2px_3px_rgba(26,26,26,0.06),0_14px_30px_rgba(26,26,26,0.10)] transition-shadow duration-300 hover:shadow-[0_6px_10px_rgba(26,26,26,0.06),0_30px_60px_var(--glow)] ${p.tilt} ${
                 p.featured ? "outline outline-[3px] outline-offset-0 outline-[#0f766e] max-lg:mt-4 lg:-my-2 lg:py-8" : ""
               }`}
-              style={{ background: p.card }}
+              style={{ background: p.card, ["--glow" as string]: p.glow }}
             >
-              <span className="tape" />
+              {/* the tier's molecule, floating above the card */}
+              <div className="float-y absolute -top-14 left-1/2 -translate-x-1/2" title={p.mol.length ? `Combines: ${p.mol.join(", ")}` : "Your mockup"}>
+                <Molecule atoms={p.mol} />
+              </div>
               {p.badge && (
                 <span className="absolute -top-3.5 right-5 rotate-[3deg] rounded-sm border-2 border-[#0f766e] bg-white px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#0f766e] shadow-sm">
                   {p.badge}
+                  {/* red marker circle, drawn as the cards land */}
+                  <svg className="pointer-events-none absolute -inset-x-4 -inset-y-3 h-[calc(100%+24px)] w-[calc(100%+32px)] overflow-visible" viewBox="0 0 140 44" preserveAspectRatio="none" aria-hidden>
+                    <path data-circle d="M10 24 C8 6 128 2 132 20 C136 38 18 44 8 26 C6 18 20 10 40 8" fill="none" stroke="#d93f44" strokeWidth="2.5" strokeLinecap="round" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 0 }} />
+                  </svg>
                 </span>
               )}
               <div className="flex items-start gap-4">
@@ -170,9 +214,8 @@ export default function Pricing() {
               <div className="mt-5 min-h-[5rem]">
                 <PriceBlock price={p.price} />
               </div>
-              <div className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink/75">
-                <Molecule atoms={p.mol} />
-                <span>{p.mol.length ? (p.mol.length === 4 ? "Full formula" : `${p.mol.length} element${p.mol.length > 1 ? "s" : ""}`) : "Your design"}</span>
+              <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-ink/75">
+                {p.mol.length ? (p.mol.length === 4 ? "The full formula" : `${p.mol.join(" + ")}`) : "Your design, free"}
               </div>
               <p className="mt-3 text-sm text-ink/85">{p.blurb}</p>
               <ul className="mt-5 flex-1 space-y-2 text-sm text-ink/90">

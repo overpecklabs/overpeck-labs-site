@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { scrollToId } from "@/lib/journey";
 import { SERVICES } from "@/lib/services";
 import { useDrawOn } from "@/lib/useDrawOn";
+import { usePanelIn } from "@/lib/usePanelIn";
 import { ServiceIcon } from "./icons";
 import Annotation from "./Annotation";
 
@@ -18,10 +19,11 @@ const ELEMENT: Record<string, { sym: string; el: string; bg: string; ink: string
 export default function Services() {
   const root = useRef<HTMLElement>(null);
   useDrawOn(root);
+  usePanelIn(root, "left");
 
   return (
-    <section ref={root} id="services" className="hex-paper relative px-5 py-24">
-      <div className="mx-auto max-w-6xl">
+    <section ref={root} id="services" className="hex-paper relative overflow-hidden px-5 py-24">
+      <div data-panel className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">The Complete Formula</p>
         <div className="mt-3 flex flex-wrap items-end gap-x-6 gap-y-2">
           <h2 className="font-display max-w-2xl text-4xl font-bold text-ink sm:text-5xl">
@@ -34,7 +36,7 @@ export default function Services() {
 
         <p className="mt-4 max-w-2xl text-ink/85">We engineer growth: each element builds on the last, so leads get found, followed up, measured and never missed.</p>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div data-depth="1" className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICES.map((s) => {
             const e = ELEMENT[s.key];
             return (

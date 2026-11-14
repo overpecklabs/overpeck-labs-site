@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { INDUSTRIES } from "@/lib/industries";
 import Link from "next/link";
+import { usePanelIn } from "@/lib/usePanelIn";
 import MockSite from "./MockSite";
 
 const mockupHref = (industry: string) => `/free-mockup?industry=${encodeURIComponent(industry)}`;
@@ -21,7 +22,12 @@ function CardLink({ d, hidden }: { d: (typeof INDUSTRIES)[number]; hidden?: bool
       className="relative mt-3 block transition-[translate,rotate] duration-300 hover:-translate-y-1 hover:!rotate-0 focus-visible:-translate-y-1"
       style={{ rotate: tilt }}
     >
-      <span className="tape" />
+      {/* pushpin */}
+      <svg className="pointer-events-none absolute -top-3 left-1/2 z-10 -translate-x-1/2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]" width="22" height="26" viewBox="0 0 22 26" aria-hidden>
+        <path d="M11 14 L11 25" stroke="#6b6b6b" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="11" cy="9" r="8" fill={INDUSTRIES.indexOf(d) % 3 === 0 ? "#d93f44" : INDUSTRIES.indexOf(d) % 3 === 1 ? "#1f6feb" : "#2f9e44"} />
+        <circle cx="8" cy="6" r="2.4" fill="#fff" opacity="0.65" />
+      </svg>
       <MockSite d={d} />
     </Link>
   );
@@ -144,6 +150,7 @@ function SwipeRow() {
 
 export default function Industries() {
   const section = useRef<HTMLElement>(null);
+  usePanelIn(section, "depth");
   const velocity = useRef(0);
   const visible = useRef(false);
   const [mode, setMode] = useState<Mode>("marquee");
@@ -198,7 +205,7 @@ export default function Industries() {
         </p>
       </div>
 
-      <div className="relative mt-12">
+      <div data-panel className="relative mt-12">
         {mode === "marquee" && (
           <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
             <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} />

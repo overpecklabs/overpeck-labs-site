@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePanelIn } from "@/lib/usePanelIn";
 import { CONTACT_OPTIONS, PHONE_DISPLAY, PHONE_TEL, type ServiceKey } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase";
 import HoneypotField from "./HoneypotField";
@@ -14,6 +17,30 @@ export default function Contact() {
   const [sentName, setSentName] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const honeypot = useRef<HTMLInputElement>(null);
+  const root = useRef<HTMLElement>(null);
+  usePanelIn(root, "tilt");
+
+  // marker arrow draws itself; form fields fade up one by one
+  useEffect(() => {
+    const el = root.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      const arrow = el.querySelector<SVGPathElement>("[data-arrow]");
+      if (arrow) {
+        gsap.fromTo(arrow, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: el, start: "top 70%", end: "top 25%", scrub: 0.5 } });
+      }
+      gsap.from(el.querySelectorAll("form > label, form > fieldset, form > div.grid > label, form > button"), {
+        y: 18,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.07,
+        ease: "power2.out",
+        scrollTrigger: { trigger: el.querySelector("form"), start: "top 80%", once: true },
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     const on = (e: Event) => setChecked(new Set((e as CustomEvent<ServiceKey[]>).detail));
@@ -78,10 +105,10 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="board-bg relative overflow-hidden px-5 py-24">
+    <section ref={root} id="contact" className="board-bg relative overflow-hidden px-5 py-24">
       {/* Bright accent section #3: a marker-blue band behind the copy, with an arrow to the form */}
       <div className="absolute inset-x-0 top-16 bottom-16 -skew-y-2 bg-mk-blue shadow-[0_14px_40px_rgba(31,111,235,0.25)] lg:inset-y-24" aria-hidden />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-12">
+      <div data-panel className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-12">
         <div className="relative py-10 text-white lg:py-0">
           <p className="text-xs font-semibold uppercase tracking-widest text-white/90">Contact</p>
           <h2 className="font-display mt-3 text-4xl font-bold sm:text-5xl">Let&apos;s talk.</h2>
@@ -101,7 +128,7 @@ export default function Contact() {
           </div>
           {/* hand-drawn arrow pointing at the form */}
           <svg className="pointer-events-none absolute -right-6 top-1/2 hidden h-28 w-40 lg:block" viewBox="0 0 160 110" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M8 86 C40 96 92 92 128 48 M112 50 L130 46 L128 66" />
+            <path data-arrow d="M8 86 C40 96 92 92 128 48 M112 50 L130 46 L128 66" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 0 }} />
           </svg>
           <span className="font-marker pointer-events-none absolute -right-2 top-[calc(50%+56px)] hidden rotate-[-4deg] text-lg text-white lg:block" aria-hidden>
             takes a minute

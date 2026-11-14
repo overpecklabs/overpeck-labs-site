@@ -1,11 +1,29 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 
 const MARKERS = ["#1a1a1a", "#1f6feb", "#d93f44", "#2f9e44", "#19c9b0"];
 
 /** Footer as the whiteboard's marker tray. */
 export default function Footer() {
+  const root = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = root.current;
+    // desktop only: phones keep the footer static (lighter, and it can never end up hidden)
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(min-width: 1024px)").matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    // slides up once as it enters (not scrubbed, so it always finishes fully visible);
+    // context.revert() restores inline styles on unmount/re-run
+    const ctx = gsap.context(() => {
+      gsap.from(el.firstElementChild, { y: 60, opacity: 0, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 98%", once: true } });
+    }, el);
+    return () => ctx.revert();
+  }, []);
   return (
-    <footer className="relative z-10 px-4 pb-6 pt-4">
+    <footer ref={root} className="relative z-10 px-4 pb-6 pt-4">
       <div className="mx-auto max-w-6xl">
         {/* aluminum tray lip */}
         <div className="board-frame h-3 rounded-t-md" />
