@@ -1,6 +1,10 @@
 import type { Faq } from "./service-pages";
 
 // Content for /industries/[slug]. Every trade gets its own pain points, features and FAQs.
+export type WorkflowStep = { icon: string; t: string; d: string };
+/** One concrete, industry-specific automation ("Signature AI Workflow"). Sample, customized per business. */
+export type SignatureWorkflow = { title: string; promise: string; steps: WorkflowStep[]; saves: string[]; tools: string[] };
+
 export type IndustryPage = {
   slug: string;
   name: string; // "Plumbing"
@@ -13,6 +17,8 @@ export type IndustryPage = {
   faqs: Faq[];
   related: string[]; // industry slugs
   areas: string[]; // area slugs
+  workflow: SignatureWorkflow;
+  more: string[]; // 3 more automation ideas
 };
 
 export const INDUSTRY_PAGES: IndustryPage[] = [
@@ -45,6 +51,58 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Should my plumbing site list prices?", a: "Many plumbers show starting prices or a service-call fee to build trust, then quote the job on site. We'll help you decide what fits your business." },
       { q: "Do I need separate pages for water heaters and drains?", a: "It helps. Focused pages match what people search for and make it clear you handle that exact job." },
       { q: "How do review requests work after a repair?", a: "When you mark a job done, the customer gets a short text with a link to leave a review. It's timed while the fix is still fresh." },
+    ],
+    workflow: {
+      "title": "Never Miss an Emergency Call",
+      "promise": "Every call answered and every emergency triaged, day or night.",
+      "steps": [
+        {
+          "icon": "phone",
+          "t": "AI answers 24/7",
+          "d": "Every call is picked up, even while you're under a sink."
+        },
+        {
+          "icon": "alert",
+          "t": "Triages the emergency",
+          "d": "Asks if water is actively leaking, where, and how bad."
+        },
+        {
+          "icon": "calendar",
+          "t": "Books or dispatches",
+          "d": "Urgent jobs go to you right away; routine ones get booked."
+        },
+        {
+          "icon": "message",
+          "t": "Texts the customer an ETA",
+          "d": "The customer knows when you'll arrive, without calling back."
+        },
+        {
+          "icon": "wrench",
+          "t": "Job gets done",
+          "d": "You mark it complete from your phone."
+        },
+        {
+          "icon": "star",
+          "t": "Review request goes out",
+          "d": "A short text asks for a review while the fix is fresh."
+        }
+      ],
+      "saves": [
+        "Emergency calls lost to voicemail",
+        "Back-and-forth calls about arrival times",
+        "Remembering to ask for reviews"
+      ],
+      "tools": [
+        "Your business phone line",
+        "Calendar",
+        "Text messaging",
+        "Google Business Profile"
+      ]
+    },
+    more: [
+      "Water heater maintenance reminders",
+      "Quote follow-ups for repipes and replacements",
+      "Missed-call text-back during jobs"
     ],
     related: ["hvac", "electricians", "contractors"],
     areas: ["hackensack", "teaneck", "fair-lawn"],
@@ -79,6 +137,54 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Will a website help sell maintenance plans?", a: "A clear plan page with benefits and online signup makes it much easier for customers to say yes." },
       { q: "Can follow-ups help close replacement quotes?", a: "Yes. A short sequence after you send a quote keeps you in the conversation while the homeowner compares options." },
     ],
+    workflow: {
+      "title": "Seasonal Tune-Up Machine",
+      "promise": "Fill spring and fall schedules from customers you already have.",
+      "steps": [
+        {
+          "icon": "list",
+          "t": "Pulls your past customers",
+          "d": "Builds a reminder list from your existing customer records."
+        },
+        {
+          "icon": "bell",
+          "t": "Sends seasonal reminders",
+          "d": "Spring AC and fall furnace tune-up reminders by text and email."
+        },
+        {
+          "icon": "calendar",
+          "t": "Books online",
+          "d": "Customers pick a time without calling the office."
+        },
+        {
+          "icon": "repeat",
+          "t": "Filter change reminders",
+          "d": "Friendly reminders between visits keep systems running well."
+        },
+        {
+          "icon": "chart",
+          "t": "Flags aging units",
+          "d": "Suggests replacement quotes for older systems, for you to review."
+        }
+      ],
+      "saves": [
+        "Calling down a customer list every season",
+        "Scrambling for bookings once the rush starts",
+        "Missing replacement opportunities on older units"
+      ],
+      "tools": [
+        "Your customer list or CRM",
+        "Text messaging",
+        "Email",
+        "Online booking",
+        "Calendar"
+      ]
+    },
+    more: [
+      "Maintenance plan renewals",
+      "Overflow call answering on the first hot day",
+      "Follow-ups on new system quotes"
+    ],
     related: ["plumbing", "electricians", "roofing"],
     areas: ["paramus", "fair-lawn", "mahwah"],
   },
@@ -111,6 +217,58 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Is it worth having an EV charger page?", a: "If you install chargers, a dedicated page helps you show up when homeowners search for that specific job." },
       { q: "How should I show I'm licensed?", a: "We place your license and insurance details near your call buttons and in the footer, where people look for them." },
       { q: "Can AI help me skip small jobs I don't want?", a: "It can ask a few screening questions and route requests based on rules you set, like minimum job size." },
+    ],
+    workflow: {
+      "title": "Quote-to-Job Pipeline",
+      "promise": "From a customer's photo to a booked job, with you approving every price.",
+      "steps": [
+        {
+          "icon": "camera",
+          "t": "Customer sends photos",
+          "d": "The quote form collects photos and a short description."
+        },
+        {
+          "icon": "scan",
+          "t": "AI reads the request",
+          "d": "Reviews the photos and notes to understand the job."
+        },
+        {
+          "icon": "dollar",
+          "t": "Drafts an estimate range",
+          "d": "Based on your pricing rules, never sent on its own."
+        },
+        {
+          "icon": "check",
+          "t": "You approve it",
+          "d": "Adjust or approve the estimate in a tap."
+        },
+        {
+          "icon": "mail",
+          "t": "Sent to the customer",
+          "d": "A clear estimate goes out by email or text."
+        },
+        {
+          "icon": "repeat",
+          "t": "Follows up until booked",
+          "d": "Polite check-ins until the customer books or declines."
+        }
+      ],
+      "saves": [
+        "Writing every quote from scratch",
+        "Forgotten follow-ups on open quotes",
+        "Site visits for jobs that were never a fit"
+      ],
+      "tools": [
+        "Your website quote form",
+        "Email",
+        "Text messaging",
+        "Calendar"
+      ]
+    },
+    more: [
+      "EV charger inquiry intake",
+      "Permit and inspection reminders",
+      "Review requests after panel upgrades"
     ],
     related: ["hvac", "plumbing", "contractors"],
     areas: ["englewood", "teaneck", "hackensack"],
@@ -145,6 +303,55 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "How long should I follow up on an estimate?", a: "Roofing decisions often take weeks, so we set up a spaced sequence that checks in without being pushy." },
       { q: "Can you highlight financing or warranties?", a: "Yes. We give warranties and any payment options their own clear sections so homeowners don't have to ask." },
     ],
+    workflow: {
+      "title": "Storm Response Autopilot",
+      "promise": "Reach the right homeowners right after a storm, with photos in hand.",
+      "steps": [
+        {
+          "icon": "cloud",
+          "t": "Watches for storms",
+          "d": "Monitors weather alerts for the towns you serve."
+        },
+        {
+          "icon": "mail",
+          "t": "Offers inspections",
+          "d": "Past customers and open leads get an inspection offer."
+        },
+        {
+          "icon": "camera",
+          "t": "Collects damage photos",
+          "d": "Homeowners upload photos of the damage from their phone."
+        },
+        {
+          "icon": "clipboard",
+          "t": "Prioritizes requests",
+          "d": "Sorts requests by urgency so the worst damage comes first."
+        },
+        {
+          "icon": "calendar",
+          "t": "Schedules inspections",
+          "d": "Books inspection visits into your calendar."
+        }
+      ],
+      "saves": [
+        "Scrambling through call lists after a storm",
+        "Driving out without knowing what you'll find",
+        "Juggling inspection requests by hand"
+      ],
+      "tools": [
+        "Weather alerts",
+        "Your customer list",
+        "Text messaging",
+        "Email",
+        "Website forms",
+        "Calendar"
+      ]
+    },
+    more: [
+      "Estimate follow-up sequences",
+      "Warranty check-in reminders",
+      "Seasonal gutter cleaning offers"
+    ],
     related: ["contractors", "landscaping", "hvac"],
     areas: ["ridgewood", "mahwah", "paramus"],
   },
@@ -177,6 +384,59 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Can you help me book spring work earlier?", a: "Yes. Automated pre-season reminders invite past customers to get on the schedule before the rush." },
       { q: "Do design consultations need their own form?", a: "A short consultation form with project type, budget range and photos helps you prepare and qualify leads." },
       { q: "Can customers sign up for maintenance online?", a: "Yes. A maintenance plan page can explain what's included and collect signups." },
+    ],
+    workflow: {
+      "title": "Job Photos on Autopilot",
+      "promise": "Your crew takes the photos; your gallery and social feeds take care of themselves.",
+      "steps": [
+        {
+          "icon": "camera",
+          "t": "Crew snaps photos",
+          "d": "Photos upload from any phone right on the job site."
+        },
+        {
+          "icon": "tag",
+          "t": "AI sorts and tags them",
+          "d": "Each photo is tagged by service, before or after, town and plants."
+        },
+        {
+          "icon": "folder",
+          "t": "Saved to Google Drive",
+          "d": "Filed into organized folders by client and project."
+        },
+        {
+          "icon": "globe",
+          "t": "Best shots go to your gallery",
+          "d": "Top photos are added to your website gallery automatically."
+        },
+        {
+          "icon": "pen",
+          "t": "AI writes the captions",
+          "d": "Short captions in your voice, ready to post."
+        },
+        {
+          "icon": "share",
+          "t": "Posted on a schedule",
+          "d": "Shared to Google Business Profile, Instagram and Facebook, with owner approval if you want it."
+        }
+      ],
+      "saves": [
+        "Evenings spent sorting and renaming photos",
+        "Logging in to update your gallery",
+        "Writing captions and remembering to post"
+      ],
+      "tools": [
+        "Google Drive",
+        "Instagram",
+        "Facebook",
+        "Google Business Profile",
+        "Your website"
+      ]
+    },
+    more: [
+      "Seasonal service reminders to past clients",
+      "Design consultation follow-ups",
+      "Maintenance plan renewal reminders"
     ],
     related: ["roofing", "contractors", "cleaning"],
     areas: ["ridgewood", "fair-lawn", "mahwah"],
@@ -211,6 +471,54 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Can automation keep clients updated during a project?", a: "We can set up scheduled check-in messages at key milestones so clients aren't left wondering." },
       { q: "When is the best time to ask for a review?", a: "Right at completion, while the client is enjoying the finished space. We automate that timing." },
     ],
+    workflow: {
+      "title": "Project Updates Without the Phone Tag",
+      "promise": "Clients stay in the loop without you writing a single update.",
+      "steps": [
+        {
+          "icon": "camera",
+          "t": "Site photos and notes",
+          "d": "The crew uploads photos and quick notes from the job."
+        },
+        {
+          "icon": "pen",
+          "t": "AI writes the weekly update",
+          "d": "A clear progress summary in your voice."
+        },
+        {
+          "icon": "mail",
+          "t": "Emailed to the client",
+          "d": "Clients get a tidy update every week."
+        },
+        {
+          "icon": "dollar",
+          "t": "Milestone invoices go out",
+          "d": "Invoices are sent automatically when a milestone is reached."
+        },
+        {
+          "icon": "folder",
+          "t": "Added to your portfolio",
+          "d": "Finished projects become portfolio pages on your website."
+        }
+      ],
+      "saves": [
+        "Writing update emails late at night",
+        "Chasing invoices at each milestone",
+        "Building portfolio pages by hand"
+      ],
+      "tools": [
+        "Phone photo uploads",
+        "Email",
+        "Your invoicing tool",
+        "Google Drive",
+        "Your website"
+      ]
+    },
+    more: [
+      "Walkthrough request qualification",
+      "Permit deadline reminders",
+      "Review requests at project completion"
+    ],
     related: ["roofing", "electricians", "plumbing"],
     areas: ["ridgewood", "englewood", "paramus"],
   },
@@ -243,6 +551,54 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "How do I show customers they can trust my team?", a: "We give bonding, insurance and how you vet your team a prominent place on the site." },
       { q: "Will reminders really reduce no-shows?", a: "A reminder the day before gives customers a chance to reschedule instead of leaving your team locked out." },
       { q: "Can an AI chatbot give cleaning quotes?", a: "For standard packages, yes. It can ask about home size and type, then share your pricing or book a visit." },
+    ],
+    workflow: {
+      "title": "Recurring Booking Autopilot",
+      "promise": "Bookings, reminders and rebooks that run themselves.",
+      "steps": [
+        {
+          "icon": "calendar",
+          "t": "Online booking",
+          "d": "Clients choose a package and a time on your site."
+        },
+        {
+          "icon": "bell",
+          "t": "Automatic reminders",
+          "d": "A reminder before every visit cuts lockouts."
+        },
+        {
+          "icon": "message",
+          "t": "AI reschedules by text",
+          "d": "Clients reply to move a visit; the calendar updates."
+        },
+        {
+          "icon": "star",
+          "t": "Feedback and reviews",
+          "d": "A quick check-in after each clean, then a review request."
+        },
+        {
+          "icon": "repeat",
+          "t": "Re-book prompts",
+          "d": "One-time clients are invited onto a recurring plan."
+        }
+      ],
+      "saves": [
+        "Scheduling back-and-forth by phone",
+        "Lockouts and no-shows",
+        "Remembering to invite clients back"
+      ],
+      "tools": [
+        "Online booking",
+        "Calendar",
+        "Text messaging",
+        "Email",
+        "Google Business Profile"
+      ]
+    },
+    more: [
+      "Move-out cleaning quote intake",
+      "Team schedule notifications",
+      "Win-back offers for lapsed clients"
     ],
     related: ["landscaping", "real-estate", "salons-barbers"],
     areas: ["fort-lee", "teaneck", "hackensack"],
@@ -277,6 +633,53 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Can texts cut down status calls?", a: "Yes. An automatic “your vehicle is ready” text answers the most common call before it happens." },
       { q: "Can AI answer questions about my shop?", a: "It can handle hours, services, warranties and appointment requests, and pass anything technical to your team." },
     ],
+    workflow: {
+      "title": "Service Reminder Engine",
+      "promise": "Keep customers coming back and the front desk off the phone.",
+      "steps": [
+        {
+          "icon": "bell",
+          "t": "Mileage and date reminders",
+          "d": "Oil changes and inspections, timed to each vehicle."
+        },
+        {
+          "icon": "message",
+          "t": "AI answers “is my car ready?”",
+          "d": "Status questions by text, answered right away."
+        },
+        {
+          "icon": "camera",
+          "t": "Photo and video inspections",
+          "d": "Customers see what the technician found."
+        },
+        {
+          "icon": "check",
+          "t": "Approval links for repairs",
+          "d": "Customers approve recommended work with one tap."
+        },
+        {
+          "icon": "car",
+          "t": "Ready-for-pickup text",
+          "d": "A heads-up the moment the car is done."
+        }
+      ],
+      "saves": [
+        "Status calls to the service desk",
+        "Waiting on repair approvals by phone",
+        "Maintenance visits customers forget"
+      ],
+      "tools": [
+        "Your shop management system",
+        "Text messaging",
+        "Email",
+        "Payment links"
+      ]
+    },
+    more: [
+      "Seasonal tire-change offers",
+      "Declined-service follow-ups",
+      "Fleet account reminders"
+    ],
     related: ["cleaning", "electricians", "real-estate"],
     areas: ["hackensack", "paramus", "mahwah"],
   },
@@ -309,6 +712,52 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Do reminders really cut no-shows?", a: "Reminders before an appointment give clients an easy way to confirm or reschedule, which helps keep chairs full." },
       { q: "How do I get clients to rebook?", a: "A friendly message a few weeks after a visit, timed to their usual schedule, invites them back." },
       { q: "Can the website show our style?", a: "Yes. We design an editorial look with your photos, colors and team so the site feels like your shop." },
+    ],
+    workflow: {
+      "title": "Fill Empty Chairs",
+      "promise": "Cancellations get filled and regulars come back right on schedule.",
+      "steps": [
+        {
+          "icon": "alert",
+          "t": "A client cancels",
+          "d": "The open slot is spotted the moment it opens up."
+        },
+        {
+          "icon": "message",
+          "t": "AI texts the waitlist",
+          "d": "Clients waiting for that stylist get a text offer."
+        },
+        {
+          "icon": "calendar",
+          "t": "First reply gets the slot",
+          "d": "The booking updates automatically."
+        },
+        {
+          "icon": "repeat",
+          "t": "Rebooking reminders",
+          "d": "Timed to each client's usual cut or color cycle."
+        },
+        {
+          "icon": "share",
+          "t": "Portfolio photos to Instagram",
+          "d": "Stylists' best work posted with AI-written captions."
+        }
+      ],
+      "saves": [
+        "Empty chairs from last-minute cancellations",
+        "Calling down the waitlist",
+        "Remembering to post new work"
+      ],
+      "tools": [
+        "Your booking system",
+        "Text messaging",
+        "Instagram"
+      ]
+    },
+    more: [
+      "Birthday offers",
+      "New-client welcome series",
+      "Product restock reminders"
     ],
     related: ["restaurants", "cleaning", "dental"],
     areas: ["englewood", "fort-lee", "ridgewood"],
@@ -343,6 +792,55 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "How do you handle catering inquiries?", a: "A dedicated form collects date, headcount and details, and an automatic follow-up makes sure no inquiry slips." },
       { q: "Can the AI answer allergy and dietary questions?", a: "It can share the information you provide, like which dishes are vegetarian, and suggest guests confirm with staff for allergies." },
     ],
+    workflow: {
+      "title": "Reviews & Reservations on Autopilot",
+      "promise": "Guests get answers, reviews get replies and specials get posted.",
+      "steps": [
+        {
+          "icon": "phone",
+          "t": "AI answers phone and chat",
+          "d": "Reservations, hours and menu questions, handled."
+        },
+        {
+          "icon": "calendar",
+          "t": "Books reservations",
+          "d": "Tables booked straight into your reservation system."
+        },
+        {
+          "icon": "star",
+          "t": "AI drafts review replies",
+          "d": "Thoughtful replies ready for you to approve."
+        },
+        {
+          "icon": "camera",
+          "t": "Snap the daily special",
+          "d": "One photo and a few words from the kitchen."
+        },
+        {
+          "icon": "share",
+          "t": "Posted everywhere",
+          "d": "Shared to Google Business Profile, Instagram and Facebook."
+        }
+      ],
+      "saves": [
+        "Phone interruptions during service",
+        "Writing every review reply yourself",
+        "Posting specials on three platforms"
+      ],
+      "tools": [
+        "Your phone line",
+        "Website chat",
+        "Your reservation system",
+        "Google Business Profile",
+        "Instagram",
+        "Facebook"
+      ]
+    },
+    more: [
+      "Catering inquiry follow-ups",
+      "Private event deposit reminders",
+      "Holiday hours updates in one place"
+    ],
     related: ["salons-barbers", "real-estate", "cleaning"],
     areas: ["englewood", "ridgewood", "fort-lee"],
   },
@@ -376,6 +874,54 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Can the AI discuss insurance questions?", a: "It can share general information you provide, like which plans you accept, and route specific questions to your team." },
       { q: "How do we help anxious patients feel comfortable?", a: "A calm design, clear new-patient information and team introductions go a long way before the first visit." },
     ],
+    workflow: {
+      "title": "Recall & No-Show Saver",
+      "promise": "Fuller schedules with fewer no-shows and less phone time.",
+      "steps": [
+        {
+          "icon": "bell",
+          "t": "Recall reminders",
+          "d": "Patients due for a cleaning get a reminder to book."
+        },
+        {
+          "icon": "message",
+          "t": "AI confirmation texts",
+          "d": "Patients confirm or reschedule by replying."
+        },
+        {
+          "icon": "calendar",
+          "t": "Waitlist fills cancellations",
+          "d": "Open slots are offered to patients who want an earlier visit."
+        },
+        {
+          "icon": "clipboard",
+          "t": "New-patient intake forms",
+          "d": "Forms completed online before the first visit."
+        },
+        {
+          "icon": "chat",
+          "t": "Insurance FAQ chatbot",
+          "d": "Answers common insurance questions using your information."
+        }
+      ],
+      "saves": [
+        "Confirmation calls every day",
+        "Cancelled slots that stay empty",
+        "Paperwork at the front desk"
+      ],
+      "tools": [
+        "Your practice management system",
+        "Text messaging",
+        "Email",
+        "Website chat",
+        "Online forms"
+      ]
+    },
+    more: [
+      "Post-treatment check-in texts",
+      "Treatment plan follow-ups",
+      "Review requests after visits"
+    ],
     related: ["salons-barbers", "real-estate", "restaurants"],
     areas: ["paramus", "teaneck", "ridgewood"],
   },
@@ -408,6 +954,61 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "Should I have neighborhood pages?", a: "Neighborhood guides showcase your local knowledge and help you show up for town-specific searches." },
       { q: "How fast should I respond to a new lead?", a: "As fast as possible. An instant automated reply buys you time to follow up personally." },
       { q: "Can AI book showings?", a: "It can answer basic listing questions and offer showing times based on your availability rules." },
+    ],
+    workflow: {
+      "title": "Instant Lead Responder",
+      "promise": "Every new lead gets a thoughtful reply within about a minute.",
+      "steps": [
+        {
+          "icon": "bell",
+          "t": "A new lead arrives",
+          "d": "From your site, a portal or social media."
+        },
+        {
+          "icon": "message",
+          "t": "AI replies in about a minute",
+          "d": "A personal-sounding first response, any time of day."
+        },
+        {
+          "icon": "list",
+          "t": "Qualifies the lead",
+          "d": "Buying or selling, timeline and budget."
+        },
+        {
+          "icon": "calendar",
+          "t": "Books showings",
+          "d": "Offers times based on your availability."
+        },
+        {
+          "icon": "mail",
+          "t": "Sends matching listings",
+          "d": "A drip of homes that fit what they're looking for."
+        },
+        {
+          "icon": "share",
+          "t": "New listings to social",
+          "d": "Listing photos posted to Instagram and Facebook."
+        }
+      ],
+      "saves": [
+        "Leads waiting hours for a reply",
+        "Phone tag to set up showings",
+        "Posting every new listing by hand"
+      ],
+      "tools": [
+        "Your lead sources",
+        "Your CRM",
+        "Text messaging",
+        "Email",
+        "Calendar",
+        "Instagram",
+        "Facebook"
+      ]
+    },
+    more: [
+      "Home valuation follow-ups",
+      "Past-client anniversary check-ins",
+      "Open house sign-in follow-ups"
     ],
     related: ["contractors", "cleaning", "dental"],
     areas: ["ridgewood", "fort-lee", "englewood"],

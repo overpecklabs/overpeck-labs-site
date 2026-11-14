@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 import { INDUSTRY_SLUGS, SERVICE_SLUGS } from "@/lib/slugs";
@@ -22,7 +22,7 @@ type Props = {
 
 const field = "w-full rounded-md border-2 border-ink/20 bg-white px-4 py-3 text-base text-ink placeholder:text-ink/55 focus:border-teal-ink focus:outline-none";
 const label = "mb-1.5 block text-sm font-medium text-ink/85";
-const SERVICE_CHOICES = [...SERVICE_SLUGS.map((s) => s.name), "Not sure yet"];
+const SERVICE_CHOICES = [...SERVICE_SLUGS.map((s) => s.name), "AI workflow", "Not sure yet"];
 
 /**
  * Lead form used on service, industry and area pages.
@@ -36,6 +36,19 @@ export default function LeadForm({ source, service, questions = [], defaults = {
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [doneName, setDoneName] = useState("");
+  const [svc, setSvc] = useState("");
+  const [workflowNote, setWorkflowNote] = useState("");
+
+  // "Get this workflow" buttons preselect a service (and remember which workflow).
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<{ service: string; note?: string }>).detail;
+      setSvc(d.service);
+      setWorkflowNote(d.note ?? "");
+    };
+    window.addEventListener("leadform-preselect", on);
+    return () => window.removeEventListener("leadform-preselect", on);
+  }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -88,7 +101,7 @@ export default function LeadForm({ source, service, questions = [], defaults = {
           services: data.service ? [data.service] : [],
           message: data.message || null,
           source_page: source,
-          raw: { ...data, timeline, answers, form: "lead_form", submitted_at: new Date().toISOString() },
+          raw: { ...data, timeline, answers, workflow: workflowNote || undefined, form: "lead_form", submitted_at: new Date().toISOString() },
         });
       if (error) throw error;
       finish();
@@ -191,12 +204,13 @@ export default function LeadForm({ source, service, questions = [], defaults = {
           <label htmlFor={id("service")} className={label}>
             What are you interested in? <span className="font-normal text-ink/70">(optional)</span>
           </label>
-          <select id={id("service")} name="service" className={field} defaultValue="">
+          <select id={id("service")} name="service" className={field} value={svc} onChange={(e) => setSvc(e.target.value)}>
             <option value="">Choose one…</option>
             {SERVICE_CHOICES.map((s) => (
               <option key={s}>{s}</option>
             ))}
           </select>
+          {svc === "AI workflow" && workflowNote && <p className="mt-1.5 text-sm text-teal-ink">Selected: {workflowNote}</p>}
         </div>
       )}
 

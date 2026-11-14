@@ -11,7 +11,7 @@ import MockSite from "./MockSite";
 const mockupHref = (industry: string) => `/free-mockup?industry=${encodeURIComponent(industry)}`;
 
 /** Industry card that starts a free-mockup request with that industry prefilled. */
-function CardLink({ d, hidden }: { d: (typeof INDUSTRIES)[number]; hidden?: boolean }) {
+function CardLink({ d, hidden, tag }: { d: (typeof INDUSTRIES)[number]; hidden?: boolean; tag?: string }) {
   // printouts taped to the board, alternating a slight tilt
   const tilt = INDUSTRIES.indexOf(d) % 2 ? "1.2deg" : "-1.2deg";
   return (
@@ -29,6 +29,12 @@ function CardLink({ d, hidden }: { d: (typeof INDUSTRIES)[number]; hidden?: bool
         <circle cx="8" cy="6" r="2.4" fill="#fff" opacity="0.65" />
       </svg>
       <MockSite d={d} />
+      {tag && (
+        <span className="absolute -bottom-3 left-4 z-10 flex max-w-[85%] items-center gap-1.5 rounded-full border-2 border-mk-blue bg-white px-2.5 py-1 text-[10.5px] font-bold text-ink shadow-[0_4px_10px_rgba(26,26,26,0.12)]">
+          <span className="rounded-full bg-mk-blue px-1.5 py-px text-[9px] uppercase tracking-wider text-white">AI Workflow</span>
+          <span className="truncate">{tag}</span>
+        </span>
+      )}
     </Link>
   );
 }
@@ -49,7 +55,7 @@ function tiltCards(cards: HTMLElement[], offset: number, stride: number, cardW: 
   }
 }
 
-function MarqueeRow({ items, dir, velocity, visible }: { items: typeof INDUSTRIES; dir: 1 | -1; velocity: React.RefObject<number>; visible: React.RefObject<boolean> }) {
+function MarqueeRow({ items, dir, velocity, visible, tags }: { items: typeof INDUSTRIES; dir: 1 | -1; velocity: React.RefObject<number>; visible: React.RefObject<boolean>; tags: Record<string, string> }) {
   const track = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -99,7 +105,7 @@ function MarqueeRow({ items, dir, velocity, visible }: { items: typeof INDUSTRIE
       <div ref={track} className="flex w-max gap-6 will-change-transform [transform-style:preserve-3d]">
         {[...items, ...items].map((d, i) => (
           <div key={i} className="[transform-style:preserve-3d]" aria-hidden={i >= items.length || undefined}>
-            <CardLink d={d} hidden={i >= items.length} />
+            <CardLink d={d} hidden={i >= items.length} tag={tags[d.industry]} />
           </div>
         ))}
       </div>
@@ -107,7 +113,7 @@ function MarqueeRow({ items, dir, velocity, visible }: { items: typeof INDUSTRIE
   );
 }
 
-function SwipeRow() {
+function SwipeRow({ tags }: { tags: Record<string, string> }) {
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scroller.current;
@@ -139,7 +145,7 @@ function SwipeRow() {
       >
         {INDUSTRIES.map((d) => (
           <div key={d.name} className="snap-center transition-transform duration-75">
-            <CardLink d={d} />
+            <CardLink d={d} tag={tags[d.industry]} />
           </div>
         ))}
       </div>
@@ -148,7 +154,7 @@ function SwipeRow() {
   );
 }
 
-export default function Industries() {
+export default function Industries({ workflowTags = {} }: { workflowTags?: Record<string, string> }) {
   const section = useRef<HTMLElement>(null);
   usePanelIn(section, "depth");
   const velocity = useRef(0);
@@ -211,16 +217,16 @@ export default function Industries() {
       <div data-panel className="relative mt-12">
         {mode === "marquee" && (
           <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
-            <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} />
-            <MarqueeRow items={ROW_B} dir={-1} velocity={velocity} visible={visible} />
+            <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} tags={workflowTags} />
+            <MarqueeRow items={ROW_B} dir={-1} velocity={velocity} visible={visible} tags={workflowTags} />
             <p className="mt-2 text-center text-xs text-ink/70">Hover to pause · click a design to start yours</p>
           </div>
         )}
-        {mode === "swipe" && <SwipeRow />}
+        {mode === "swipe" && <SwipeRow tags={workflowTags} />}
         {mode === "grid" && (
           <div className="mx-auto grid max-w-6xl justify-items-center gap-6 px-5 sm:grid-cols-2 lg:grid-cols-3">
             {INDUSTRIES.map((d) => (
-              <CardLink key={d.name} d={d} />
+              <CardLink key={d.name} d={d} tag={workflowTags[d.industry]} />
             ))}
           </div>
         )}

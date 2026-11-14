@@ -8,6 +8,7 @@ import { pageMeta } from "@/lib/site";
 import { Breadcrumbs, ChipLinks, Divider, FaqBlock, HeroBoard, IndexCards, PageShell, Section, SectionHead, ServiceCards } from "@/components/pages/blocks";
 import LeadForm from "@/components/LeadForm";
 import MockSite from "@/components/MockSite";
+import SignatureWorkflow from "@/components/pages/SignatureWorkflow";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -70,6 +71,24 @@ export default async function IndustryRoute({ params }: Params) {
       <Section className="hex-paper">
         <SectionHead kicker="The Formula, for your trade" title={`How each service helps ${i.pros}`} />
         <ServiceCards lines={{ websites: i.angles.websites, "workflows-automation": i.angles.workflows, "track-optimize": i.angles.tracking, ai: i.angles.ai }} />
+      </Section>
+
+      <Section id="ai-workflow" className="graph-paper">
+        <SectionHead kicker="Signature AI Workflow" title={`One automation we'd build for ${i.pros}`} />
+        <div className="mt-10">
+          <SignatureWorkflow workflow={i.workflow} industry={i.name} />
+        </div>
+        <div className="paper mt-14 rounded-md p-6">
+          <h3 className="font-display text-xl font-bold text-ink">More automations for {i.name.toLowerCase()}</h3>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+            {i.more.map((m) => (
+              <li key={m} className="flex gap-2 rounded-md bg-note-blue/60 px-3 py-2.5 text-[15px] text-ink">
+                <span aria-hidden className="text-mk-blue">→</span>
+                {m}
+              </li>
+            ))}
+          </ul>
+        </div>
       </Section>
 
       <Section>

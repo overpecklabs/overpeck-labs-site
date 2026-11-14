@@ -9,6 +9,7 @@ import Workflows from "@/components/chapters/Workflows";
 import Tracking from "@/components/chapters/Tracking";
 import AIChapter from "@/components/chapters/AIChapter";
 import Industries from "@/components/Industries";
+import { INDUSTRY_PAGES } from "@/lib/industries-pages";
 import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
@@ -34,7 +35,7 @@ export default function Page() {
         <Divider />
         <Services />
         <Divider />
-        <Industries />
+        <Industries workflowTags={Object.fromEntries(INDUSTRY_PAGES.map((i) => [i.mockup, i.workflow.title]))} />
         <Divider />
         <Process />
         <Divider />
