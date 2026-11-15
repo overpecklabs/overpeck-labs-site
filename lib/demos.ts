@@ -17,8 +17,36 @@ export const DEMOS: Demo[] = [
 
 export const demoBySlug = (slug: string) => DEMOS.find((d) => d.slug === slug);
 
-/** "Mains and drains" -> "mains-and-drains" */
+/** Longest slug for a demo URL. */
+export const MAX_DEMO_SLUG = 30;
+/**
+ * Longest slug that keeps the Vercel branch preview host
+ * "overpeck-labs-site-git-demo-{slug}-markqsai-8173" within DNS's 63-character label limit.
+ */
+export const MAX_BRANCH_SLUG = 63 - "overpeck-labs-site-git-demo-".length - "-markqsai-8173".length; // 21
+
+/** Shortens a slug to at most `max` characters, cutting at a hyphen (word boundary) when possible. */
+export function capSlug(slug: string, max: number): string {
+  if (slug.length <= max) return slug;
+  let out = "";
+  for (const word of slug.split("-")) {
+    const next = out ? `${out}-${word}` : word;
+    if (next.length > max) break;
+    out = next;
+  }
+  return out || slug.slice(0, max).replace(/-+$/, "");
+}
+
+/**
+ * "Mains and drains" -> "mains-and-drains"; "Paws and Tails (dog sitting)" -> "paws-and-tails".
+ * Text in parentheses is dropped and the result is capped at MAX_DEMO_SLUG characters on a word boundary.
+ */
 export function demoSlug(businessName: string): string {
+  const base = businessName.replace(/\([^)]*\)/g, " ").trim() || businessName;
+  return capSlug(slugify(base), MAX_DEMO_SLUG);
+}
+
+function slugify(businessName: string): string {
   return businessName
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")

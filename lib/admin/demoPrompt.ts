@@ -1,5 +1,5 @@
 import "server-only";
-import { demoSlug } from "@/lib/demos";
+import { MAX_BRANCH_SLUG, capSlug, demoSlug } from "@/lib/demos";
 import type { Client, MockupRequest } from "./types";
 
 export type CallSummary = { when: string | null; summary: string | null; next_step: string | null; message_for_mark: string | null };
@@ -51,6 +51,8 @@ export function logoExt(path: string): string {
 export function buildDemoPrompt({ client, request, calls, logo }: { client: Client; request: MockupRequest | null; calls: CallSummary[]; logo: LogoLink }): { slug: string; prompt: string } {
   const businessName = clean(client.business_name) || clean(request?.business_name) || "the business";
   const slug = clean(client.demo_slug) || demoSlug(businessName) || "demo";
+  // Branch name drives the Vercel preview host; keep it short enough for a valid hostname.
+  const branch = `demo/${capSlug(slug, MAX_BRANCH_SLUG)}`;
   const r = (k: string) => clean(request?.[k]);
   const industry = r("industry") || clean(client.industry);
   const town = r("town") || clean(client.town);
@@ -112,7 +114,7 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
   const prompt = `Build a free homepage mockup (demo) for ${businessName} in this repo (the Overpeck Labs Next.js site).
 
 SETUP
-- Create a new branch demo/${slug} from admin-backend (that's where the /demo structure lives; if main already has app/demo/[slug], branch from main instead). Do NOT merge into main or push to main.
+- Create a new branch ${branch} from main (main has the /demo and clients/ structure). Use exactly this branch name: it keeps the Vercel preview hostname under 63 characters. Do NOT merge into main or push to main.
 - Read clients/README.md first. Copy the clients/_template folder to clients/${slug}/ and build the whole demo inside that folder:
   - clients/${slug}/demo/data.ts: set slug "${slug}", businessName "${businessName.replace(/"/g, '\\"')}", and fill in colors, services, phone and the other fields from the business data below. Replace every [PLACEHOLDER].
   - clients/${slug}/demo/page-content.tsx: the homepage (all its sections), reading from data.ts.
@@ -143,9 +145,14 @@ ${lines.join("\n")}
 ${callLines.length ? `\nCALL SUMMARIES\n${callLines.join("\n")}\n` : ""}
 FINISH
 - Run npm run lint and npm run build and fix any errors.
-- Put the preview URL in clients/${slug}/notes.md.
-- Commit with the message "Demo: ${businessName}" and push the demo/${slug} branch to origin.
-- Reply with the Vercel preview URL for /demo/${slug} (the branch preview usually looks like https://overpeck-labs-site-git-demo-${slug}-markqsai-8173.vercel.app/demo/${slug}?preview=1; keep ?preview=1 on links you share with Overpeck Labs so our own views aren't counted; confirm the real URL from the Vercel deployment for the branch).
+- Commit with the message "Demo: ${businessName}" and push the ${branch} branch to origin.
+- Find the REAL preview URL; do not guess it:
+  - If the Vercel CLI is installed and logged in, run \`vercel ls overpeck-labs-site\` and take the newest Ready deployment for ${branch}.
+  - Otherwise poll the GitHub commit status until the "Vercel" check is no longer pending: \`gh api repos/overpecklabs/overpeck-labs-site/commits/$(git rev-parse HEAD)/status\` (or curl https://api.github.com/repos/overpecklabs/overpeck-labs-site/commits/<sha>/status). Its target_url is the Vercel deployment page.
+  - The branch alias should be https://overpeck-labs-site-git-${branch.replace("/", "-")}-markqsai-8173.vercel.app. Only report it after confirming it resolves (e.g. \`curl -sI\` returns an HTTP status, not a DNS error). If it doesn't resolve, report the Vercel deployment page link instead and say so.
+  - If the deployment failed, say so and include the error. Never report a URL you haven't verified.
+- Put the verified preview URL in clients/${slug}/notes.md, commit ("Demo: ${businessName}: preview URL") and push.
+- Reply with the verified preview URL for /demo/${slug}?preview=1 (keep ?preview=1 on links shared with Overpeck Labs so our own views aren't counted).
 `;
   return { slug, prompt: prompt.replace(/\n{3,}/g, "\n\n") };
 }
