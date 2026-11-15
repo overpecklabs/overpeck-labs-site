@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { createClientAction, updateClientAction } from "@/app/admin/actions";
-import { CLIENT_STATUS_LABEL } from "@/lib/admin/labels";
-import { CLIENT_STATUSES, type Client } from "@/lib/admin/types";
+import { STAGE_LABEL, normalizeStage } from "@/lib/admin/labels";
+import { CLIENT_STATUSES, type Client, type ClientStage } from "@/lib/admin/types";
 import { ActionError } from "./controls";
 
-export default function ClientForm({ client }: { client?: Client }) {
+export default function ClientForm({ client, defaultStage = "lead" }: { client?: Client; defaultStage?: ClientStage }) {
   const [state, action, pending] = useActionState(client ? updateClientAction : createClientAction, null);
   const v = (k: keyof Client) => (client?.[k] as string | null | undefined) ?? "";
 
@@ -31,10 +31,10 @@ export default function ClientForm({ client }: { client?: Client }) {
           <label className="adm-label" htmlFor="status">
             Status
           </label>
-          <select id="status" name="status" defaultValue={client?.status ?? "lead"} className="adm-input">
+          <select id="status" name="status" defaultValue={client ? normalizeStage(client.status) : defaultStage} className="adm-input">
             {CLIENT_STATUSES.map((s) => (
               <option key={s} value={s}>
-                {CLIENT_STATUS_LABEL[s]}
+                {STAGE_LABEL[s]}
               </option>
             ))}
           </select>

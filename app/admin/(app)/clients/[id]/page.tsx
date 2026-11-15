@@ -12,7 +12,7 @@ import { ActionButton, AutoSaveSelect, ConfirmButton } from "@/components/admin/
 import { Badge, Card, DbError, Empty, Field, PageHeader, Progress } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { externalHref, fmtDateTime, fmtDay, fmtDuration, nyLocalNow, telHref, todayNY } from "@/lib/admin/format";
-import { CLIENT_STATUS_LABEL, DELIVERABLE_STATUS_LABEL, PROJECT_STATUS_LABEL, PROJECT_TYPE_LABEL } from "@/lib/admin/labels";
+import { CLIENT_STATUS_LABEL, STAGE_LABEL, normalizeStage, DELIVERABLE_STATUS_LABEL, PROJECT_STATUS_LABEL, PROJECT_TYPE_LABEL } from "@/lib/admin/labels";
 import { CLIENT_STATUSES, type CallLog, type Client, type ContactMessage, type Deliverable, type MockupRequest, type Project } from "@/lib/admin/types";
 import { loadDemoViews, loadFiles, loadTimeline, signLogos } from "@/lib/admin/views";
 
@@ -72,9 +72,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <>
             <AutoSaveSelect
               key={client.status}
-              label="Client status"
-              value={client.status}
-              options={CLIENT_STATUSES.map((s) => ({ value: s, label: CLIENT_STATUS_LABEL[s] }))}
+              label="Client stage"
+              value={normalizeStage(client.status)}
+              options={CLIENT_STATUSES.map((s) => ({ value: s, label: STAGE_LABEL[s] }))}
               onSave={setClientStatus.bind(null, client.id)}
             />
             <Link href={`/admin/clients/${client.id}/edit`} className="adm-btn-ghost">
@@ -281,12 +281,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                   <p>
                     This permanently deletes the client <strong>and all of their projects, deliverables, communications and files</strong>. It can&apos;t be undone.
                   </p>
-                  <p className="mt-2">Usually it&apos;s better to set the status to <strong>Past</strong> instead.</p>
+                  <p className="mt-2">Usually it&apos;s better to move them to <strong>Archived</strong> instead.</p>
                 </>
               }
               confirmLabel="Delete everything"
               onConfirm={deleteClient.bind(null, client.id)}
-              alternative={client.status !== "past" ? { label: "Mark as Past instead", run: setClientStatus.bind(null, client.id, "past") } : undefined}
+              alternative={normalizeStage(client.status) !== "archived" ? { label: "Archive instead", run: setClientStatus.bind(null, client.id, "archived") } : undefined}
             />
           </Card>
         </div>

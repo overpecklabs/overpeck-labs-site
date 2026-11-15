@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { friendlyError } from "@/lib/admin/errors";
 import { buildDemoPrompt, logoExt, type LogoLink } from "@/lib/admin/demoPrompt";
 import { fmtDate, nyLocalToIso } from "@/lib/admin/format";
-import { PROJECT_STATUS_LABEL } from "@/lib/admin/labels";
+import { PROJECT_STATUS_LABEL, STAGE_COLUMN, normalizeStage, statusesForStage } from "@/lib/admin/labels";
 import {
   CHANNELS,
   CLIENT_STATUSES,
@@ -16,6 +16,7 @@ import {
   PROJECT_STATUSES,
   PROJECT_TYPES,
   type ActionResult,
+  type ClientStage,
   type Client,
   type MockupRequest as MockupRequestRow,
   type ProjectStatus,
@@ -545,4 +546,79 @@ export async function logDemoPromptCopied(clientId: string): Promise<ActionResul
   if (error) return fail(friendlyError(error, "Copied, but couldn't log the note."));
   done();
   return { ok: true };
+}
+
+// ---------- pipeline ----------
+
+const stageEnum = z.enum(CLIENT_STATUSES);
+const position = z.number().finite();
+
+/** Inserts the "Stage: Leads → Hot Leads" note. */
+async function logStageNote(supabase: Awaited<ReturnType<typeof requireAdmin>>["supabase"], me: string, clientId: string, from: ClientStage, to: ClientStage) {
+  await supabase.from("communications").insert({
+    client_id: clientId,
+    project_id: null,
+    channel: "note",
+    direction: null,
+    summary: `Stage: ${STAGE_COLUMN[from]} → ${STAGE_COLUMN[to]}`,
+    body: null,
+    occurred_at: new Date().toISOString(),
+    created_by: me,
+  });
+}
+
+/**
+ * Moves a pipeline card: sets status + board_position (status_changed_at is set by the DB).
+ * `renumber` re-spaces the destination column when neighbours had identical positions.
+ */
+export async function moveClient(input: { id: string; stage: string; position: number; renumber?: { id: string; position: number }[] }): Promise<ActionResult> {
+  const { supabase, email: me } = await requireAdmin();
+  const parsed = z
+    .object({ id: idSchema, stage: stageEnum, position, renumber: z.array(z.object({ id: idSchema, position })).max(1000).optional() })
+    .safeParse(input);
+  if (!parsed.success) return fail("Invalid move.");
+  const v = parsed.data;
+
+  const { data: current, error: readErr } = await supabase.from("clients").select("status").eq("id", v.id).maybeSingle<{ status: string }>();
+  if (readErr) return fail(friendlyError(readErr, "Couldn't move the card."));
+  if (!current) return fail(NOT_FOUND);
+  const from = normalizeStage(current.status);
+
+  const { error, count } = await supabase.from("clients").update({ status: v.stage, board_position: v.position }, { count: "exact" }).eq("id", v.id);
+  if (error) return fail(friendlyError(error, "Couldn't move the card."));
+  if (!count) return fail(NOT_FOUND);
+
+  for (const r of v.renumber ?? []) {
+    if (r.id === v.id) continue;
+    const { error: e } = await supabase.from("clients").update({ board_position: r.position }).eq("id", r.id);
+    if (e) return fail(friendlyError(e, "Moved, but couldn't reorder the column."));
+  }
+  if (from !== v.stage) await logStageNote(supabase, me, v.id, from, v.stage);
+  done();
+  return { ok: true };
+}
+
+/** "+ Add" on a pipeline column: creates a client at the top of that stage. */
+export async function createClientInStage(stage: string, fd: FormData): Promise<ActionResult> {
+  const { supabase } = await requireAdmin();
+  const st = stageEnum.safeParse(stage);
+  if (!st.success) return fail("Invalid stage.");
+  const parsed = z
+    .object({ business_name: z.string().trim().min(1, "Business name is required").max(200), phone: text(40), email, industry: text(100), town: text(100) })
+    .safeParse({ business_name: str(fd, "business_name"), phone: str(fd, "phone"), email: str(fd, "email"), industry: str(fd, "industry"), town: str(fd, "town") });
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  const { data: top } = await supabase
+    .from("clients")
+    .select("board_position")
+    .in("status", statusesForStage(st.data))
+    .order("board_position", { ascending: true })
+    .limit(1)
+    .overrideTypes<{ board_position: number | null }[], { merge: false }>();
+  const board_position = (top?.[0]?.board_position ?? 1024) - 1024;
+
+  const { data, error } = await supabase.from("clients").insert({ ...parsed.data, status: st.data, board_position }).select("id").single<{ id: string }>();
+  if (error || !data) return fail(friendlyError(error, "Couldn't add the client."));
+  done();
+  return { ok: true, id: data.id };
 }

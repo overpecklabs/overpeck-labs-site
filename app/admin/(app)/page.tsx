@@ -7,8 +7,8 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { referrerLabel } from "@/components/admin/DemoViews";
 import { fmtDateTime, fmtDay, fmtRelative, todayNY } from "@/lib/admin/format";
 import { loadDemoActivity } from "@/lib/admin/views";
-import { CHANNEL_LABEL, CLIENT_STATUS_LABEL, CLOSED_PROJECT_STATUSES, PROJECT_STATUS_LABEL } from "@/lib/admin/labels";
-import { PROJECT_STATUSES, type Communication, type ContactMessage, type Deliverable, type MockupRequest, type ProjectStatus } from "@/lib/admin/types";
+import { CHANNEL_LABEL, CLOSED_PROJECT_STATUSES, PROJECT_STATUS_LABEL, STAGE_COLUMN, TONE, normalizeStage } from "@/lib/admin/labels";
+import { CLIENT_STATUSES, PROJECT_STATUSES, type ClientStage, type Communication, type ContactMessage, type Deliverable, type MockupRequest, type ProjectStatus } from "@/lib/admin/types";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -22,11 +22,8 @@ export default async function DashboardPage() {
   const weekEnd = todayNY(6);
   const since = new Date(Date.now() - 14 * 86400000).toISOString();
 
-  const count = (status: string) => supabase.from("clients").select("id", { count: "exact", head: true }).eq("status", status);
-  const [lead, prospect, active, projects, due, comms, mockups, messages, demo] = await Promise.all([
-    count("lead"),
-    count("prospect"),
-    count("active"),
+  const [clientRows, projects, due, comms, mockups, messages, demo] = await Promise.all([
+    supabase.from("clients").select("status").limit(20000).overrideTypes<{ status: string }[], { merge: false }>(),
     supabase.from("projects").select("status").overrideTypes<{ status: ProjectStatus }[], { merge: false }>(),
     supabase
       .from("deliverables")
@@ -60,7 +57,7 @@ export default async function DashboardPage() {
     loadDemoActivity(supabase),
   ]);
 
-  const err = [lead, prospect, active, projects, due, comms, mockups, messages].find((r) => r.error)?.error;
+  const err = [clientRows, projects, due, comms, mockups, messages].find((r) => r.error)?.error;
   if (err) return <DbError error={err} />;
 
   const byStatus = new Map<ProjectStatus, number>();
@@ -73,10 +70,13 @@ export default async function DashboardPage() {
   const upcoming = dueRows.filter((d) => d.due_date! >= today);
   const dueThisWeek = upcoming.filter((d) => d.due_date! <= weekEnd).length;
 
+  const stageCounts = new Map<ClientStage, number>();
+  (clientRows.data ?? []).forEach((c) => {
+    const s = normalizeStage(c.status);
+    stageCounts.set(s, (stageCounts.get(s) ?? 0) + 1);
+  });
+
   const stats = [
-    { label: CLIENT_STATUS_LABEL.lead + "s", value: lead.count ?? 0, href: "/admin/clients?status=lead", tone: "bg-note-yellow" },
-    { label: CLIENT_STATUS_LABEL.prospect + "s", value: prospect.count ?? 0, href: "/admin/clients?status=prospect", tone: "bg-note-blue" },
-    { label: "Active clients", value: active.count ?? 0, href: "/admin/clients?status=active", tone: "bg-note-green" },
     { label: "Open projects", value: openProjects, href: "/admin/projects?open=1", tone: "bg-note-teal" },
     { label: "Due this week", value: dueThisWeek, href: "#due", tone: "bg-white" },
     { label: "Overdue", value: overdue.length, href: "#due", tone: overdue.length ? "bg-mk-red/10" : "bg-white" },
@@ -86,7 +86,15 @@ export default async function DashboardPage() {
     <>
       <PageHeader title="Dashboard" subtitle={`Today is ${fmtDay(today)} (New York time)`} />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {CLIENT_STATUSES.map((s) => (
+          <Link key={s} href={`/admin/clients?status=${s}`} className={`adm-card ${TONE[s] ?? "bg-white"} p-4 transition hover:-translate-y-0.5`}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink/60">{STAGE_COLUMN[s]}</p>
+            <p className="mt-1 font-display text-3xl font-bold tabular-nums">{stageCounts.get(s) ?? 0}</p>
+          </Link>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-3">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className={`adm-card ${s.tone} p-4 transition hover:-translate-y-0.5`}>
             <p className="text-xs font-semibold uppercase tracking-wide text-ink/60">{s.label}</p>

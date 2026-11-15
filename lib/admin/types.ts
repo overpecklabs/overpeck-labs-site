@@ -1,13 +1,17 @@
 // Hand-written row types for the admin back end (public schema). Statuses match the DB CHECK constraints.
 
-export const CLIENT_STATUSES = ["lead", "prospect", "active", "paused", "past"] as const;
+/** Pipeline stages, in board order. These are the only statuses the admin writes. */
+export const CLIENT_STATUSES = ["prospect", "lead", "hot_lead", "client", "archived"] as const;
+/** Old values the DB still allows (until the migration runs). Read-only: mapped via normalizeStage(). */
+export const LEGACY_CLIENT_STATUSES = ["active", "paused", "past"] as const;
 export const PROJECT_TYPES = ["website", "workflow", "tracking", "ai", "marketing", "other"] as const;
 export const PROJECT_STATUSES = ["discovery", "mockup", "design", "build", "review", "launched", "maintenance", "on_hold"] as const;
 export const DELIVERABLE_STATUSES = ["todo", "in_progress", "waiting_client", "done"] as const;
 export const CHANNELS = ["call", "sms", "email", "meeting", "note"] as const;
 export const DIRECTIONS = ["in", "out"] as const;
 
-export type ClientStatus = (typeof CLIENT_STATUSES)[number];
+export type ClientStage = (typeof CLIENT_STATUSES)[number];
+export type ClientStatus = ClientStage | (typeof LEGACY_CLIENT_STATUSES)[number];
 export type ProjectType = (typeof PROJECT_TYPES)[number];
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 export type DeliverableStatus = (typeof DELIVERABLE_STATUSES)[number];
@@ -27,6 +31,8 @@ export type Client = {
   google_profile: string | null;
   /** Slug of their private demo page (/demo/{slug}); demo_views link to the client through it. */
   demo_slug: string | null;
+  board_position: number | null;
+  status_changed_at: string | null;
   status: ClientStatus;
   source: string | null;
   notes: string | null;

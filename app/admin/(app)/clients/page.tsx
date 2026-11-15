@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Badge, DbError, Empty, PageHeader } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { fmtDate, telHref } from "@/lib/admin/format";
-import { CLIENT_STATUS_LABEL } from "@/lib/admin/labels";
-import { CLIENT_STATUSES, type Client, type ClientStatus } from "@/lib/admin/types";
+import { CLIENT_STATUS_LABEL, STAGE_LABEL, statusesForStage } from "@/lib/admin/labels";
+import { CLIENT_STATUSES, type Client, type ClientStage } from "@/lib/admin/types";
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -19,7 +19,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: SP }
   const { supabase } = await requireAdmin();
   const sp = await searchParams;
   const q = clean(one(sp.q));
-  const status = (CLIENT_STATUSES as readonly string[]).includes(one(sp.status)) ? (one(sp.status) as ClientStatus) : "";
+  const status = (CLIENT_STATUSES as readonly string[]).includes(one(sp.status)) ? (one(sp.status) as ClientStage) : "";
   const industry = one(sp.industry).slice(0, 100);
   const sort = ["name", "last"].includes(one(sp.sort)) ? one(sp.sort) : "newest";
 
@@ -29,7 +29,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: SP }
     .order("occurred_at", { referencedTable: "communications", ascending: false })
     .limit(1, { referencedTable: "communications" })
     .limit(1000);
-  if (status) query = query.eq("status", status);
+  if (status) query = query.in("status", statusesForStage(status));
   if (industry) query = query.eq("industry", industry);
   if (q) {
     const like = `%${q}%`;
@@ -82,7 +82,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: SP }
             <option value="">All</option>
             {CLIENT_STATUSES.map((s) => (
               <option key={s} value={s}>
-                {CLIENT_STATUS_LABEL[s]}
+                {STAGE_LABEL[s]}
               </option>
             ))}
           </select>
