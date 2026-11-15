@@ -36,8 +36,8 @@ export const CONTACT_OPTIONS: { key: ServiceKey; label: string }[] = [
   ...SERVICES.map((s) => ({ key: s.key, label: s.name })),
 ];
 
-export const PHONE_DISPLAY = "(201) 800-4379";
-export const PHONE_TEL = "+12018004379";
+export const PHONE_DISPLAY = "(201) 949-7695";
+export const PHONE_TEL = "+12019497695";
 
 /** Ask the contact form to pre-check these options. */
 export function prefillContact(keys: ServiceKey[]) {

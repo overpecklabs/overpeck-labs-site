@@ -14,4 +14,4 @@ export function getSupabase(): SupabaseClient {
   return client;
 }
 
-export const CALL_US = "Please call (201) 800-4379.";
+export const CALL_US = "Please call (201) 949-7695.";
