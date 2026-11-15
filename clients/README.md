@@ -22,8 +22,10 @@ clients/
 
 1. Copy `clients/_template` to `clients/{slug}`. The slug is the business name, lowercase and
    hyphenated ("Mains and drains" -> `mains-and-drains`).
-2. Fill in `demo/data.ts` (set `slug` to the folder name) and replace every `[PLACEHOLDER]`.
-   Use only true details: no invented reviews, awards, licenses, years or stats.
+2. Fill in `demo/data.ts` (set `slug` to the folder name) and replace every `[PLACEHOLDER]` with finished,
+   specific copy: the demo must look done. Real facts as-is; unknown facts (rates, license, insurance, years,
+   stats) get natural typical wording plus `sample: true` (shows a tiny "sample" marker). Write 6-8 sample
+   reviews (one `<SampleTag />` on the heading) and 8-10 FAQs. See `components/demos/sample.tsx`.
 3. Build the homepage in `demo/page-content.tsx`. Keep forms display-only (no network requests).
 4. Put the logo and images in `assets/`. `npm run dev` and `npm run build` copy them to
    `public/demos/{slug}/` (`npm run demo-assets` does it on demand). Reference them as
@@ -45,7 +47,7 @@ clients/
      Needs `PEXELS_API_KEY` (or `UNSPLASH_ACCESS_KEY`) in `.env.local`. No identifiable people presented
      as the business's staff, no other companies' logos or branded vehicles. AI-generated images only if no
      fitting stock photo exists, marked "AI-generated" in CREDITS.md. Put the paths in `data.photos` and
-     render every image with `<DemoImage>` (adds the "Placeholder photo" tag; lazy unless `priority`).
+     render every image with `<DemoImage>` (lazy unless `priority`).
    - **Motion:** use `@/components/demos/motion`: `MotionRoot`, `StickyHeader`, `HeroIntro`/`HeroItem`,
      `HeroImage`, `Reveal`, `Stagger`/`StaggerItem`, `CountUp` (true numbers only) and the `demo-lift` class.
      They respect prefers-reduced-motion and animate transform/opacity only.

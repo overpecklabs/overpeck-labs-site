@@ -108,7 +108,7 @@ export function StickyHeader({
 
 /* ---------- reveal ---------- */
 
-type Tag = "div" | "section" | "article" | "li" | "ul" | "ol" | "figure" | "header" | "p" | "h2";
+type Tag = "div" | "section" | "article" | "li" | "ul" | "ol" | "figure" | "header" | "p" | "h2" | "h3";
 
 export function Reveal({ children, className, delay = 0, as = "div", y = 24 }: { children: ReactNode; className?: string; delay?: number; as?: Tag; y?: number }) {
   const reduce = useReducedMotion();

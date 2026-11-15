@@ -3,21 +3,24 @@
 import { useState } from "react";
 import { data } from "./data";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag } from "@/components/demos/sample";
 
 /*
- * TEMPLATE homepage. Copy this folder to clients/{slug}/ and make it this client's own:
- * restyle it, add sections, swap the placeholders. Forms stay display-only (no network calls).
+ * TEMPLATE homepage. Copy this folder to clients/{slug}/ and make it this client's own: restyle it, add
+ * sections, and fill data.ts with finished copy. Forms stay display-only (no network calls).
  * The /demo route already adds the "Free homepage mockup" banner, noindex and the view tracker.
  *
- * Photos: every image goes through <DemoImage> (next/image + "Placeholder photo" tag). Fill data.photos
- * with stock photos downloaded via `npm run demo-photos` (credits land in assets/CREDITS.md).
- * Motion: use the shared components from @/components/demos/motion (see that file's header).
+ * Finished look: no brackets or "placeholder" text on the page. Unknown facts get <SampleMark />,
+ * reviews get one <SampleTag /> on the heading, and the footer has <PreviewNote />.
+ * Photos: <DemoImage> (stock photos via `npm run demo-photos`, credits in assets/CREDITS.md).
+ * Motion: the shared components from @/components/demos/motion.
  */
 
 const DEMO_MSG = "Demo only, this form isn't connected yet.";
 
 export default function DemoHomepage() {
   const [sent, setSent] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const c = data.colors;
   const ph = data.photos;
   return (
@@ -66,21 +69,17 @@ export default function DemoHomepage() {
           </HeroIntro>
         </section>
 
-        {/* Count-up stats: TRUE numbers only (e.g. number of services). Never invent stats. */}
         <section aria-label="Highlights" className="border-b border-slate-100 bg-slate-50">
-          <Stagger as="ul" className="mx-auto grid max-w-4xl grid-cols-2 gap-px px-4 py-4 text-center sm:px-6">
-            <StaggerItem as="li" className="py-2">
-              <span className="block text-2xl font-extrabold" style={{ color: c.primary }}>
-                <CountUp to={data.services.length} />
-              </span>
-              <span className="text-sm text-slate-600">services</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="py-2">
-              <span className="block text-2xl font-extrabold" style={{ color: c.primary }}>
-                {data.town}
-              </span>
-              <span className="text-sm text-slate-600">based</span>
-            </StaggerItem>
+          <Stagger as="ul" className="mx-auto grid max-w-4xl grid-cols-2 gap-px px-4 py-4 text-center sm:px-6 md:grid-cols-4">
+            {data.stats.map((st) => (
+              <StaggerItem key={st.label} as="li" className="py-2">
+                <span className="block text-2xl font-extrabold" style={{ color: c.primary }}>
+                  {st.value !== undefined ? <CountUp to={st.value} suffix={st.suffix ?? ""} /> : st.text}
+                  {st.sample && <SampleMark className="text-slate-500" />}
+                </span>
+                <span className="text-sm text-slate-600">{st.label}</span>
+              </StaggerItem>
+            ))}
           </Stagger>
         </section>
 
@@ -104,15 +103,37 @@ export default function DemoHomepage() {
         </section>
 
         <section className="px-4 py-16 sm:px-6">
-          <div className="mx-auto grid max-w-6xl items-center gap-6 md:grid-cols-2">
+          <div className="mx-auto grid max-w-6xl items-start gap-8 md:grid-cols-2">
             <Reveal>
               <DemoImage photo={ph.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 768px) 50vw, 100vw" />
+              <h2 className="mt-6 text-2xl font-extrabold">{data.about.title}</h2>
+              <p className="mt-3 text-slate-600">{data.about.body}</p>
             </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="text-3xl font-extrabold">Why choose us</h2>
-              <p className="mt-3 text-slate-600">[PLACEHOLDER] What really sets this business apart (true details only).</p>
-            </Reveal>
+            <Stagger className="grid gap-4">
+              {data.whyUs.map((w) => (
+                <StaggerItem key={w.title} className="demo-lift rounded-2xl border border-slate-200 p-6">
+                  <h3 className="text-lg font-bold">
+                    {w.title}
+                    {w.sample && <SampleMark className="text-slate-500" />}
+                  </h3>
+                  <p className="mt-2 text-slate-600">{w.body}</p>
+                </StaggerItem>
+              ))}
+            </Stagger>
           </div>
+          <Stagger as="ol" className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">
+            {data.process.map((st, i) => (
+              <StaggerItem key={st.title} as="li" className="flex gap-4 rounded-2xl bg-slate-50 p-5">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-bold text-white" style={{ background: c.primary }}>
+                  {i + 1}
+                </span>
+                <span>
+                  <span className="block font-bold">{st.title}</span>
+                  <span className="block text-sm text-slate-600">{st.body}</span>
+                </span>
+              </StaggerItem>
+            ))}
+          </Stagger>
         </section>
 
         <section id="gallery" className="bg-slate-50 px-4 py-16 sm:px-6">
@@ -130,9 +151,40 @@ export default function DemoHomepage() {
 
         <section className="px-4 py-16 sm:px-6">
           <Reveal as="h2" className="text-center text-3xl font-extrabold">
-            Sample reviews (placeholder)
+            What customers say <SampleTag className="ml-1 text-slate-500" />
           </Reveal>
-          <p className="mt-2 text-center text-slate-500">[PLACEHOLDER] These are placeholders, not real reviews.</p>
+          <div className="mt-4 text-center">
+            <RatingSummary reviews={data.reviews} color={c.accent} />
+          </div>
+          <ReviewGrid reviews={data.reviews} color={c.accent} cardClassName="bg-white border-slate-200" />
+        </section>
+
+        <section id="faq" className="bg-slate-50 px-4 py-16 sm:px-6">
+          <Reveal as="h2" className="text-center text-3xl font-extrabold">
+            Frequently asked questions
+          </Reveal>
+          <div className="mx-auto mt-8 max-w-3xl divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
+            {data.faqs.map((f, i) => {
+              const open = openFaq === i;
+              return (
+                <div key={f.q}>
+                  <h3>
+                    <button type="button" aria-expanded={open} aria-controls={`tpl-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold">
+                      {f.q}
+                      <span aria-hidden>{open ? "−" : "+"}</span>
+                    </button>
+                  </h3>
+                  {open && (
+                    <p id={`tpl-faq-${i}`} className="px-5 pb-5 text-slate-600">
+                      {f.a}
+                      {f.sample && <SampleMark className="text-slate-500" />}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="mx-auto mt-8 max-w-3xl text-center text-slate-600">{data.areaBlurb}</p>
         </section>
 
         <section id="quote" className="px-4 py-16 sm:px-6">
@@ -144,7 +196,8 @@ export default function DemoHomepage() {
                 setSent(true);
               }}
             >
-              <h2 className="text-3xl font-extrabold">Get a free quote</h2>
+              <h2 className="text-3xl font-extrabold">{data.ctaTitle}</h2>
+              <p className="text-slate-600">{data.ctaBody}</p>
               <label className="block text-sm font-semibold">
                 Name
                 <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-3" autoComplete="name" />
@@ -169,8 +222,13 @@ export default function DemoHomepage() {
       <footer className="px-4 py-10 text-sm text-white/70 sm:px-6" style={{ background: c.dark }}>
         <div className="mx-auto max-w-6xl">
           <p className="text-lg font-bold text-white">{data.businessName}</p>
+          <p className="mt-1">{data.footerBlurb}</p>
           {data.phone && <p className="mt-1">{data.phone.display}</p>}
           <p className="mt-1">{data.serviceArea}</p>
+          <div className="mt-6 flex flex-wrap justify-between gap-2 border-t border-white/10 pt-4 text-xs text-white/40">
+            <p>© {data.businessName}. All rights reserved.</p>
+            <PreviewNote />
+          </div>
         </div>
       </footer>
     </MotionRoot>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { data } from "./data";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag } from "@/components/demos/sample";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Paws and Tails (dog sitting) homepage mockup. Display-only: no form sends anything anywhere. */
@@ -39,7 +40,7 @@ function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
 const PHONE_D = "M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z";
 const TEXT_D = "M4 5h16v11H8l-4 4z";
 
-function Head({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+function Head({ eyebrow, title, sub }: { eyebrow: string; title: React.ReactNode; sub?: React.ReactNode }) {
   return (
     <Reveal className="mx-auto max-w-2xl text-center">
       <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: C.primary }}>
@@ -300,39 +301,24 @@ export default function PawsAndTails() {
           </div>
         </section>
 
-        {/* quick facts (true details only) */}
+        {/* quick facts */}
         <section aria-label="Highlights" className="border-y border-stone-200/70 bg-white">
           <Stagger as="ul" className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-3 text-center sm:px-6 md:grid-cols-4">
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
-                <CountUp to={data.services.length} />
-              </span>
-              <span className="text-sm font-semibold text-stone-600">ways we care for your dog</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
-                Local
-              </span>
-              <span className="text-sm font-semibold text-stone-600">based in Ridgefield Park</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
-                Text
-              </span>
-              <span className="text-sm font-semibold text-stone-600">or call to book</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
-                At home
-              </span>
-              <span className="text-sm font-semibold text-stone-600">care in your own home</span>
-            </StaggerItem>
+            {data.stats.map((st) => (
+              <StaggerItem key={st.label} as="li" className="px-2 py-3">
+                <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
+                  {"value" in st && st.value !== undefined ? <CountUp to={st.value} /> : st.text}
+                  {"sample" in st && st.sample && <SampleMark className="text-stone-500" />}
+                </span>
+                <span className="text-sm font-semibold text-stone-600">{st.label}</span>
+              </StaggerItem>
+            ))}
           </Stagger>
         </section>
 
         {/* services */}
         <section id="services" className="scroll-mt-16 bg-white px-4 py-16 sm:px-6 md:py-24">
-          <Head eyebrow="Services" title="Care that fits your dog's routine" sub="Suggested services: [Placeholder: confirm which of these Paws and Tails offers]" />
+          <Head eyebrow="Services" title="Care that fits your dog's routine" sub="Flexible, at-home care for busy days, weekends away and everything in between." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {data.services.map((s, i) => (
               <StaggerItem key={s.title} as="article" className="demo-lift overflow-hidden rounded-3xl border border-stone-200 bg-[#fffaf3]">
@@ -343,26 +329,54 @@ export default function PawsAndTails() {
                   </span>
                   <h3 className="mt-4 text-lg font-extrabold">{s.title}</h3>
                   <p className="mt-2 text-[15px] leading-relaxed text-stone-600">{s.body}</p>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-stone-400">Suggested service</p>
                 </div>
               </StaggerItem>
             ))}
           </Stagger>
         </section>
 
-        {/* why us (placeholder) */}
+        {/* about + why us */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
-          <Head eyebrow="Why Paws and Tails" title="Why pet parents choose us" sub="[Placeholder: replace these points with what makes Paws and Tails special.]" />
-          <div className="mx-auto mt-10 grid max-w-6xl items-center gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <Head eyebrow="Why Paws and Tails" title="Why pet parents choose us" sub="Reliable, gentle care from someone local, with your dog's routine at the center of everything." />
+          <div className="mx-auto mt-10 grid max-w-6xl items-start gap-8 lg:grid-cols-[1fr_1.15fr]">
             <Reveal>
               <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+              <h3 className="mt-6 text-2xl font-extrabold" style={{ color: C.dark }}>
+                {data.about.title}
+              </h3>
+              <p className="mt-3 text-[16px] leading-relaxed text-stone-600">{data.about.body}</p>
             </Reveal>
-            <Stagger className="grid gap-4">
-              {["[Placeholder: your experience with dogs]", "[Placeholder: how you keep owners updated]", "[Placeholder: safety / insurance details]"].map((t) => (
-                <StaggerItem key={t} className="demo-lift rounded-3xl border-2 border-dashed border-stone-300 bg-white/60 p-6">
+            <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              {data.whyUs.map((w) => (
+                <StaggerItem key={w.title} className="demo-lift rounded-3xl border border-stone-200 bg-white p-6">
                   <Paw className="h-6 w-6" fill={C.accent} />
-                  <h3 className="mt-3 text-lg font-extrabold text-stone-700">{t}</h3>
-                  <p className="mt-2 text-[15px] text-stone-500">[Placeholder: one or two sentences backing this up.]</p>
+                  <h3 className="mt-3 text-lg font-extrabold" style={{ color: C.dark }}>
+                    {w.title}
+                    {"sample" in w && w.sample && <SampleMark className="text-stone-500" />}
+                  </h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-stone-600">{w.body}</p>
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+
+          {/* how it works */}
+          <div className="mx-auto mt-16 max-w-5xl">
+            <Reveal as="h3" className="text-center text-2xl font-extrabold" >
+              How it works
+            </Reveal>
+            <Stagger as="ol" className="mt-8 grid gap-4 md:grid-cols-3">
+              {data.process.map((st, i) => (
+                <StaggerItem key={st.title} as="li" className="demo-lift flex gap-4 rounded-3xl border border-stone-200 bg-white p-6">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-extrabold text-white" style={{ background: C.primary }}>
+                    {i + 1}
+                  </span>
+                  <span>
+                    <span className="block font-bold" style={{ color: C.dark }}>
+                      {st.title}
+                    </span>
+                    <span className="mt-1 block text-[15px] text-stone-600">{st.body}</span>
+                  </span>
                 </StaggerItem>
               ))}
             </Stagger>
@@ -371,7 +385,7 @@ export default function PawsAndTails() {
 
         {/* gallery */}
         <section id="gallery" className="px-4 pb-16 sm:px-6 md:pb-24">
-          <Head eyebrow="Gallery" title="Happy dogs, happy owners" sub="Stock photos for the mockup. Your own photos of the dogs you care for go here." />
+          <Head eyebrow="Gallery" title="A day in the life" sub="Walks, naps, playtime and plenty of belly rubs." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
             {PH.gallery.map((ph, i) => (
               <StaggerItem key={i}>
@@ -390,18 +404,20 @@ export default function PawsAndTails() {
           </div>
         </section>
 
-        {/* reviews (placeholder) */}
+        {/* reviews (sample) */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
-          <Head eyebrow="Reviews" title="Sample reviews (placeholder)" sub="These are placeholders, not real reviews. Real reviews from pet parents will go here." />
-          <div className="mx-auto mt-10 grid max-w-6xl gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((n) => (
-              <figure key={n} className="rounded-3xl border-2 border-dashed border-stone-300 bg-white p-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Sample review {n}</p>
-                <blockquote className="mt-3 text-[15px] leading-relaxed text-stone-500">[Placeholder: a real customer review will appear here.]</blockquote>
-                <figcaption className="mt-4 text-sm font-semibold text-stone-400">[Customer name] &amp; [dog&apos;s name]</figcaption>
-              </figure>
-            ))}
+          <Head
+            eyebrow="Reviews"
+            title={
+              <>
+                Happy dogs, happy owners <SampleTag className="ml-1 text-stone-500" />
+              </>
+            }
+          />
+          <div className="mt-4 text-center" style={{ color: C.dark }}>
+            <RatingSummary reviews={data.reviews} color={C.accent} />
           </div>
+          <ReviewGrid reviews={data.reviews} color={C.accent} cardClassName="bg-white border-stone-200 text-stone-700" />
         </section>
 
         {/* service area */}
@@ -414,7 +430,10 @@ export default function PawsAndTails() {
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight" style={{ color: C.dark }}>
                 Based in Ridgefield Park
               </h2>
-              <p className="mt-3 text-[16px] leading-relaxed text-stone-600">We care for dogs in Ridgefield Park, NJ and nearby Bergen County towns. Not sure if you&apos;re in range? Call or text and we&apos;ll let you know.</p>
+              <p className="mt-3 text-[16px] leading-relaxed text-stone-600">
+                We care for dogs in Ridgefield Park and nearby towns like {data.areaTowns}
+                <SampleMark className="text-stone-500" />. Not sure if you&apos;re in range? Call or text and we&apos;ll let you know.
+              </p>
               <a href={data.sms} className="mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white" style={{ background: C.primary }}>
                 <Icon d={TEXT_D} className="h-4 w-4" />
                 Text to check your area
@@ -454,6 +473,7 @@ export default function PawsAndTails() {
                   {open && (
                     <p id={`pt-faq-${i}`} className="px-5 pb-5 text-[15px] leading-relaxed text-stone-600 sm:px-6">
                       {f.a}
+                      {f.sample && <SampleMark className="text-stone-500" />}
                     </p>
                   )}
                 </div>
@@ -466,10 +486,10 @@ export default function PawsAndTails() {
         <section className="px-4 py-16 sm:px-6 md:py-20">
           <div className="mx-auto max-w-4xl rounded-[2rem] px-6 py-12 text-center text-white sm:px-12" style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.dark})` }}>
             <Paw className="mx-auto h-10 w-10" fill={C.accent} />
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Going away soon?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/80">Give us a call or send a text, and let&apos;s make sure your dog is in good hands.</p>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{data.ctaTitle}</h2>
+            <p className="mx-auto mt-3 max-w-xl text-white/80">{data.ctaBody}</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href={phone.tel} className="rounded-full px-7 py-4 font-extrabold text-stone-900" style={{ background: C.accent }}>
+              <a href={phone.tel} className="demo-lift rounded-full px-7 py-4 font-extrabold text-stone-900" style={{ background: C.accent }}>
                 Call {phone.display}
               </a>
               <a href={data.sms} className="rounded-full border-2 border-white/40 px-7 py-4 font-bold hover:bg-white/10">
@@ -488,7 +508,11 @@ export default function PawsAndTails() {
               <Paw className="h-5 w-5" fill={C.accent} />
               {data.businessName}
             </p>
-            <p className="mt-2 text-sm">Dog sitting in {data.town}, NJ.</p>
+            <p className="mt-2 text-sm">{data.footerBlurb}</p>
+            <p className="mt-2 text-sm">
+              Fully insured
+              <SampleMark className="text-white/60" />
+            </p>
           </div>
           <div className="text-sm">
             <p className="font-bold text-white">Contact</p>
@@ -504,7 +528,10 @@ export default function PawsAndTails() {
             <p className="mt-2">{data.serviceArea}</p>
           </div>
         </div>
-        <p className="mx-auto mt-10 max-w-6xl border-t border-white/10 pt-6 text-xs text-white/40">© {data.businessName}. All rights reserved.</p>
+        <div className="mx-auto mt-10 flex max-w-6xl flex-wrap justify-between gap-2 border-t border-white/10 pt-6 text-xs text-white/40">
+          <p>© {data.businessName}. All rights reserved.</p>
+          <PreviewNote />
+        </div>
       </footer>
 
       {/* sticky mobile call/text bar */}

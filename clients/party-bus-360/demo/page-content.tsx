@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { data } from "./data";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag } from "@/components/demos/sample";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Party Bus 360 homepage mockup. Display-only: no form sends anything anywhere. */
@@ -38,7 +39,7 @@ function TextIcon({ className = "h-5 w-5" }: { className?: string }) {
   return <Icon className={className} d="M4 5h16v11H8l-4 4z" />;
 }
 
-function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: React.ReactNode; sub?: React.ReactNode }) {
   return (
     <Reveal className="mx-auto max-w-2xl text-center">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7c3aed]">{eyebrow}</p>
@@ -173,8 +174,9 @@ function QuoteForm() {
               <option value="" disabled>
                 Choose a vehicle
               </option>
-              <option>[Placeholder: Party bus name]</option>
-              <option>[Placeholder: Limo name]</option>
+              {data.vehicles.map((v) => (
+                <option key={v}>{v}</option>
+              ))}
             </select>
           </div>
         )}
@@ -356,7 +358,7 @@ export default function PartyBus360() {
                 </h1>
               </HeroItem>
               <HeroItem>
-                <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">Weddings, nightlife and corporate events. Get an instant quote online and book your ride in minutes.</p>
+                <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{data.heroSub}</p>
               </HeroItem>
               <HeroItem>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -385,26 +387,15 @@ export default function PartyBus360() {
         {/* quick facts strip (all true details) */}
         <section aria-label="Highlights" className="border-b border-slate-100 bg-slate-50">
           <Stagger as="ul" className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-3 text-center sm:px-6 md:grid-cols-4">
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold text-[#7c3aed]">
-                <CountUp to={21} />
-              </span>
-              <span className="text-sm font-semibold text-slate-600">NJ counties served</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold text-[#7c3aed]">
-                <CountUp to={data.services.length} />
-              </span>
-              <span className="text-sm font-semibold text-slate-600">kinds of events</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold text-[#7c3aed]">Instant</span>
-              <span className="text-sm font-semibold text-slate-600">online quotes</span>
-            </StaggerItem>
-            <StaggerItem as="li" className="px-2 py-3">
-              <span className="block text-2xl font-extrabold text-[#7c3aed]">Text</span>
-              <span className="text-sm font-semibold text-slate-600">or call us</span>
-            </StaggerItem>
+            {data.stats.map((st) => (
+              <StaggerItem key={st.label} as="li" className="px-2 py-3">
+                <span className="block text-2xl font-extrabold text-[#7c3aed]">
+                  {"value" in st && st.value !== undefined ? <CountUp to={st.value} suffix={"suffix" in st ? st.suffix : ""} /> : st.text}
+                  {"sample" in st && st.sample && <SampleMark className="text-slate-500" />}
+                </span>
+                <span className="text-sm font-semibold text-slate-600">{st.label}</span>
+              </StaggerItem>
+            ))}
           </Stagger>
         </section>
 
@@ -464,53 +455,62 @@ export default function PartyBus360() {
           </div>
         </section>
 
-        {/* why us (placeholder) */}
+        {/* why us + about */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
-          <SectionHead eyebrow="Why Party Bus 360" title="Why groups ride with us" sub="[Placeholder: replace these points with what really sets Party Bus 360 apart.]" />
-          <div className="mx-auto mt-10 grid max-w-6xl items-center gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <SectionHead eyebrow="Why Party Bus 360" title="Why groups ride with us" sub="Simple booking, one ride for everyone, and a night your group will be talking about for weeks." />
+          <div className="mx-auto mt-10 grid max-w-6xl items-start gap-8 lg:grid-cols-[1fr_1.15fr]">
             <Reveal>
               <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+              <h3 className="mt-6 text-2xl font-extrabold">{data.about.title}</h3>
+              <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{data.about.body}</p>
             </Reveal>
-            <Stagger className="grid gap-4">
-              {["[Placeholder: your fleet]", "[Placeholder: your drivers]", "[Placeholder: your service promise]"].map((t) => (
-                <StaggerItem key={t} className="demo-lift rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 p-6">
-                  <h3 className="text-lg font-extrabold text-slate-700">{t}</h3>
-                  <p className="mt-2 text-[15px] text-slate-500">[Placeholder: one or two sentences backing this up.]</p>
+            <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              {data.whyUs.map((w) => (
+                <StaggerItem key={w.title} className="demo-lift rounded-3xl border border-slate-200 bg-white p-6">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#ede9fe] text-[#7c3aed]" aria-hidden>
+                    <Icon d="M5 12l5 5L20 7" className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold">
+                    {w.title}
+                    {"sample" in w && w.sample && <SampleMark className="text-slate-500" />}
+                  </h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{w.body}</p>
                 </StaggerItem>
               ))}
             </Stagger>
           </div>
         </section>
 
-        {/* gallery (placeholder tiles) */}
+        {/* gallery */}
         <section id="gallery" className="scroll-mt-16 bg-[#0b1020] px-4 py-16 text-white sm:px-6 md:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#fbbf24]">Gallery</p>
             <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Inside the ride</h2>
-            <p className="mt-3 text-white/65">Real photos of your buses, limos and events will replace these.</p>
+            <p className="mt-3 text-white/65">{data.gallerySub}</p>
           </div>
           <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
-            {PH.gallery.map((ph, i) => (
+            {PH.gallery.slice(0, 5).map((ph, i) => (
               <StaggerItem key={i} className={i === 0 ? "col-span-2 row-span-2" : ""}>
                 <DemoImage photo={ph} className={`demo-lift rounded-2xl ${i === 0 ? "aspect-square" : "aspect-[4/3]"}`} sizes={i === 0 ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"} />
               </StaggerItem>
             ))}
           </Stagger>
-          <p className="mx-auto mt-4 max-w-6xl text-center text-xs text-white/45">Stock photos for the mockup. Your own fleet and event photos go here.</p>
         </section>
 
-        {/* reviews (placeholder) */}
+        {/* reviews (sample) */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
-          <SectionHead eyebrow="Reviews" title="Sample reviews (placeholder)" sub="These are placeholders, not real reviews. Connect your Google reviews here." />
-          <div className="mx-auto mt-10 grid max-w-6xl gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((n) => (
-              <figure key={n} className="rounded-3xl border-2 border-dashed border-slate-300 bg-white p-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Sample review {n}</p>
-                <blockquote className="mt-3 text-[15px] leading-relaxed text-slate-500">[Placeholder: a real customer review will appear here.]</blockquote>
-                <figcaption className="mt-4 text-sm font-semibold text-slate-400">[Customer name], [event type]</figcaption>
-              </figure>
-            ))}
+          <SectionHead
+            eyebrow="Reviews"
+            title={
+              <>
+                Groups love the ride <SampleTag className="ml-1 text-slate-500" />
+              </>
+            }
+          />
+          <div className="mt-4 text-center text-[#0b1020]">
+            <RatingSummary reviews={data.reviews} color="#fbbf24" />
           </div>
+          <ReviewGrid reviews={data.reviews} color="#fbbf24" cardClassName="bg-white border-slate-200 text-slate-700" />
         </section>
 
         {/* cost splitter + service area */}
@@ -520,7 +520,7 @@ export default function PartyBus360() {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7c3aed]">Service area</p>
               <h3 className="mt-2 text-2xl font-extrabold">Bergen County based. All of New Jersey served.</h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-slate-600">Wherever your night starts in New Jersey, tell us your pickup town and we&apos;ll quote your ride instantly.</p>
+              <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{data.areaBlurb}</p>
               <div className="relative mt-6 grid aspect-[16/10] place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#ede9fe] to-[#e0f2fe]">
                 <svg viewBox="0 0 120 200" className="h-[85%] w-auto" aria-hidden>
                   <path
@@ -564,6 +564,7 @@ export default function PartyBus360() {
                   {open && (
                     <p id={`pb-faq-${i}`} className="px-5 pb-5 text-[15px] leading-relaxed text-slate-600 sm:px-6">
                       {f.a}
+                      {f.sample && <SampleMark className="text-slate-500" />}
                     </p>
                   )}
                 </div>
@@ -575,10 +576,10 @@ export default function PartyBus360() {
         {/* closing CTA */}
         <section className="px-4 pb-16 sm:px-6 md:pb-24">
           <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#1e1b4b] via-[#4c1d95] to-[#0c4a6e] px-6 py-12 text-center text-white sm:px-12">
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Ready to roll?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/75">Get your instant quote now, or call or text us and we&apos;ll help plan your ride.</p>
+            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{data.ctaTitle}</h2>
+            <p className="mx-auto mt-3 max-w-xl text-white/75">{data.ctaBody}</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href="#quote" className="rounded-full bg-[#fbbf24] px-7 py-4 font-extrabold text-[#0b1020] hover:bg-[#fcd34d]">
+              <a href="#quote" className="demo-lift rounded-full bg-[#fbbf24] px-7 py-4 font-extrabold text-[#0b1020] hover:bg-[#fcd34d]">
                 Get a free quote
               </a>
               <a href={TEL} className="rounded-full border-2 border-white/30 px-7 py-4 font-bold hover:bg-white/10">
@@ -596,7 +597,7 @@ export default function PartyBus360() {
             <p className="text-xl font-extrabold text-white">
               Party Bus <span className="text-[#a78bfa]">360</span>
             </p>
-            <p className="mt-2 text-sm">Party bus and limo service for weddings, nightlife and corporate events.</p>
+            <p className="mt-2 text-sm">{data.footerBlurb}</p>
           </div>
           <div className="text-sm">
             <p className="font-bold text-white">Contact</p>
@@ -611,10 +612,16 @@ export default function PartyBus360() {
             <p className="font-bold text-white">Service area</p>
             <p className="mt-2">Based in Bergen County, NJ</p>
             <p>Serving all of New Jersey</p>
-            <p className="mt-2 text-white/45">[Placeholder: license / DOT number]</p>
+            <p className="mt-2">
+              Fully licensed &amp; insured
+              <SampleMark className="text-white/60" />
+            </p>
           </div>
         </div>
-        <p className="mx-auto mt-10 max-w-6xl border-t border-white/10 pt-6 text-xs text-white/40">© Party Bus 360. All rights reserved.</p>
+        <div className="mx-auto mt-10 flex max-w-6xl flex-wrap justify-between gap-2 border-t border-white/10 pt-6 text-xs text-white/40">
+          <p>© Party Bus 360. All rights reserved.</p>
+          <PreviewNote />
+        </div>
       </footer>
 
       {/* sticky mobile action bar */}

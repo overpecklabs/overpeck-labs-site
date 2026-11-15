@@ -3,8 +3,8 @@ import Image from "next/image";
 export type DemoPhoto = { src: string; alt: string } | null;
 
 /**
- * A demo photo: next/image filling its box, lazy unless `priority` (the hero), with a subtle
- * "Placeholder photo" tag so the client knows their own photos will replace it.
+ * A demo photo: next/image filling its box, lazy unless `priority` (the hero).
+ * No per-photo label by default (the footer's <PreviewNote /> covers it); pass `tag` to show one.
  * The parent sets the size (an aspect-ratio box, or `absolute inset-0`), so there's no layout shift.
  * With no photo yet, it shows a soft gradient panel instead.
  */
@@ -14,7 +14,7 @@ export default function DemoImage({
   priority = false,
   className = "",
   imgClassName = "object-cover",
-  tag = true,
+  tag = false,
   tagPosition = "bottom-right",
 }: {
   photo: DemoPhoto;

@@ -1,9 +1,15 @@
 import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
+import type { Faq, Review } from "@/components/demos/sample";
 import type { DemoData } from "@/lib/demo-types";
 
 /**
- * TEMPLATE: replace every [PLACEHOLDER]. Use only true details about the business:
- * no invented reviews, awards, licenses, years in business or stats.
+ * TEMPLATE: replace every [PLACEHOLDER] with finished, specific, local-sounding copy. The demo must look done:
+ * no brackets, "TBD" or "placeholder" anywhere on the page.
+ *  - Real facts from the client (name, town, phone, services, what they told us) are used as-is.
+ *  - Anything we don't know (rates, license, insurance, years, capacity, policies, stats) is written naturally
+ *    with typical wording AND flagged `sample: true` so the page shows a tiny <SampleMark />.
+ *  - Reviews are sample reviews: the section heading carries one <SampleTag /> and the summary says
+ *    "from N sample reviews". Never present sample content as real.
  */
 export const data = {
   slug: "_template", // [PLACEHOLDER] lowercase-hyphen business name, same as the folder name
@@ -20,6 +26,37 @@ export const data = {
   ],
   headline: "[PLACEHOLDER hero headline: what they do and where]",
   subhead: "[PLACEHOLDER one supporting sentence]",
+  /** 3-4 points. Unknown facts get sample: true. */
+  whyUs: [
+    { title: "[PLACEHOLDER point]", body: "[PLACEHOLDER 1-2 sentences]" },
+    { title: "[PLACEHOLDER point]", body: "[PLACEHOLDER 1-2 sentences]", sample: true },
+    { title: "[PLACEHOLDER point]", body: "[PLACEHOLDER 1-2 sentences]" },
+  ] as { title: string; body: string; sample?: boolean }[],
+  about: { title: "[PLACEHOLDER About heading]", body: "[PLACEHOLDER 2-4 sentences about the business, true details only]" },
+  /** 3 short steps: how a customer gets started. */
+  process: [
+    { title: "[PLACEHOLDER step]", body: "[PLACEHOLDER one line]" },
+    { title: "[PLACEHOLDER step]", body: "[PLACEHOLDER one line]" },
+    { title: "[PLACEHOLDER step]", body: "[PLACEHOLDER one line]" },
+  ],
+  /** Stats: true numbers, or believable ones flagged sample: true (e.g. "500+ jobs"). */
+  stats: [
+    { value: 3, label: "[PLACEHOLDER e.g. services]" },
+    { value: 500, suffix: "+", label: "[PLACEHOLDER e.g. jobs done]", sample: true },
+  ] as { value?: number; suffix?: string; text?: string; label: string; sample?: boolean }[],
+  areaBlurb: "[PLACEHOLDER service area sentence naming real nearby towns]",
+  ctaTitle: "[PLACEHOLDER closing headline]",
+  ctaBody: "[PLACEHOLDER closing line]",
+  footerBlurb: "[PLACEHOLDER one-line description]",
+  /** 6-8 sample reviews: first name + last initial, Bergen County towns, specific details, varied length, 4-5 stars. */
+  reviews: [
+    { name: "[PLACEHOLDER Jessica M.]", town: "[PLACEHOLDER Paramus]", rating: 5, service: "[PLACEHOLDER service]", text: "[PLACEHOLDER specific, believable review]" },
+  ] satisfies Review[],
+  /** 8-10 complete answers. Unknown facts: natural typical wording + sample: true. */
+  faqs: [
+    { q: "[PLACEHOLDER question]", a: "[PLACEHOLDER answer from real facts]" },
+    { q: "[PLACEHOLDER question about rates]", a: "[PLACEHOLDER typical answer]", sample: true },
+  ] satisfies Faq[],
   logo: null as string | null, // e.g. "/demos/{slug}/logo.png" (file in assets/, copied to public/demos/{slug}/)
   /**
    * [PLACEHOLDER] Stock photos, e.g. { src: "/demos/{slug}/hero.webp", alt: "Plumber's tools on a workbench" }.
