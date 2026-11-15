@@ -19,6 +19,7 @@ export type Demo = {
 };
 
 export const DEMOS: Demo[] = [
+  { slug: "party-bus-360", businessName: "Party Bus 360", load: () => import("@/components/demos/party-bus-360") },
   // { slug: "mains-and-drains", businessName: "Mains and Drains", load: () => import("@/components/demos/mains-and-drains") },
 ];
 
