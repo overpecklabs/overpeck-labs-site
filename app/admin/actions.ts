@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { friendlyError } from "@/lib/admin/errors";
-import { nyLocalToIso } from "@/lib/admin/format";
+import { buildDemoPrompt, logoExt, type LogoLink } from "@/lib/admin/demoPrompt";
+import { fmtDate, nyLocalToIso } from "@/lib/admin/format";
 import { PROJECT_STATUS_LABEL } from "@/lib/admin/labels";
 import {
   CHANNELS,
@@ -15,6 +16,8 @@ import {
   PROJECT_STATUSES,
   PROJECT_TYPES,
   type ActionResult,
+  type Client,
+  type MockupRequest as MockupRequestRow,
   type ProjectStatus,
 } from "@/lib/admin/types";
 
@@ -457,6 +460,67 @@ export async function deleteClientFile(id: string): Promise<ActionResult> {
   if (se) return fail(friendlyError(se, "Couldn't delete the file from storage."));
   const { error } = await supabase.from("client_files").delete().eq("id", pid.data);
   if (error) return fail(friendlyError(error, "Couldn't delete the file."));
+  done();
+  return { ok: true };
+}
+
+// ---------- demo prompt ----------
+
+/** Builds the ready-to-paste Claude Code prompt for a client's demo homepage (server side, admin session). */
+export async function generateDemoPrompt(clientId: string): Promise<{ ok: true; slug: string; prompt: string } | { ok: false; error: string }> {
+  const { supabase } = await requireAdmin();
+  const id = idSchema.safeParse(clientId);
+  if (!id.success) return { ok: false, error: "Invalid client." };
+
+  const { data: client, error } = await supabase.from("clients").select("*").eq("id", id.data).maybeSingle<Client>();
+  if (error) return { ok: false, error: friendlyError(error, "Couldn't load this client.") };
+  if (!client) return { ok: false, error: "Client not found." };
+
+  const [req, calls] = await Promise.all([
+    supabase.from("mockup_requests").select("*").eq("client_id", id.data).order("created_at", { ascending: false }).limit(1).overrideTypes<MockupRequestRow[], { merge: false }>(),
+    supabase
+      .from("call_logs")
+      .select("call_summary, next_step, message_for_mark, start_timestamp, created_at")
+      .eq("client_id", id.data)
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .overrideTypes<{ call_summary: string | null; next_step: string | null; message_for_mark: string | null; start_timestamp: string | number | null; created_at: string }[], { merge: false }>(),
+  ]);
+  if (req.error) return { ok: false, error: friendlyError(req.error, "Couldn't load the mockup request.") };
+  if (calls.error) return { ok: false, error: friendlyError(calls.error, "Couldn't load call logs.") };
+
+  const request = req.data?.[0] ?? null;
+  let logo: LogoLink = null;
+  if (request?.logo_url) {
+    const { data: signed } = await supabase.storage.from("mockup-logos").createSignedUrl(request.logo_url, 60 * 60 * 24);
+    if (signed?.signedUrl) logo = { url: signed.signedUrl, ext: logoExt(request.logo_url) };
+  }
+
+  const { slug, prompt } = buildDemoPrompt({
+    client,
+    request,
+    logo,
+    calls: (calls.data ?? []).map((c) => ({ when: fmtDate(c.created_at), summary: c.call_summary, next_step: c.next_step, message_for_mark: c.message_for_mark })),
+  });
+  return { ok: true, slug, prompt };
+}
+
+/** Logged once the prompt is copied. */
+export async function logDemoPromptCopied(clientId: string): Promise<ActionResult> {
+  const { supabase, email: me } = await requireAdmin();
+  const id = idSchema.safeParse(clientId);
+  if (!id.success) return fail("Invalid client.");
+  const { error } = await supabase.from("communications").insert({
+    client_id: id.data,
+    project_id: null,
+    channel: "note",
+    direction: null,
+    summary: "Demo prompt generated",
+    body: null,
+    occurred_at: new Date().toISOString(),
+    created_by: me,
+  });
+  if (error) return fail(friendlyError(error, "Copied, but couldn't log the note."));
   done();
   return { ok: true };
 }

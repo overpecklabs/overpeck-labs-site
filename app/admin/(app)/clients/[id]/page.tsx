@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteClient, setClientStatus, setDeliverableStatus } from "@/app/admin/actions";
 import Composer from "@/components/admin/Composer";
+import DemoPromptButton from "@/components/admin/DemoPromptButton";
 import FilesPanel from "@/components/admin/FilesPanel";
 import IntakeDetail from "@/components/admin/IntakeDetail";
 import Timeline from "@/components/admin/Timeline";
@@ -102,6 +103,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             Google profile ↗
           </a>
         )}
+        <DemoPromptButton clientId={client.id} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
