@@ -163,3 +163,28 @@ export function ActionButton({
     </span>
   );
 }
+
+/** Copies text to the clipboard and briefly shows "Copied!". */
+export function CopyButton({ text, label = "Copy", className = "adm-btn-ghost !px-3 !py-1 text-xs" }: { text: string; label?: string; className?: string }) {
+  const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          setFailed(false);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch {
+          setFailed(true);
+        }
+      }}
+      aria-live="polite"
+    >
+      {copied ? "Copied!" : failed ? "Copy failed" : label}
+    </button>
+  );
+}

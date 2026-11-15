@@ -76,6 +76,27 @@ export default function ClientForm({ client }: { client?: Client }) {
           <input id="google_profile" name="google_profile" maxLength={500} defaultValue={v("google_profile")} className="adm-input" placeholder="Link to the profile" />
         </div>
         <div>
+          <label className="adm-label" htmlFor="demo_slug">
+            Demo slug
+          </label>
+          <input
+            id="demo_slug"
+            name="demo_slug"
+            maxLength={80}
+            defaultValue={v("demo_slug")}
+            className="adm-input font-mono"
+            placeholder="e.g. mains-and-drains"
+            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            title="Lowercase letters, numbers and hyphens"
+            autoCapitalize="none"
+            spellCheck={false}
+            aria-describedby="demo_slug_hint"
+          />
+          <p id="demo_slug_hint" className="mt-1 text-xs text-ink/55">
+            Their private demo at /demo/&lt;slug&gt;. Views are matched to this client by it.
+          </p>
+        </div>
+        <div>
           <label className="adm-label" htmlFor="source">
             Source
           </label>

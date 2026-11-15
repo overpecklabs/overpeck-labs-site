@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DemoBanner from "@/components/demos/DemoBanner";
+import DemoViewTracker from "@/components/demos/DemoViewTracker";
 import { DEMOS, demoBySlug } from "@/lib/demos";
 
 export const dynamicParams = false;
@@ -31,6 +32,7 @@ export default async function DemoPage({ params }: Props) {
   const { default: Site } = await demo.load();
   return (
     <>
+      <DemoViewTracker slug={demo.slug} />
       <DemoBanner businessName={demo.businessName} />
       <Site />
     </>

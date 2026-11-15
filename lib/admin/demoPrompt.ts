@@ -50,7 +50,7 @@ export function logoExt(path: string): string {
 
 export function buildDemoPrompt({ client, request, calls, logo }: { client: Client; request: MockupRequest | null; calls: CallSummary[]; logo: LogoLink }): { slug: string; prompt: string } {
   const businessName = clean(client.business_name) || clean(request?.business_name) || "the business";
-  const slug = demoSlug(businessName) || "demo";
+  const slug = clean(client.demo_slug) || demoSlug(businessName) || "demo";
   const r = (k: string) => clean(request?.[k]);
   const industry = r("industry") || clean(client.industry);
   const town = r("town") || clean(client.town);
@@ -139,7 +139,7 @@ ${callLines.length ? `\nCALL SUMMARIES\n${callLines.join("\n")}\n` : ""}
 FINISH
 - Run npm run lint and npm run build and fix any errors.
 - Commit with the message "Demo: ${businessName}" and push the demo/${slug} branch to origin.
-- Reply with the Vercel preview URL for /demo/${slug} (the branch preview usually looks like https://overpeck-labs-site-git-demo-${slug}-markqsai-8173.vercel.app/demo/${slug}; confirm the real URL from the Vercel deployment for the branch).
+- Reply with the Vercel preview URL for /demo/${slug} (the branch preview usually looks like https://overpeck-labs-site-git-demo-${slug}-markqsai-8173.vercel.app/demo/${slug}?preview=1; keep ?preview=1 on links you share with Overpeck Labs so our own views aren't counted; confirm the real URL from the Vercel deployment for the branch).
 `;
   return { slug, prompt: prompt.replace(/\n{3,}/g, "\n\n") };
 }

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { deleteClient, setClientStatus, setDeliverableStatus } from "@/app/admin/actions";
 import Composer from "@/components/admin/Composer";
 import DemoPromptButton from "@/components/admin/DemoPromptButton";
+import DemoViews from "@/components/admin/DemoViews";
 import FilesPanel from "@/components/admin/FilesPanel";
 import IntakeDetail from "@/components/admin/IntakeDetail";
 import Timeline from "@/components/admin/Timeline";
@@ -13,7 +14,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { externalHref, fmtDateTime, fmtDay, fmtDuration, nyLocalNow, telHref, todayNY } from "@/lib/admin/format";
 import { CLIENT_STATUS_LABEL, DELIVERABLE_STATUS_LABEL, PROJECT_STATUS_LABEL, PROJECT_TYPE_LABEL } from "@/lib/admin/labels";
 import { CLIENT_STATUSES, type CallLog, type Client, type ContactMessage, type Deliverable, type MockupRequest, type Project } from "@/lib/admin/types";
-import { loadFiles, loadTimeline, signLogos } from "@/lib/admin/views";
+import { loadDemoViews, loadFiles, loadTimeline, signLogos } from "@/lib/admin/views";
 
 export const metadata: Metadata = { title: "Client" };
 
@@ -46,9 +47,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const projectRows = projects.data ?? [];
   const projectNames = new Map(projectRows.map((p) => [p.id, p.name]));
   const projectOptions = projectRows.map((p) => ({ id: p.id, name: p.name }));
-  const [files, logos] = await Promise.all([
+  const [files, logos, demoStats] = await Promise.all([
     loadFiles(supabase, { clientId: id }, projectNames),
     signLogos(supabase, (mockups.data ?? []).map((m) => m.logo_url ?? "")),
+    loadDemoViews(supabase, { clientId: id, slug: client.demo_slug }),
   ]);
 
   const today = todayNY();
@@ -186,6 +188,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         </div>
 
         <div className="space-y-6">
+          <DemoViews slug={client.demo_slug} stats={demoStats} />
+
           <Card title="Info">
             <dl className="grid gap-3">
               <Field label="Contact">{client.contact_name}</Field>
@@ -198,6 +202,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
               <Field label="Status">
                 <Badge value={client.status} label={CLIENT_STATUS_LABEL[client.status] ?? client.status} />
               </Field>
+              <Field label="Demo slug">{client.demo_slug ? <span className="font-mono text-xs">{client.demo_slug}</span> : null}</Field>
               <Field label="Source">{client.source}</Field>
               <Field label="Added">{fmtDateTime(client.created_at)}</Field>
               <Field label="Updated">{fmtDateTime(client.updated_at)}</Field>

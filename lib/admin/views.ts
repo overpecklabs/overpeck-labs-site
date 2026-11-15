@@ -1,7 +1,7 @@
 import "server-only";
 import type { AdminSession } from "./auth";
 import { fmtBytes, fmtDate, fmtDateTime, fmtDuration } from "./format";
-import type { CallLog, ClientFile, Communication } from "./types";
+import type { CallLog, ClientFile, Communication, DemoView } from "./types";
 import type { TimelineItem } from "@/components/admin/Timeline";
 import type { FileItem } from "@/components/admin/FilesPanel";
 
@@ -107,4 +107,70 @@ export async function signLogos(supabase: Sb, paths: string[]): Promise<Map<stri
     if (d.path && d.signedUrl) out.set(d.path, d.signedUrl);
   });
   return out;
+}
+
+export type DemoViewStats = {
+  total: number;
+  sessions: number;
+  last7: number;
+  capped: boolean; // unique sessions / last-7 counted from the newest MAX_VIEW_ROWS rows only
+  recent: DemoView[];
+  error: { message: string; code?: string } | null;
+};
+const MAX_VIEW_ROWS = 2000;
+
+/** Views for one client: rows the trigger linked by client_id, plus any for their slug from before it was set. */
+export async function loadDemoViews(supabase: Sb, { clientId, slug }: { clientId: string; slug: string | null }): Promise<DemoViewStats> {
+  const safeSlug = slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : null;
+  const filter = safeSlug ? `client_id.eq.${clientId},slug.eq.${safeSlug}` : `client_id.eq.${clientId}`;
+  const { data, count, error } = await supabase
+    .from("demo_views")
+    .select("slug, client_id, session_id, referrer, user_agent, device, viewed_at", { count: "exact" })
+    .or(filter)
+    .order("viewed_at", { ascending: false })
+    .limit(MAX_VIEW_ROWS)
+    .overrideTypes<DemoView[], { merge: false }>();
+  const rows = data ?? [];
+  const weekAgo = Date.now() - 7 * 86400000;
+  return {
+    total: count ?? rows.length,
+    sessions: new Set(rows.map((r) => r.session_id ?? `row-${r.viewed_at}`)).size,
+    last7: rows.filter((r) => new Date(r.viewed_at).getTime() >= weekAgo).length,
+    capped: (count ?? 0) > rows.length,
+    recent: rows.slice(0, 20),
+    error,
+  };
+}
+
+export type DemoActivity = {
+  recent: (DemoView & { clientName: string | null; hot: boolean })[];
+  hot: { id: string; name: string; views: number }[];
+  error: { message: string; code?: string } | null;
+};
+
+/** Dashboard feed: the 10 newest demo views, plus "hot" clients (3+ views in the last 48 hours). */
+export async function loadDemoActivity(supabase: Sb): Promise<DemoActivity> {
+  const since = new Date(Date.now() - 48 * 3600000).toISOString();
+  const [recent, window48] = await Promise.all([
+    supabase.from("demo_views").select("slug, client_id, session_id, referrer, user_agent, device, viewed_at").order("viewed_at", { ascending: false }).limit(10).overrideTypes<DemoView[], { merge: false }>(),
+    supabase.from("demo_views").select("client_id").gte("viewed_at", since).not("client_id", "is", null).limit(5000).overrideTypes<{ client_id: string }[], { merge: false }>(),
+  ]);
+  const error = recent.error ?? window48.error;
+  if (error) return { recent: [], hot: [], error };
+
+  const counts = new Map<string, number>();
+  (window48.data ?? []).forEach((r) => counts.set(r.client_id, (counts.get(r.client_id) ?? 0) + 1));
+  const hotIds = new Set([...counts].filter(([, n]) => n >= 3).map(([id]) => id));
+
+  const ids = [...new Set([...(recent.data ?? []).map((r) => r.client_id).filter((x): x is string => !!x), ...hotIds])];
+  const names = new Map<string, string>();
+  if (ids.length) {
+    const { data } = await supabase.from("clients").select("id, business_name").in("id", ids).overrideTypes<{ id: string; business_name: string }[], { merge: false }>();
+    (data ?? []).forEach((c) => names.set(c.id, c.business_name));
+  }
+  return {
+    recent: (recent.data ?? []).map((r) => ({ ...r, clientName: r.client_id ? names.get(r.client_id) ?? null : null, hot: !!r.client_id && hotIds.has(r.client_id) })),
+    hot: [...hotIds].map((id) => ({ id, name: names.get(id) ?? "Unknown client", views: counts.get(id) ?? 0 })).sort((a, b) => b.views - a.views),
+    error: null,
+  };
 }

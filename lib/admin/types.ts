@@ -25,6 +25,8 @@ export type Client = {
   town: string | null;
   website: string | null;
   google_profile: string | null;
+  /** Slug of their private demo page (/demo/{slug}); demo_views link to the client through it. */
+  demo_slug: string | null;
   status: ClientStatus;
   source: string | null;
   notes: string | null;
@@ -108,6 +110,19 @@ export type MockupRequest = {
   status: string | null;
   created_at: string;
   [column: string]: unknown;
+};
+
+export type DemoDevice = "mobile" | "tablet" | "desktop";
+
+/** One page view of a private demo (anon INSERT only; admins read). client_id is set by a DB trigger from clients.demo_slug. */
+export type DemoView = {
+  slug: string;
+  client_id: string | null;
+  session_id: string | null;
+  referrer: string | null;
+  user_agent: string | null;
+  device: DemoDevice | null;
+  viewed_at: string;
 };
 
 export type CallLog = {

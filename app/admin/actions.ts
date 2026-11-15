@@ -74,10 +74,23 @@ const clientSchema = z.object({
   town: text(100),
   website: text(300),
   google_profile: text(500),
+  demo_slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .max(80, "Keep the demo slug under 80 characters")
+    .refine((v) => v === "" || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v), "Demo slug: lowercase letters, numbers and single hyphens only (e.g. mains-and-drains)")
+    .transform(nullify),
   status: z.enum(CLIENT_STATUSES, { message: "Pick a status" }),
   source: text(100),
   notes: text(20000),
 });
+
+/** Unique-violation on demo_slug -> a clear message (other errors fall through). */
+function slugTaken(error: { code?: string; message?: string; details?: string } | null): string | null {
+  if (error?.code !== "23505") return null;
+  return /demo_slug/.test(`${error.message ?? ""} ${error.details ?? ""}`) ? "That demo slug is already used by another client." : null;
+}
 
 function readClient(fd: FormData) {
   return clientSchema.safeParse({
@@ -89,6 +102,7 @@ function readClient(fd: FormData) {
     town: str(fd, "town"),
     website: str(fd, "website"),
     google_profile: str(fd, "google_profile"),
+    demo_slug: str(fd, "demo_slug"),
     status: str(fd, "status") || "lead",
     source: str(fd, "source"),
     notes: str(fd, "notes"),
@@ -100,7 +114,7 @@ export async function createClientAction(_prev: ActionResult | null, fd: FormDat
   const parsed = readClient(fd);
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const { data, error } = await supabase.from("clients").insert(parsed.data).select("id").single<{ id: string }>();
-  if (error || !data) return fail(friendlyError(error, "Couldn't add the client."));
+  if (error || !data) return fail(slugTaken(error) ?? friendlyError(error, "Couldn't add the client."));
   done();
   redirect(`/admin/clients/${data.id}`);
 }
@@ -112,7 +126,7 @@ export async function updateClientAction(_prev: ActionResult | null, fd: FormDat
   const parsed = readClient(fd);
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const { error, count } = await supabase.from("clients").update(parsed.data, { count: "exact" }).eq("id", id.data);
-  if (error) return fail(friendlyError(error, "Couldn't save the client."));
+  if (error) return fail(slugTaken(error) ?? friendlyError(error, "Couldn't save the client."));
   if (!count) return fail(NOT_FOUND);
   done();
   redirect(`/admin/clients/${id.data}`);
@@ -496,12 +510,20 @@ export async function generateDemoPrompt(clientId: string): Promise<{ ok: true; 
     if (signed?.signedUrl) logo = { url: signed.signedUrl, ext: logoExt(request.logo_url) };
   }
 
-  const { slug, prompt } = buildDemoPrompt({
+  const built = buildDemoPrompt({
     client,
     request,
     logo,
     calls: (calls.data ?? []).map((c) => ({ when: fmtDate(c.created_at), summary: c.call_summary, next_step: c.next_step, message_for_mark: c.message_for_mark })),
   });
+  const { slug, prompt } = built;
+
+  // Remember the slug so demo views can be matched to this client (only if none is set yet).
+  if (!client.demo_slug) {
+    const { error: saveErr } = await supabase.from("clients").update({ demo_slug: slug }).eq("id", id.data).is("demo_slug", null);
+    if (saveErr) return { ok: false, error: slugTaken(saveErr) ?? friendlyError(saveErr, "Built the prompt, but couldn't save the demo slug.") };
+    done();
+  }
   return { ok: true, slug, prompt };
 }
 

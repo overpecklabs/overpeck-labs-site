@@ -22,6 +22,18 @@ export function fmtDateTime(v: string | number | null | undefined): string {
   return d ? dtFmt.format(d) : "—";
 }
 
+/** "just now", "5 min ago", "3 hr ago", "2 days ago", then the New York date. */
+export function fmtRelative(v: string | number | null | undefined, now = Date.now()): string {
+  const d = toDate(v);
+  if (!d) return "—";
+  const s = Math.round((now - d.getTime()) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)} hr ago`;
+  if (s < 86400 * 30) return `${Math.floor(s / 86400)} day${s < 86400 * 2 ? "" : "s"} ago`;
+  return dFmt.format(d);
+}
+
 export function fmtDate(v: string | number | null | undefined): string {
   const d = toDate(v);
   return d ? dFmt.format(d) : "—";

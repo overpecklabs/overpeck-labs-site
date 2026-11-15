@@ -4,7 +4,9 @@ import { setDeliverableStatus } from "@/app/admin/actions";
 import { ActionButton } from "@/components/admin/controls";
 import { Badge, Card, ChannelIcon, DbError, Empty, PageHeader } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
-import { fmtDateTime, fmtDay, todayNY } from "@/lib/admin/format";
+import { referrerLabel } from "@/components/admin/DemoViews";
+import { fmtDateTime, fmtDay, fmtRelative, todayNY } from "@/lib/admin/format";
+import { loadDemoActivity } from "@/lib/admin/views";
 import { CHANNEL_LABEL, CLIENT_STATUS_LABEL, CLOSED_PROJECT_STATUSES, PROJECT_STATUS_LABEL } from "@/lib/admin/labels";
 import { PROJECT_STATUSES, type Communication, type ContactMessage, type Deliverable, type MockupRequest, type ProjectStatus } from "@/lib/admin/types";
 
@@ -21,7 +23,7 @@ export default async function DashboardPage() {
   const since = new Date(Date.now() - 14 * 86400000).toISOString();
 
   const count = (status: string) => supabase.from("clients").select("id", { count: "exact", head: true }).eq("status", status);
-  const [lead, prospect, active, projects, due, comms, mockups, messages] = await Promise.all([
+  const [lead, prospect, active, projects, due, comms, mockups, messages, demo] = await Promise.all([
     count("lead"),
     count("prospect"),
     count("active"),
@@ -55,6 +57,7 @@ export default async function DashboardPage() {
       .order("created_at", { ascending: false })
       .limit(10)
       .overrideTypes<ContactMessage[], { merge: false }>(),
+    loadDemoActivity(supabase),
   ]);
 
   const err = [lead, prospect, active, projects, due, comms, mockups, messages].find((r) => r.error)?.error;
@@ -184,6 +187,53 @@ export default async function DashboardPage() {
           )}
         </Card>
       </div>
+
+      <Card
+        title="Demo activity"
+        className="mt-6"
+        actions={
+          demo.hot.length ? (
+            <p className="flex flex-wrap items-center gap-1.5 text-xs">
+              {demo.hot.map((h) => (
+                <Link key={h.id} href={`/admin/clients/${h.id}`} className="inline-flex items-center gap-1 rounded-full bg-mk-red/10 px-2 py-0.5 font-semibold text-mk-red hover:underline">
+                  🔥 {h.name} · {h.views}
+                </Link>
+              ))}
+            </p>
+          ) : null
+        }
+      >
+        {demo.error ? (
+          <p role="alert" className="text-sm text-mk-red">
+            Couldn&apos;t load demo views.
+          </p>
+        ) : demo.recent.length === 0 ? (
+          <Empty>No demo views yet.</Empty>
+        ) : (
+          <ul className="divide-y divide-ink/[0.07]">
+            {demo.recent.map((v, i) => (
+              <li key={`${v.viewed_at}-${i}`} className="flex flex-wrap items-center gap-x-3 gap-y-0.5 py-2">
+                <span className="min-w-0 flex-1 truncate text-sm">
+                  {v.client_id ? (
+                    <Link href={`/admin/clients/${v.client_id}`} className="font-semibold text-teal-ink hover:underline">
+                      {v.clientName ?? "Unknown client"}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold">{v.slug}</span>
+                  )}
+                  {v.hot && <span className="ml-2 rounded-full bg-mk-red px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Hot</span>}
+                  <span className="ml-2 text-xs text-ink/55">
+                    {v.device ?? "unknown"} · {referrerLabel(v.referrer)}
+                  </span>
+                </span>
+                <time className="shrink-0 text-xs text-ink/55" dateTime={v.viewed_at} title={fmtDateTime(v.viewed_at)}>
+                  {fmtRelative(v.viewed_at)}
+                </time>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card title="New mockup requests (14 days)">
