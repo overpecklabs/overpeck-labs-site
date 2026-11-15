@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 /** Absolute site URL for canonicals, Open Graph and the sitemap. Set NEXT_PUBLIC_SITE_URL per environment. */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://overpeck-labs-site.vercel.app").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://overpecklabs.com").replace(/\/+$/, "");
 export const SITE_NAME = "Overpeck Labs";
 
 /** Unique title + description + canonical + Open Graph for a page. */

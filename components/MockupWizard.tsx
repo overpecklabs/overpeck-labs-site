@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { INDUSTRIES } from "@/lib/industries";
 import { INDUSTRY_SLUGS } from "@/lib/slugs";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 import { submitMockupRequest, TIMELINES, type MockupRequest } from "@/lib/submitMockupRequest";
@@ -10,44 +9,64 @@ import HoneypotField from "./HoneypotField";
 
 /* ---------- options ---------- */
 
-const INDUSTRY_OPTIONS = [...INDUSTRIES.map((i) => i.industry), "Other"];
-const YEARS = ["Just starting", "Less than 1 year", "1–3 years", "3–5 years", "5–10 years", "10+ years"];
-const JOB_VALUES = ["Under $250", "$250–$1,000", "$1,000–$5,000", "$5,000–$15,000", "$15,000+", "Not sure"];
-const GOALS = ["More calls", "More quote requests", "Online booking", "Look more professional", "Show up on Google", "Stop missing calls/leads"];
+const INDUSTRIES: { key: string; icon: string; services: string }[] = [
+  { key: "Plumbing", icon: "M12 3c3 4.5 5 7.5 5 10a5 5 0 0 1-10 0c0-2.5 2-5.5 5-10z", services: "Water heaters, drain cleaning, leak repair" },
+  { key: "HVAC", icon: "M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5", services: "AC installs, furnace repair, maintenance plans" },
+  { key: "Electrical", icon: "M13 2 4 14h7l-1 8 9-12h-7z", services: "Panel upgrades, EV chargers, lighting" },
+  { key: "Roofing", icon: "M3 12l9-8 9 8M6 10v10h12V10M10 20v-5h4v5", services: "Roof replacement, leak repair, gutters" },
+  { key: "Landscaping", icon: "M5 19C5 10 11 5 20 5c0 9-5 15-14 15M5 19l7-7", services: "Lawn care, patios, spring cleanups" },
+  { key: "Cleaning", icon: "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z", services: "Deep cleans, move-out cleans, offices" },
+  { key: "Construction / Remodeling", icon: "M14 4l6 6-3 3-6-6zM11.5 7.5 3 16l3 3 8.5-8.5", services: "Kitchens, bathrooms, additions" },
+  { key: "Painting", icon: "M4 4h13v5H4zM17 6.5h3v5h-8v3M11 14.5h2V21h-2z", services: "Interior, exterior, cabinet painting" },
+  { key: "Auto", icon: "M3 16v-3l2-5h14l2 5v3zM5 16v2.5h3V16M16 16v2.5h3V16M7 12.5h.01M17 12.5h.01", services: "Brakes, oil changes, inspections" },
+  { key: "Other", icon: "M12 5v14M5 12h14", services: "" },
+];
+/** Old industry names (industry pages, ?industry= links) -> the cards above. */
+const INDUSTRY_ALIASES: Record<string, string> = {
+  electrician: "Electrical",
+  electricians: "Electrical",
+  "auto repair": "Auto",
+  "contractor / remodeling": "Construction / Remodeling",
+  "contractors & remodelers": "Construction / Remodeling",
+};
+const YEARS = ["Less than 1 year", "1–5 years", "5–10 years", "10+ years"];
+const GOALS = ["More phone calls", "More quote requests", "Look more professional", "Show off my work", "Get more reviews"];
 const STYLES = [
-  { key: "Modern / Clean", d: "Lots of white space, crisp and simple", sw: ["#f4f8ff", "#1d6fe0", "#0b2545"] },
-  { key: "Bold / Strong", d: "Big type, high contrast, confident", sw: ["#111111", "#ffd60a", "#f5f5f5"] },
-  { key: "Friendly / Local", d: "Warm colors, approachable, neighborly", sw: ["#fff7f0", "#e8590c", "#2f9e44"] },
-  { key: "Premium / Luxury", d: "Dark, elegant, refined details", sw: ["#0f1b2d", "#d4af37", "#eef2f7"] },
-];
-const EXTRAS = [
-  { key: "AI chatbot", d: "Answers questions and books jobs from your website, day or night." },
-  { key: "AI call receptionist", d: "Picks up when you can't and books the job for you." },
-  { key: "Automated follow-ups & review requests", d: "Texts and emails go out on their own after calls, quotes and jobs." },
-  { key: "Lead dashboard", d: "See every call, form and booking in one place." },
-  { key: "Google Ads / local SEO", d: "Show up when people nearby search for what you do." },
-];
-const BEST_TIMES = ["Anytime", "Morning (8–11am)", "Midday (11am–2pm)", "Afternoon (2–5pm)", "Evening (5–7pm)"];
+  { key: "Clean & modern", d: "Crisp, simple, lots of space" },
+  { key: "Bold", d: "Big type, high contrast" },
+  { key: "Classic", d: "Timeless and trustworthy" },
+  { key: "Friendly", d: "Warm, local, approachable" },
+] as const;
+const IDEAL = ["Homeowners", "Businesses", "Property managers", "Contractors"];
+const EXTRAS = ["Online booking", "Quote request form", "Photo gallery", "Reviews", "Emergency / 24-7 banner", "Financing info", "Service area map", "Spanish version"];
+const DIFFERENT = ["Fast response", "Family-owned", "Licensed & insured", "Fair pricing", "Warranty"];
+const JOB_VALUES = ["Under $250", "$250–$1,000", "$1,000–$5,000", "$5,000–$15,000", "$15,000+", "Not sure"];
 const METHODS = ["Call", "Text", "Email"];
 
-const STEPS = ["Your Business", "Customers & Services", "Your Goals", "Look & Feel", "Extras We Can Add", "Contact"];
+/** Each screen's share of the bar. Front-loaded so the quick screens feel fast (~40% after two). */
+const WEIGHTS = [22, 18, 14, 12, 12, 12, 10];
+const STEPS = WEIGHTS.length;
+const PER_ANSWER = 0.35; // each answered question nudges the bar by this share of its screen
 
 const MAX_LOGO = 5 * 1024 * 1024;
-const STORAGE_KEY = "overpeck-mockup-v1";
+const STORAGE_KEY = "overpeck-mockup-v2";
 
 const EMPTY: MockupRequest = {
   business: { name: "", industry: "", industryOther: "", area: "", years: "", website: "", noWebsite: false, gbp: "" },
   customers: { services: ["", "", ""], ideal: "", jobValue: "", different: "" },
   goals: { timeline: "", goals: [], headache: "" },
-  look: { style: "", primary: "#1d6fe0", accent: "#f08c00", pickForMe: false, logo: null, likes: ["", ""] },
+  look: { style: "", primary: "#1d6fe0", accent: "#f08c00", pickForMe: true, logo: null, likes: ["", ""] },
   extras: [],
-  contact: { name: "", phone: "", email: "", bestTime: "Anytime", method: "Call", consent: false },
+  contact: { name: "", phone: "", email: "", bestTime: "Anytime", method: "", consent: false },
 };
+
+/** UI-only answers that get folded into the same MockupRequest fields on submit. */
+type Ui = { hasSite: "" | "yes" | "no"; idealPicks: string[]; idealText: string; diffPicks: string[]; diffText: string; more: boolean };
+const EMPTY_UI: Ui = { hasSite: "", idealPicks: [], idealText: "", diffPicks: [], diffText: "", more: false };
 
 /* ---------- validation ---------- */
 
 type Errors = Record<string, string>;
-const isUrl = (v: string) => /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(v.trim());
 const phoneDigits = (v: string) => v.replace(/\D/g, "");
 const isPhone = (v: string) => {
   const d = phoneDigits(v);
@@ -57,128 +76,239 @@ const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
 function validate(step: number, d: MockupRequest): Errors {
   const e: Errors = {};
-  if (step === 0) {
-    const b = d.business;
-    if (!b.name.trim()) e.name = "Please enter your business name.";
-    if (!b.industry) e.industry = "Please choose your industry.";
-    if (b.industry === "Other" && !b.industryOther.trim()) e.industryOther = "Please tell us your industry.";
-    if (!b.area.trim()) e.area = "Please enter your town or service area.";
-    if (!b.years) e.years = "Please choose how long you've been in business.";
-    if (!b.noWebsite && b.website && !isUrl(b.website)) e.website = "That doesn't look like a web address (e.g. yoursite.com).";
-    if (b.gbp && !isUrl(b.gbp)) e.gbp = "That doesn't look like a link. Paste the full Google link, or leave it blank.";
-  }
-  if (step === 1) {
-    if (!d.customers.services[0].trim()) e.service0 = "Please list at least one service.";
-    if (!d.customers.jobValue) e.jobValue = "Please choose a range (or “Not sure”).";
-  }
-  if (step === 2) {
-    if (!d.goals.timeline) e.timeline = "Please choose when you want your site up and running.";
-    if (!d.goals.goals.length) e.goals = "Pick at least one goal.";
-  }
   if (step === 3) {
-    if (!d.look.style) e.style = "Pick the style closest to what you like.";
-    d.look.likes.forEach((u, i) => {
-      if (u && !isUrl(u)) e[`like${i}`] = "That doesn't look like a web address.";
-    });
+    if (!d.business.name.trim()) e.name = "What should we put on the sign? Add your business name.";
+    if (!d.business.area.trim()) e.area = "Add the town you're based in.";
   }
-  if (step === 5) {
+  if (step === 6) {
     const c = d.contact;
-    if (!c.name.trim()) e.cname = "Please enter your name.";
-    if (!isPhone(c.phone)) e.phone = "Please enter a 10-digit phone number.";
-    if (c.email && !isEmail(c.email)) e.email = "That email doesn't look right. Fix it, or leave it blank.";
-    if (c.method === "Email" && !c.email) e.email = "Add an email if you'd like us to contact you that way.";
-    if (!c.consent) e.consent = "Please check this so we can contact you about your mockup.";
+    if (!c.name.trim()) e.cname = "Add your name so Mark knows who to ask for.";
+    if (!c.email.trim() && !c.phone.trim()) e.reach = "Add an email or a phone number (or both).";
+    if (c.email.trim() && !isEmail(c.email)) e.email = "That email doesn't look quite right.";
+    if (c.phone.trim() && !isPhone(c.phone)) e.phone = "Please use a 10-digit phone number.";
+    if (c.method === "Email" && !c.email.trim() && !e.reach) e.email = "Add an email so we can reach you that way.";
+    if ((c.method === "Call" || c.method === "Text") && !c.phone.trim() && !e.reach) e.phone = `Add a phone number so we can ${c.method.toLowerCase()} you.`;
+    if (!c.consent) e.consent = "Please check this so we can send your mockup.";
   }
   return e;
 }
 
-/* ---------- small field helpers ---------- */
+/** [question 1 answered, question 2 answered] for each screen. */
+function answered(step: number, d: MockupRequest, ui: Ui): [boolean, boolean] {
+  const b = d.business;
+  const c = d.contact;
+  switch (step) {
+    case 0:
+      return [!!b.industry && (b.industry !== "Other" || !!b.industryOther.trim()), !!b.years];
+    case 1:
+      return [!!ui.hasSite, d.goals.goals.length > 0];
+    case 2:
+      return [!!d.look.style, !!d.goals.timeline];
+    case 3:
+      return [!!b.name.trim(), !!b.area.trim()];
+    case 4:
+      return [!!d.customers.services[0].trim(), ui.idealPicks.length > 0 || !!ui.idealText.trim()];
+    case 5:
+      return [d.extras.length > 0, ui.diffPicks.length > 0 || !!ui.diffText.trim()];
+    default:
+      return [!!c.name.trim(), (!!c.email.trim() || !!c.phone.trim()) && c.consent];
+  }
+}
+
+function progress(step: number, d: MockupRequest, ui: Ui, done: boolean) {
+  if (done) return 100;
+  const before = WEIGHTS.slice(0, step).reduce((a, w) => a + w, 0);
+  const n = answered(step, d, ui).filter(Boolean).length;
+  const raw = before + WEIGHTS[step] * PER_ANSWER * n;
+  return Math.round(5 + raw * 0.95);
+}
+
+function cheer(step: number, pct: number, done: boolean) {
+  if (done) return "Done! Mark's starting on your design.";
+  if (step === 0) return pct > 5 ? "Nice start. Tap, tap, done." : "About 2 minutes. Most of it is just tapping.";
+  if (step === 1) return "Nice, that was quick.";
+  if (step === 2) return "You're almost halfway there.";
+  if (step <= 4) return "Halfway! Your mockup is taking shape.";
+  return "Last few, you've got this.";
+}
+
+const join = (parts: string[]) => parts.map((p) => p.trim()).filter(Boolean).join(", ");
+
+/** Fold the UI-only answers into the stored request shape. */
+function finalize(d: MockupRequest, ui: Ui): MockupRequest {
+  const phone = d.contact.phone.trim();
+  return {
+    ...d,
+    business: { ...d.business, noWebsite: ui.hasSite === "no", website: ui.hasSite === "yes" ? d.business.website : "" },
+    customers: { ...d.customers, ideal: join([...ui.idealPicks, ui.idealText]), different: join([...ui.diffPicks, ui.diffText]) },
+    contact: { ...d.contact, method: d.contact.method || (phone ? "Call" : "Email") },
+  };
+}
+
+/* ---------- small building blocks ---------- */
 
 const inputCls =
-  "w-full rounded-xl border bg-white px-4 py-3 text-base text-ink placeholder:text-ink/55 focus:outline-none focus:ring-2 focus:ring-teal/60 disabled:opacity-40";
-const border = (err?: string) => (err ? "border-red-400/70" : "border-ink/15 focus:border-teal");
+  "w-full rounded-2xl border-2 bg-white px-4 py-3.5 text-[17px] text-ink placeholder:text-ink/45 transition focus:border-teal-ink focus:outline-none focus:ring-4 focus:ring-teal/25";
+const border = (err?: string) => (err ? "border-mk-red/70" : "border-ink/12");
 
-function Field({ id, label, error, hint, optional, children }: { id: string; label: string; error?: string; hint?: string; optional?: boolean; children: React.ReactNode }) {
+function Q({ id, title, hint, optional, children, as = "fieldset" }: { id: string; title: string; hint?: string; optional?: boolean; children: React.ReactNode; as?: "fieldset" | "div" }) {
+  const head = (
+    <>
+      <span className="font-display block text-[1.45rem] font-bold leading-tight text-ink sm:text-[1.65rem]">{title}</span>
+      {(hint || optional) && <span className="mt-1 block text-[15px] text-ink/60">{hint ?? "Optional"}</span>}
+    </>
+  );
+  if (as === "div")
+    return (
+      <div className="space-y-4">
+        <label htmlFor={id} className="block">
+          {head}
+        </label>
+        {children}
+      </div>
+    );
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-ink/90">
-        {label} {optional && <span className="font-normal text-ink/70">(optional)</span>}
-      </label>
+    <fieldset className="space-y-4">
+      <legend className="mb-4 block w-full">{head}</legend>
       {children}
-      {hint && !error && (
-        <p id={`${id}-hint`} className="text-xs text-ink/70">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-err`} className="text-xs font-medium text-red-700" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
+    </fieldset>
   );
 }
 
-const describe = (id: string, err?: string, hint?: string) => ({
-  id,
-  "aria-invalid": err ? true : undefined,
-  "aria-describedby": err ? `${id}-err` : hint ? `${id}-hint` : undefined,
-});
-
-function GroupError({ id, error }: { id: string; error?: string }) {
+function Err({ id, error }: { id: string; error?: string }) {
   return error ? (
-    <p id={id} className="mt-2 text-xs font-medium text-red-700" role="alert">
+    <p id={id} className="mt-2 text-[15px] font-medium text-mk-red" role="alert">
       {error}
     </p>
   ) : null;
+}
+
+/** A tap target with real radio/checkbox semantics (the input is visually hidden, the label is the card). */
+function Choice({
+  type,
+  name,
+  checked,
+  onChange,
+  children,
+  className = "",
+}: {
+  type: "radio" | "checkbox";
+  name: string;
+  checked: boolean;
+  onChange: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <label
+      className={`relative flex cursor-pointer select-none items-center gap-2 rounded-2xl border-2 transition has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-teal/40 active:scale-[0.98] motion-reduce:active:scale-100 ${
+        checked ? "border-teal-ink bg-note-teal text-ink" : "border-ink/12 bg-white text-ink/85 hover:border-ink/30"
+      } ${className}`}
+    >
+      <input type={type} name={name} checked={checked} onChange={onChange} className="sr-only" />
+      {children}
+      {checked && type === "checkbox" && (
+        <span className="ml-auto grid h-5 w-5 shrink-0 place-items-center rounded-full bg-teal-ink text-[11px] font-bold text-white" aria-hidden>
+          ✓
+        </span>
+      )}
+    </label>
+  );
+}
+
+const chip = "min-h-12 px-4 py-2.5 text-[15px] font-semibold";
+
+function Icon({ d }: { d: string }) {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={d} />
+    </svg>
+  );
+}
+
+/** Tiny homepage sketch for each style card. */
+function StylePreview({ k }: { k: (typeof STYLES)[number]["key"] }) {
+  const p = {
+    "Clean & modern": { bg: "#ffffff", bar: "#0b2545", fg: "#0b2545", acc: "#1d6fe0", r: "6px", center: false, heavy: false },
+    Bold: { bg: "#111111", bar: "#ffd60a", fg: "#ffffff", acc: "#ffd60a", r: "2px", center: false, heavy: true },
+    Classic: { bg: "#f6f1e7", bar: "#7a1f1f", fg: "#2b2b2b", acc: "#7a1f1f", r: "0px", center: true, heavy: false },
+    Friendly: { bg: "#fff4ea", bar: "#2f9e44", fg: "#5a3214", acc: "#e8590c", r: "999px", center: false, heavy: false },
+  }[k];
+  return (
+    <span className="block h-[4.5rem] overflow-hidden rounded-xl border border-ink/10 p-2" style={{ background: p.bg }} aria-hidden>
+      <span className="flex items-center justify-between">
+        <span className="h-1.5 w-6 rounded-full" style={{ background: p.bar }} />
+        <span className="flex gap-1">
+          {[0, 1, 2].map((i) => (
+            <span key={i} className="h-1 w-2.5 rounded-full opacity-50" style={{ background: p.fg }} />
+          ))}
+        </span>
+      </span>
+      <span className={`mt-2 flex flex-col gap-1 ${p.center ? "items-center" : ""}`}>
+        <span className="rounded-full" style={{ background: p.fg, height: p.heavy ? 7 : 4, width: p.heavy ? "80%" : "65%" }} />
+        <span className="h-1 w-1/2 rounded-full opacity-40" style={{ background: p.fg }} />
+        <span className="mt-1 h-2.5 w-10" style={{ background: p.acc, borderRadius: p.r }} />
+      </span>
+    </span>
+  );
 }
 
 /* ---------- wizard ---------- */
 
 export default function MockupWizard() {
   const [data, setData] = useState<MockupRequest>(EMPTY);
+  const [ui, setUi] = useState<Ui>(EMPTY_UI);
   const [step, setStep] = useState(0);
-  const [errors, setErrors] = useState<Errors>({});
+  const [dir, setDir] = useState<"fwd" | "back">("fwd");
+  const [tried, setTried] = useState(false);
   const [ready, setReady] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoErr, setLogoErr] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [logoFailed, setLogoFailed] = useState(false);
+  const [firstName, setFirstName] = useState("");
   const honeypot = useRef<HTMLInputElement>(null);
-  const [submitted, setSubmitted] = useState<MockupRequest | null>(null);
-  const heading = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
+  const doneRef = useRef<HTMLHeadingElement>(null);
+  const moved = useRef(false);
   const uid = useId();
   const fid = (k: string) => `${uid}-${k}`;
 
-  // Restore saved progress, then apply ?industry= from an industry card.
+  // Restore the draft, then apply ?industry= from an industry page link.
   useEffect(() => {
     let next = EMPTY;
+    let nextUi = EMPTY_UI;
     let savedStep = 0;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const saved = JSON.parse(raw) as { step: number; data: MockupRequest };
+        const saved = JSON.parse(raw) as { step: number; data: MockupRequest; ui: Ui };
         next = {
           business: { ...EMPTY.business, ...saved.data.business },
           customers: { ...EMPTY.customers, ...saved.data.customers },
           goals: { ...EMPTY.goals, ...saved.data.goals },
-          look: { ...EMPTY.look, ...saved.data.look },
+          look: { ...EMPTY.look, ...saved.data.look, logo: null },
           extras: saved.data.extras ?? [],
           contact: { ...EMPTY.contact, ...saved.data.contact },
         };
-        savedStep = Math.min(Math.max(0, saved.step | 0), STEPS.length - 1);
+        nextUi = { ...EMPTY_UI, ...saved.ui };
+        savedStep = Math.min(Math.max(0, saved.step | 0), STEPS - 1);
       }
     } catch {
       /* storage unavailable or corrupt: start fresh */
     }
     const q = new URLSearchParams(window.location.search).get("industry");
     if (q) {
-      const bySlug = INDUSTRY_SLUGS.find((x) => x.slug === q.toLowerCase())?.mockup;
-      const match = bySlug ?? INDUSTRY_OPTIONS.find((o) => o.toLowerCase() === q.toLowerCase());
-      next = { ...next, business: { ...next.business, industry: match ?? "Other", industryOther: match ? next.business.industryOther : q.slice(0, 60) } };
+      const lower = q.toLowerCase();
+      const name = INDUSTRY_SLUGS.find((x) => x.slug === lower)?.mockup.toLowerCase() ?? lower;
+      const match = INDUSTRIES.find((o) => o.key.toLowerCase() === name)?.key ?? INDUSTRY_ALIASES[name];
+      const other = INDUSTRY_SLUGS.find((x) => x.slug === lower)?.name ?? q;
+      next = { ...next, business: { ...next.business, industry: match ?? "Other", industryOther: match ? next.business.industryOther : other.slice(0, 60) } };
     }
     setData(next);
+    setUi(nextUi);
     setStep(savedStep);
     setReady(true);
   }, []);
@@ -186,91 +316,109 @@ export default function MockupWizard() {
   useEffect(() => {
     if (!ready || status === "done") return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, data }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, data, ui }));
     } catch {
       /* ignore quota / private mode */
     }
-  }, [data, step, ready, status]);
+  }, [data, ui, step, ready, status]);
 
-  useEffect(() => () => {
-    if (logoUrl) URL.revokeObjectURL(logoUrl);
-  }, [logoUrl]);
+  useEffect(
+    () => () => {
+      if (logoUrl) URL.revokeObjectURL(logoUrl);
+    },
+    [logoUrl],
+  );
 
-  // Clear each error as soon as its field becomes valid (new errors only appear on Next).
+  // After a step change: bring the form into view and focus the first answer (not on first load).
   useEffect(() => {
-    setErrors((prev) => {
-      const keys = Object.keys(prev);
-      if (!keys.length) return prev;
-      const now = validate(step, data);
-      const next: Errors = {};
-      for (const k of keys) if (k === "logo" || now[k]) next[k] = now[k] ?? prev[k];
-      return keys.length === Object.keys(next).length && keys.every((k) => next[k] === prev[k]) ? prev : next;
+    if (!moved.current) return;
+    requestAnimationFrame(() => {
+      const top = formRef.current?.getBoundingClientRect().top ?? 0;
+      if (top < 0) formRef.current?.scrollIntoView({ block: "start" });
+      const root = screenRef.current;
+      const el =
+        root?.querySelector<HTMLElement>("input:checked") ??
+        root?.querySelector<HTMLElement>("input:not([type=file]):not([tabindex='-1']), textarea");
+      el?.focus({ preventScroll: true });
     });
-  }, [data, step]);
+  }, [step]);
 
   const set = <K extends keyof MockupRequest>(section: K, patch: Partial<MockupRequest[K]>) =>
     setData((d) => ({ ...d, [section]: { ...(d[section] as object), ...patch } }) as MockupRequest);
-
-  const toggleIn = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const setU = (patch: Partial<Ui>) => setUi((u) => ({ ...u, ...patch }));
+  const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
   const goTo = (n: number) => {
+    moved.current = true;
+    setDir(n > step ? "fwd" : "back");
+    setTried(false);
     setStep(n);
-    setErrors({});
-    requestAnimationFrame(() => {
-      heading.current?.focus({ preventScroll: true });
-      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   };
 
-  const focusFirstError = () =>
-    requestAnimationFrame(() => {
-      const el = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
-      el?.focus();
-    });
+  const errors = tried ? validate(step, data) : {};
+  const [a1, a2] = answered(step, data, ui);
+  const required = step === 3 || step === 6;
+  const ok = Object.keys(validate(step, data)).length === 0;
+  const lit = required ? ok : a1 || a2;
+  const done = status === "done";
+  const pct = progress(step, data, ui, done);
 
-  const onNext = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const errs = validate(step, data);
-    setErrors(errs);
-    if (Object.keys(errs).length) {
-      focusFirstError();
-      return;
-    }
-    if (step < STEPS.length - 1) return goTo(step + 1);
-
+  const submit = async () => {
     setStatus("sending");
+    const payload = finalize(data, ui);
     let res: Awaited<ReturnType<typeof submitMockupRequest>>;
     try {
-      res = await submitMockupRequest(data, logoFile, honeypot.current?.value ?? "");
+      res = await submitMockupRequest(payload, logoFile, honeypot.current?.value ?? "");
     } catch (err) {
       console.error("[mockup request] unexpected error", err);
       res = { ok: false, error: "network" };
     }
-    // Only show the thank-you screen after a real successful insert (or a silently dropped spam submission).
+    // Only show the success screen after a real insert (or a silently dropped spam submission).
     if (res.ok) {
       setLogoFailed(res.logoFailed);
-      setSubmitted(data);
+      setFirstName(payload.contact.name.trim().split(/\s+/)[0] ?? "");
       setStatus("done");
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch {}
-      requestAnimationFrame(() => heading.current?.focus());
+      requestAnimationFrame(() => doneRef.current?.focus());
     } else {
       setStatus("error");
     }
   };
 
+  const onContinue = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (status === "sending") return;
+    setTried(true);
+    const errs = validate(step, data);
+    if (Object.keys(errs).length) {
+      requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+      return;
+    }
+    if (step < STEPS - 1) goTo(step + 1);
+    else void submit();
+  };
+
+  // Enter advances from cards too (text inputs already submit the form natively).
+  const onKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const t = e.target as HTMLElement;
+    if (e.key === "Enter" && t instanceof HTMLInputElement && (t.type === "radio" || t.type === "checkbox")) {
+      e.preventDefault();
+      onContinue();
+    }
+  };
+
   const onLogo = (f: File | undefined) => {
     if (!f) return;
-    if (!f.type.startsWith("image/")) return setErrors((x) => ({ ...x, logo: "Please choose an image file (PNG, JPG, SVG…)." }));
-    if (f.size > MAX_LOGO) return setErrors((x) => ({ ...x, logo: "That file is over 5MB. Please choose a smaller image." }));
-    setErrors(({ logo: _drop, ...rest }) => rest);
+    if (!f.type.startsWith("image/")) return setLogoErr("Please choose an image file (PNG, JPG, SVG…).");
+    if (f.size > MAX_LOGO) return setLogoErr("That file is over 5 MB. Please choose a smaller image.");
+    setLogoErr(null);
     if (logoUrl) URL.revokeObjectURL(logoUrl);
     setLogoFile(f);
     setLogoUrl(URL.createObjectURL(f));
     set("look", { logo: { name: f.name, type: f.type, size: f.size } });
   };
-
   const removeLogo = () => {
     if (logoUrl) URL.revokeObjectURL(logoUrl);
     setLogoFile(null);
@@ -278,573 +426,449 @@ export default function MockupWizard() {
     set("look", { logo: null });
   };
 
-  const startOver = () => {
-    removeLogo();
-    setData(EMPTY);
-    setSubmitted(null);
-    setLogoFailed(false);
-    setStatus("idle");
-    goTo(0);
-  };
-
-  /* ---------- done screen ---------- */
-  if (status === "done" && submitted) {
-    return (
-      <section className="glass mt-8 rounded-3xl p-6 sm:p-8" aria-labelledby={fid("done")}>
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-teal/15 text-2xl text-teal-ink" aria-hidden>
-          ✓
-        </div>
-        <h2 id={fid("done")} ref={heading} tabIndex={-1} className="font-display mt-4 text-3xl font-bold focus:outline-none">
-          {submitted.goals.timeline === "asap"
-            ? "Thanks! We'll prioritize your mockup and reach out within 1 business day."
-            : "Thanks! Your free mockup will be ready in 2–3 business days."}
-        </h2>
-        <p className="mt-3 text-ink/85">
-          We&apos;ll reach out to <span className="font-semibold text-ink">{submitted.contact.phone}</span> by {submitted.contact.method.toLowerCase()}
-          {submitted.contact.bestTime !== "Anytime" ? `, ${submitted.contact.bestTime.toLowerCase()}` : ""}.
-        </p>
-        {logoFailed && (
-          <p role="alert" className="mt-4 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-800">
-            Your request was saved, but we couldn&apos;t upload your logo. Please call {PHONE_DISPLAY} about the logo.
-          </p>
-        )}
-        <Summary d={submitted} />
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/" className="btn-primary">
-            Back to home
-          </Link>
-          <button type="button" onClick={startOver} className="btn-ghost">
-            Start another request
-          </button>
-        </div>
-        <p className="mt-5 text-sm text-ink/70">
-          Questions? Call{" "}
-          <a href={`tel:${PHONE_TEL}`} className="text-teal-ink underline">
-            {PHONE_DISPLAY}
-          </a>
-          .
-        </p>
-      </section>
-    );
-  }
-
   const b = data.business;
   const c = data.customers;
   const l = data.look;
   const ct = data.contact;
-  const pct = Math.round(((step + 1) / STEPS.length) * 100);
+  const industry = INDUSTRIES.find((i) => i.key === b.industry);
+  const describe = (k: string) => ({ id: fid(k), "aria-invalid": errors[k] ? true : undefined, "aria-describedby": errors[k] ? fid(`${k}-err`) : undefined });
 
-  return (
-    <form ref={formRef} onSubmit={onNext} noValidate className="relative mt-8 scroll-mt-24" aria-busy={!ready}>
-      <HoneypotField ref={honeypot} />
-      {/* progress: a filling beaker + "Trial" sticky notes */}
-      <div className="mb-6 flex items-end gap-4">
-        <div
-          role="progressbar"
-          aria-label="Questionnaire progress"
-          aria-valuemin={1}
-          aria-valuemax={STEPS.length}
-          aria-valuenow={step + 1}
-          aria-valuetext={`Trial ${step + 1} of ${STEPS.length}: ${STEPS[step]}`}
-          className="shrink-0"
-        >
-          <svg width="46" height="58" viewBox="0 0 46 58" aria-hidden>
-            <defs>
-              <clipPath id="beaker-clip">
-                <path d="M7 6 V50 Q7 54 11 54 H35 Q39 54 39 50 V6 Z" />
-              </clipPath>
-            </defs>
-            <g clipPath="url(#beaker-clip)">
-              <rect x="0" y={54 - 48 * (pct / 100)} width="46" height="60" fill="#19f0d2" opacity="0.7" className="transition-[y] duration-500" />
-            </g>
-            <path d="M7 6 V50 Q7 54 11 54 H35 Q39 54 39 50 V6 M3 6 H11 M35 6 H43 M9 18 H15 M9 30 H15 M9 42 H15" fill="none" stroke="#1a1a1a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <ol className="flex flex-1 flex-wrap gap-1.5">
-          {STEPS.map((name, i) => {
-            const done = i < step;
-            const current = i === step;
-            const note = (
-              <>
-                <span className="block text-[10px] font-bold uppercase tracking-wider">Trial {i + 1}</span>
-                <span className="hidden truncate text-[11px] sm:block">{name}</span>
-              </>
-            );
-            const cls = `block w-full rounded-[3px] px-2 py-1.5 text-left text-ink shadow-[0_1px_2px_rgba(26,26,26,0.08),0_4px_10px_rgba(26,26,26,0.06)] ${
-              current ? "bg-note-yellow -rotate-2 ring-2 ring-ink/70" : done ? "bg-note-green" : "bg-white/80 text-ink/75"
-            }`;
-            return (
-              <li key={name} className="min-w-[3.6rem] flex-1 sm:min-w-0" aria-current={current ? "step" : undefined}>
-                {done ? (
-                  <button type="button" onClick={() => goTo(i)} className={cls} aria-label={`Back to trial ${i + 1}: ${name}`}>
-                    {note}
-                  </button>
-                ) : (
-                  <span className={cls}>{note}</span>
-                )}
-              </li>
-            );
-          })}
-        </ol>
+  /* ---------- progress header ---------- */
+  const bar = (
+    <div className="sticky top-[4.6rem] z-30 -mx-4 bg-[#f8f8f5] px-4 pb-3 pt-3 before:absolute before:inset-x-0 before:bottom-full before:h-[4.6rem] before:bg-[#f8f8f5] before:content-[''] sm:mx-0 sm:px-0">
+      <div className="flex items-center justify-between gap-3 text-sm">
+        {!done && step > 0 ? (
+          <button type="button" onClick={() => goTo(step - 1)} className="-ml-1 rounded-full px-1 py-0.5 font-semibold text-ink/60 hover:text-ink focus-visible:outline-2 focus-visible:outline-teal-ink">
+            ← Back
+          </button>
+        ) : (
+          <span />
+        )}
+        <span className="font-semibold tabular-nums text-ink/70">{pct}% done</span>
       </div>
+      <div
+        className="mt-2 h-2 overflow-hidden rounded-full bg-ink/[0.08]"
+        role="progressbar"
+        aria-label="Progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
+      >
+        <div className="h-full rounded-full bg-teal transition-[width] duration-500 ease-out motion-reduce:transition-none" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-2 text-[15px] font-medium text-teal-ink" aria-live="polite">
+        {cheer(step, pct, done)}
+      </p>
+    </div>
+  );
 
-      <div className="notebook relative rounded-sm p-5 pl-7 sm:p-8 sm:pl-20">
-        <span className="tape" style={{ left: "20%" }} />
-        <p className="text-xs font-bold uppercase tracking-widest text-ink/75">Trial {step + 1} of {STEPS.length}</p>
-        <h2 ref={heading} tabIndex={-1} className="font-display mt-1 text-2xl font-bold text-ink focus:outline-none sm:text-3xl">
-          {STEPS[step]}
-        </h2>
-
-        <div className="mt-6 space-y-5">
-          {/* ---------- 1. business ---------- */}
-          {step === 0 && (
-            <>
-              <Field id={fid("name")} label="Business name" error={errors.name}>
-                <input {...describe(fid("name"), errors.name)} className={`${inputCls} ${border(errors.name)}`} value={b.name} onChange={(e) => set("business", { name: e.target.value })} autoComplete="organization" placeholder="e.g. Bergen Flow Plumbing" />
-              </Field>
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Field id={fid("industry")} label="Industry" error={errors.industry}>
-                  <select {...describe(fid("industry"), errors.industry)} className={`${inputCls} ${border(errors.industry)}`} value={b.industry} onChange={(e) => set("business", { industry: e.target.value })}>
-                    <option value="" className="">
-                      Choose one…
-                    </option>
-                    {INDUSTRY_OPTIONS.map((o) => (
-                      <option key={o} className="">
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field id={fid("years")} label="Years in business" error={errors.years}>
-                  <select {...describe(fid("years"), errors.years)} className={`${inputCls} ${border(errors.years)}`} value={b.years} onChange={(e) => set("business", { years: e.target.value })}>
-                    <option value="" className="">
-                      Choose one…
-                    </option>
-                    {YEARS.map((o) => (
-                      <option key={o} className="">
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
-              {b.industry === "Other" && (
-                <Field id={fid("industryOther")} label="What industry are you in?" error={errors.industryOther}>
-                  <input {...describe(fid("industryOther"), errors.industryOther)} className={`${inputCls} ${border(errors.industryOther)}`} value={b.industryOther} onChange={(e) => set("business", { industryOther: e.target.value })} placeholder="e.g. Pest control" />
-                </Field>
-              )}
-              <Field id={fid("area")} label="Town / service area" error={errors.area} hint="Where in Bergen County (and beyond) do you work?">
-                <input {...describe(fid("area"), errors.area, "y")} className={`${inputCls} ${border(errors.area)}`} value={b.area} onChange={(e) => set("business", { area: e.target.value })} placeholder="e.g. Hackensack, Teaneck, Paramus" />
-              </Field>
-              <Field id={fid("website")} label="Current website" optional error={errors.website}>
-                <input {...describe(fid("website"), errors.website)} className={`${inputCls} ${border(errors.website)}`} value={b.noWebsite ? "" : b.website} disabled={b.noWebsite} onChange={(e) => set("business", { website: e.target.value })} inputMode="url" placeholder="yoursite.com" />
-                <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-sm text-ink/80">
-                  <input type="checkbox" className="h-4 w-4 accent-[#0f766e]" checked={b.noWebsite} onChange={(e) => set("business", { noWebsite: e.target.checked })} />
-                  I don&apos;t have one
-                </label>
-              </Field>
-              <Field id={fid("gbp")} label="Google Business Profile link" optional error={errors.gbp} hint="Find it by searching your business on Google Maps and tapping Share.">
-                <input {...describe(fid("gbp"), errors.gbp, "y")} className={`${inputCls} ${border(errors.gbp)}`} value={b.gbp} onChange={(e) => set("business", { gbp: e.target.value })} inputMode="url" placeholder="https://maps.app.goo.gl/…" />
-              </Field>
-            </>
+  /* ---------- success ---------- */
+  if (done) {
+    return (
+      <div className="mx-auto max-w-[560px]">
+        {bar}
+        <section className="mk-in-fwd pt-10 text-center" aria-labelledby={fid("done")}>
+          <svg className="mk-check mx-auto" width="88" height="88" viewBox="0 0 88 88" aria-hidden>
+            <circle cx="44" cy="44" r="40" fill="#c8f5ec" stroke="#0f766e" strokeWidth="3" />
+            <path d="M27 45l11 11 23-24" fill="none" stroke="#0f766e" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <h2 id={fid("done")} ref={doneRef} tabIndex={-1} className="font-display mt-6 text-3xl font-bold leading-tight focus:outline-none sm:text-4xl">
+            You&apos;re all set{firstName ? `, ${firstName}` : ""}!
+          </h2>
+          <p className="mt-3 text-lg text-ink/80">Mark will have your free homepage mockup ready soon.</p>
+          {logoFailed && (
+            <p role="alert" className="mt-5 rounded-2xl border border-amber-400/50 bg-amber-50 p-3 text-[15px] text-amber-900">
+              Your request was saved, but your logo didn&apos;t upload. Mention it when Mark reaches out.
+            </p>
           )}
+          <p className="mt-5 text-[17px] text-ink/80">
+            Questions? Call{" "}
+            <a href={`tel:${PHONE_TEL}`} className="font-semibold text-teal-ink underline">
+              {PHONE_DISPLAY}
+            </a>
+            .
+          </p>
+          <Link href="/" className="btn-primary mt-8">
+            Back to home
+          </Link>
+        </section>
+      </div>
+    );
+  }
 
-          {/* ---------- 2. customers ---------- */}
-          {step === 1 && (
-            <>
-              <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-sm font-medium text-ink/90">Top 3 services you want more of</legend>
-                {[0, 1, 2].map((i) => (
-                  <div key={i}>
-                    <label htmlFor={fid(`service${i}`)} className="sr-only">
-                      Service {i + 1}
-                      {i > 0 ? " (optional)" : ""}
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <span className="font-display grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink/5 text-sm font-bold" aria-hidden>
-                        {i + 1}
-                      </span>
-                      <input
-                        {...describe(fid(`service${i}`), errors[`service${i}`])}
-                        className={`${inputCls} ${border(errors[`service${i}`])}`}
-                        value={c.services[i]}
-                        onChange={(e) => {
-                          const s = [...c.services] as [string, string, string];
-                          s[i] = e.target.value;
-                          set("customers", { services: s });
-                        }}
-                        placeholder={["e.g. Water heater installs", "e.g. Drain cleaning", "e.g. Bathroom remodels"][i]}
-                      />
-                    </div>
-                    {errors[`service${i}`] && (
-                      <p id={`${fid(`service${i}`)}-err`} className="ml-11 mt-1 text-xs font-medium text-red-700" role="alert">
-                        {errors[`service${i}`]}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </fieldset>
-              <Field id={fid("ideal")} label="Who's your ideal customer?" optional>
-                <input id={fid("ideal")} className={`${inputCls} ${border()}`} value={c.ideal} onChange={(e) => set("customers", { ideal: e.target.value })} placeholder="e.g. Homeowners in older houses, property managers" />
-              </Field>
-              <Field id={fid("jobValue")} label="Average job value" error={errors.jobValue}>
-                <select {...describe(fid("jobValue"), errors.jobValue)} className={`${inputCls} ${border(errors.jobValue)}`} value={c.jobValue} onChange={(e) => set("customers", { jobValue: e.target.value })}>
-                  <option value="" className="">
-                    Choose a range…
-                  </option>
-                  {JOB_VALUES.map((o) => (
-                    <option key={o} className="">
-                      {o}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field id={fid("different")} label="What makes you different?" optional hint="One or two sentences is perfect.">
-                <textarea id={fid("different")} aria-describedby={`${fid("different")}-hint`} rows={3} maxLength={400} className={`${inputCls} ${border()}`} value={c.different} onChange={(e) => set("customers", { different: e.target.value })} placeholder="e.g. Family-owned for 20 years, upfront pricing, we clean up after every job" />
-              </Field>
-            </>
-          )}
+  /* ---------- screens ---------- */
+  const screens: React.ReactNode[] = [
+    // 1. industry + years
+    <>
+      <Q id={fid("industry")} title="What kind of business do you run?">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          {INDUSTRIES.map((i) => (
+            <Choice key={i.key} type="radio" name={fid("industry")} checked={b.industry === i.key} onChange={() => set("business", { industry: i.key })} className="min-h-[5.25rem] flex-col justify-center px-2 py-3 text-center text-[15px] font-semibold">
+              <span className={b.industry === i.key ? "text-teal-ink" : "text-ink/70"}>
+                <Icon d={i.icon} />
+              </span>
+              <span className="leading-tight">{i.key}</span>
+            </Choice>
+          ))}
+        </div>
+        {b.industry === "Other" && (
+          <div className="mk-in-fwd">
+            <label htmlFor={fid("industryOther")} className="sr-only">
+              Your industry
+            </label>
+            <input id={fid("industryOther")} className={`${inputCls} ${border()}`} value={b.industryOther} onChange={(e) => set("business", { industryOther: e.target.value })} placeholder="What do you do? e.g. Pest control" maxLength={60} autoFocus />
+          </div>
+        )}
+      </Q>
+      <Q id={fid("years")} title="How long have you been in business?">
+        <div className="grid grid-cols-2 gap-2.5">
+          {YEARS.map((y) => (
+            <Choice key={y} type="radio" name={fid("years")} checked={b.years === y} onChange={() => set("business", { years: y })} className={`${chip} justify-center`}>
+              {y}
+            </Choice>
+          ))}
+        </div>
+      </Q>
+    </>,
 
-          {/* ---------- 3. goals ---------- */}
-          {step === 2 && (
-            <>
-              <fieldset aria-describedby={errors.timeline ? fid("timeline-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-ink/90">How soon do you want your new site up and running?</legend>
-                <div className="grid grid-cols-2 gap-3">
-                  {TIMELINES.map((t, i) => {
-                    const on = data.goals.timeline === t.value;
-                    return (
-                      <label
-                        key={t.value}
-                        className={`relative cursor-pointer rounded-2xl border p-4 transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/10 shadow-[0_8px_24px_rgba(26,26,26,0.10)]" : "border-ink/15 bg-white hover:border-ink/30"}`}
-                      >
-                        <input
-                          type="radio"
-                          name={fid("timeline")}
-                          value={t.value}
-                          checked={on}
-                          onChange={() => set("goals", { timeline: t.value })}
-                          aria-invalid={i === 0 && errors.timeline ? true : undefined}
-                          className="sr-only"
-                        />
-                        <span className="font-display block text-lg font-bold">{t.label}</span>
-                        <span className="mt-0.5 block text-xs text-ink/75">{t.d}</span>
-                        {on && (
-                          <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-teal text-[11px] font-bold text-black" aria-hidden>
-                            ✓
-                          </span>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-                <GroupError id={fid("timeline-err")} error={errors.timeline} />
-              </fieldset>
-              <fieldset aria-describedby={errors.goals ? fid("goals-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-ink/90">What do you want your new website to do? Pick all that apply.</legend>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {GOALS.map((g, i) => {
-                    const on = data.goals.goals.includes(g);
-                    return (
-                      <label key={g} className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-teal/60 bg-teal/10" : "border-ink/15 bg-white hover:border-ink/30"}`}>
-                        <input type="checkbox" className="h-4 w-4 shrink-0 accent-[#0f766e]" checked={on} aria-invalid={i === 0 && errors.goals ? true : undefined} onChange={() => set("goals", { goals: toggleIn(data.goals.goals, g) })} />
-                        <span className="text-sm">{g}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-                <GroupError id={fid("goals-err")} error={errors.goals} />
-              </fieldset>
-              <Field id={fid("headache")} label="What's your biggest headache right now?" optional>
-                <textarea id={fid("headache")} rows={3} maxLength={400} className={`${inputCls} ${border()}`} value={data.goals.headache} onChange={(e) => set("goals", { headache: e.target.value })} placeholder="e.g. I miss calls while I'm on jobs, and my site looks outdated" />
-              </Field>
-            </>
-          )}
+    // 2. website + goals
+    <>
+      <Q id={fid("hasSite")} title="Do you have a website now?">
+        <div className="grid grid-cols-2 gap-2.5">
+          {(["yes", "no"] as const).map((v) => (
+            <Choice key={v} type="radio" name={fid("hasSite")} checked={ui.hasSite === v} onChange={() => setU({ hasSite: v })} className={`${chip} justify-center`}>
+              {v === "yes" ? "Yes" : "No"}
+            </Choice>
+          ))}
+        </div>
+        {ui.hasSite === "yes" && (
+          <div className="mk-in-fwd">
+            <label htmlFor={fid("website")} className="mb-1.5 block text-[15px] text-ink/60">
+              What&apos;s the address? (optional)
+            </label>
+            <input id={fid("website")} className={`${inputCls} ${border()}`} value={b.website} onChange={(e) => set("business", { website: e.target.value })} inputMode="url" autoComplete="url" placeholder="yoursite.com" />
+          </div>
+        )}
+      </Q>
+      <Q id={fid("goals")} title="What do you want your new site to do?" hint="Pick all that apply.">
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          {GOALS.map((g) => (
+            <Choice key={g} type="checkbox" name={fid("goals")} checked={data.goals.goals.includes(g)} onChange={() => set("goals", { goals: toggle(data.goals.goals, g) })} className={chip}>
+              {g}
+            </Choice>
+          ))}
+        </div>
+      </Q>
+    </>,
 
-          {/* ---------- 4. look & feel ---------- */}
-          {step === 3 && (
-            <>
-              <fieldset aria-describedby={errors.style ? fid("style-err") : undefined}>
-                <legend className="mb-2 text-sm font-medium text-ink/90">Which style feels most like you?</legend>
-                <div className="grid grid-cols-2 gap-3">
-                  {STYLES.map((s, i) => {
-                    const on = l.style === s.key;
-                    return (
-                      <label key={s.key} className={`relative cursor-pointer rounded-2xl border p-3 transition focus-within:ring-2 focus-within:ring-teal/70 sm:p-4 ${on ? "border-teal bg-teal/10 shadow-[0_8px_24px_rgba(26,26,26,0.10)]" : "border-ink/15 bg-white hover:border-ink/30"}`}>
-                        <input type="radio" name={fid("style")} value={s.key} checked={on} onChange={() => set("look", { style: s.key })} aria-invalid={i === 0 && errors.style ? true : undefined} className="sr-only" />
-                        <span className="flex h-12 overflow-hidden rounded-lg" aria-hidden>
-                          {s.sw.map((c2) => (
-                            <span key={c2} className="flex-1" style={{ background: c2 }} />
-                          ))}
-                        </span>
-                        <span className="mt-2 block text-sm font-semibold">{s.key}</span>
-                        <span className="mt-0.5 block text-xs leading-snug text-ink/75">{s.d}</span>
-                        {on && (
-                          <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-teal text-[11px] font-bold text-black" aria-hidden>
-                            ✓
-                          </span>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-                <GroupError id={fid("style-err")} error={errors.style} />
-              </fieldset>
+    // 3. style + timeline
+    <>
+      <Q id={fid("style")} title="What style do you like?">
+        <div className="grid grid-cols-2 gap-2.5">
+          {STYLES.map((s) => (
+            <Choice key={s.key} type="radio" name={fid("style")} checked={l.style === s.key} onChange={() => set("look", { style: s.key })} className="flex-col items-stretch gap-0 p-2.5 text-left">
+              <StylePreview k={s.key} />
+              <span className="mt-2 block px-0.5 text-[15px] font-semibold">{s.key}</span>
+              <span className="block px-0.5 text-[13px] leading-snug text-ink/60">{s.d}</span>
+            </Choice>
+          ))}
+        </div>
+      </Q>
+      <Q id={fid("timeline")} title="When do you want your new site?">
+        <div className="grid grid-cols-2 gap-2.5">
+          {TIMELINES.map((t) => (
+            <Choice key={t.value} type="radio" name={fid("timeline")} checked={data.goals.timeline === t.value} onChange={() => set("goals", { timeline: t.value })} className={`${chip} justify-center`}>
+              {t.label}
+            </Choice>
+          ))}
+        </div>
+      </Q>
+    </>,
 
-              <fieldset>
-                <legend className="mb-2 text-sm font-medium text-ink/90">Brand colors</legend>
-                <div className="flex flex-wrap items-center gap-4">
+    // 4. name + town (required)
+    <>
+      <Q as="div" id={fid("name")} title="What's your business called?">
+        <input {...describe("name")} className={`${inputCls} ${border(errors.name)}`} value={b.name} onChange={(e) => set("business", { name: e.target.value })} autoComplete="organization" placeholder="e.g. Bergen Flow Plumbing" maxLength={120} />
+        <Err id={fid("name-err")} error={errors.name} />
+      </Q>
+      <Q as="div" id={fid("area")} title="Which town are you based in?">
+        <input {...describe("area")} className={`${inputCls} ${border(errors.area)}`} value={b.area} onChange={(e) => set("business", { area: e.target.value })} autoComplete="address-level2" placeholder="e.g. Hackensack" maxLength={120} />
+        <Err id={fid("area-err")} error={errors.area} />
+      </Q>
+    </>,
+
+    // 5. services + ideal customer
+    <>
+      <Q as="div" id={fid("services")} title="What are your top services?" hint="A few is plenty.">
+        <input
+          id={fid("services")}
+          className={`${inputCls} ${border()}`}
+          value={c.services[0]}
+          onChange={(e) => set("customers", { services: [e.target.value, "", ""] })}
+          placeholder={`e.g. ${industry?.services || "Your top 2–3 services"}`}
+          maxLength={300}
+        />
+      </Q>
+      <Q id={fid("ideal")} title="Who's your ideal customer?">
+        <div className="flex flex-wrap gap-2.5">
+          {IDEAL.map((v) => (
+            <Choice key={v} type="checkbox" name={fid("ideal")} checked={ui.idealPicks.includes(v)} onChange={() => setU({ idealPicks: toggle(ui.idealPicks, v) })} className={chip}>
+              {v}
+            </Choice>
+          ))}
+        </div>
+        <label htmlFor={fid("idealText")} className="sr-only">
+          Anything more about your ideal customer (optional)
+        </label>
+        <input id={fid("idealText")} className={`${inputCls} ${border()}`} value={ui.idealText} onChange={(e) => setU({ idealText: e.target.value })} placeholder="Anything more? (optional)" maxLength={200} />
+      </Q>
+    </>,
+
+    // 6. extras + differentiators + more details
+    <>
+      <Q id={fid("extras")} title="Want any of these on your site?" hint="Pick any. All optional.">
+        <div className="flex flex-wrap gap-2.5">
+          {EXTRAS.map((x) => (
+            <Choice key={x} type="checkbox" name={fid("extras")} checked={data.extras.includes(x)} onChange={() => setData((d) => ({ ...d, extras: toggle(d.extras, x) }))} className={chip}>
+              {x}
+            </Choice>
+          ))}
+        </div>
+      </Q>
+      <Q id={fid("diff")} title="What makes you different?" optional>
+        <div className="flex flex-wrap gap-2.5">
+          {DIFFERENT.map((v) => (
+            <Choice key={v} type="checkbox" name={fid("diff")} checked={ui.diffPicks.includes(v)} onChange={() => setU({ diffPicks: toggle(ui.diffPicks, v) })} className={chip}>
+              {v}
+            </Choice>
+          ))}
+        </div>
+        <label htmlFor={fid("diffText")} className="sr-only">
+          Anything else that makes you different (optional)
+        </label>
+        <input id={fid("diffText")} className={`${inputCls} ${border()}`} value={ui.diffText} onChange={(e) => setU({ diffText: e.target.value })} placeholder="Anything else? (optional)" maxLength={300} />
+      </Q>
+
+      <div className="border-t border-ink/10 pt-5">
+        <button type="button" aria-expanded={ui.more} aria-controls={fid("more")} onClick={() => setU({ more: !ui.more })} className="text-[16px] font-semibold text-teal-ink underline-offset-4 hover:underline">
+          {ui.more ? "− Hide extra details" : "+ Add more details (optional)"}
+        </button>
+        {ui.more && (
+          <div id={fid("more")} className="mk-in-fwd mt-5 space-y-6">
+            <fieldset>
+              <legend className="mb-2 text-[16px] font-semibold">Brand colors</legend>
+              <label className="flex w-fit cursor-pointer items-center gap-2 text-[15px]">
+                <input type="checkbox" className="h-5 w-5 accent-[#0f766e]" checked={l.pickForMe} onChange={(e) => set("look", { pickForMe: e.target.checked })} />
+                Pick colors for me
+              </label>
+              {!l.pickForMe && (
+                <div className="mt-3 flex flex-wrap gap-5">
                   {(
                     [
                       ["primary", "Main color"],
                       ["accent", "Accent color"],
                     ] as const
                   ).map(([k, label]) => (
-                    <label key={k} className={`flex items-center gap-2 text-sm ${l.pickForMe ? "opacity-40" : ""}`}>
-                      <input type="color" disabled={l.pickForMe} value={l[k]} onChange={(e) => set("look", { [k]: e.target.value })} className="h-10 w-12 cursor-pointer rounded-lg border border-ink/20 bg-transparent p-0.5 disabled:cursor-not-allowed" />
+                    <label key={k} className="flex items-center gap-2 text-[15px]">
+                      <input type="color" value={l[k]} onChange={(e) => set("look", { [k]: e.target.value })} className="h-11 w-12 cursor-pointer rounded-lg border border-ink/20 bg-transparent p-0.5" />
                       {label}
                     </label>
                   ))}
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-ink/85">
-                    <input type="checkbox" className="h-4 w-4 accent-[#0f766e]" checked={l.pickForMe} onChange={(e) => set("look", { pickForMe: e.target.checked })} />
-                    Pick for me
-                  </label>
                 </div>
-              </fieldset>
+              )}
+            </fieldset>
 
-              <Field id={fid("logo")} label="Logo" optional error={errors.logo} hint="Image files only, up to 5MB.">
-                {l.logo ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-ink/15 bg-white p-3">
-                    {logoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={logoUrl} alt="Your uploaded logo" className="h-12 w-12 rounded-lg bg-white object-contain p-1" />
-                    ) : (
-                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-ink/5 text-xs text-ink/70">IMG</span>
-                    )}
-                    <div className="min-w-0 flex-1 text-sm">
-                      <div className="truncate">{l.logo.name}</div>
-                      {!logoFile && <div className="text-xs text-amber-800">Please re-attach after a page refresh.</div>}
-                    </div>
-                    <button type="button" onClick={removeLogo} className="rounded-full border border-ink/15 px-3 py-1 text-xs hover:bg-ink/5">
-                      Remove
-                    </button>
-                  </div>
-                ) : (
+            <div>
+              <label htmlFor={fid("logo")} className="mb-2 block text-[16px] font-semibold">
+                Logo <span className="font-normal text-ink/55">(image, up to 5 MB)</span>
+              </label>
+              {l.logo ? (
+                <div className="flex items-center gap-3 rounded-2xl border-2 border-ink/12 bg-white p-3">
+                  {logoUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoUrl} alt="Your uploaded logo" className="h-12 w-12 rounded-lg object-contain" />
+                  )}
+                  <span className="min-w-0 flex-1 truncate text-[15px]">{l.logo.name}</span>
+                  <button type="button" onClick={removeLogo} className="rounded-full border border-ink/15 px-3 py-1.5 text-sm hover:bg-ink/5">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <input
+                  id={fid("logo")}
+                  type="file"
+                  accept="image/*"
+                  aria-invalid={logoErr ? true : undefined}
+                  aria-describedby={logoErr ? fid("logo-err") : undefined}
+                  onChange={(e) => onLogo(e.target.files?.[0])}
+                  className="block w-full cursor-pointer rounded-2xl border-2 border-dashed border-ink/20 bg-white p-3 text-[15px] text-ink/70 file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink/5 file:px-4 file:py-2 file:font-semibold file:text-ink"
+                />
+              )}
+              <Err id={fid("logo-err")} error={logoErr ?? undefined} />
+            </div>
+
+            <fieldset className="space-y-2">
+              <legend className="mb-2 text-[16px] font-semibold">Websites you like</legend>
+              {[0, 1].map((i) => (
+                <div key={i}>
+                  <label htmlFor={fid(`like${i}`)} className="sr-only">
+                    Website you like {i + 1}
+                  </label>
                   <input
-                    {...describe(fid("logo"), errors.logo, "y")}
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => onLogo(e.target.files?.[0])}
-                    className="block w-full cursor-pointer rounded-xl border border-dashed border-ink/20 bg-white p-3 text-sm text-ink/75 file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink/5 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-ink hover:border-teal/50"
+                    id={fid(`like${i}`)}
+                    className={`${inputCls} ${border()}`}
+                    value={l.likes[i]}
+                    inputMode="url"
+                    onChange={(e) => {
+                      const v = [...l.likes] as [string, string];
+                      v[i] = e.target.value;
+                      set("look", { likes: v });
+                    }}
+                    placeholder="https://…"
                   />
-                )}
-              </Field>
+                </div>
+              ))}
+            </fieldset>
 
-              <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-sm font-medium text-ink/90">
-                  1–2 websites you like <span className="font-normal text-ink/70">(optional)</span>
-                </legend>
-                {[0, 1].map((i) => (
-                  <div key={i}>
-                    <label htmlFor={fid(`like${i}`)} className="sr-only">
-                      Website you like {i + 1}
-                    </label>
-                    <input
-                      {...describe(fid(`like${i}`), errors[`like${i}`])}
-                      className={`${inputCls} ${border(errors[`like${i}`])}`}
-                      value={l.likes[i]}
-                      inputMode="url"
-                      onChange={(e) => {
-                        const v = [...l.likes] as [string, string];
-                        v[i] = e.target.value;
-                        set("look", { likes: v });
-                      }}
-                      placeholder="https://…"
-                    />
-                    {errors[`like${i}`] && (
-                      <p id={`${fid(`like${i}`)}-err`} className="mt-1 text-xs font-medium text-red-700" role="alert">
-                        {errors[`like${i}`]}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </fieldset>
-            </>
-          )}
-
-          {/* ---------- 5. extras ---------- */}
-          {step === 4 && (
             <fieldset>
-              <legend className="mb-3 text-sm text-ink/80">Optional add-ons. Check anything you&apos;d like us to include in your mockup or talk about.</legend>
-              <div className="space-y-2">
-                {EXTRAS.map((x) => {
-                  const on = data.extras.includes(x.key);
-                  return (
-                    <label key={x.key} className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition ${on ? "border-violet/60 bg-violet/10" : "border-ink/15 bg-white hover:border-ink/30"}`}>
-                      <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[#1f6feb]" checked={on} onChange={() => setData((d) => ({ ...d, extras: toggleIn(d.extras, x.key) }))} />
-                      <span>
-                        <span className="block text-sm font-semibold">{x.key}</span>
-                        <span className="block text-xs text-ink/75">{x.d}</span>
-                      </span>
-                    </label>
-                  );
-                })}
+              <legend className="mb-2 text-[16px] font-semibold">Average job value</legend>
+              <div className="flex flex-wrap gap-2">
+                {JOB_VALUES.map((v) => (
+                  <Choice key={v} type="radio" name={fid("jobValue")} checked={c.jobValue === v} onChange={() => set("customers", { jobValue: v })} className="min-h-11 px-3.5 py-2 text-[14px] font-semibold">
+                    {v}
+                  </Choice>
+                ))}
               </div>
             </fieldset>
-          )}
 
-          {/* ---------- 6. contact ---------- */}
-          {step === 5 && (
-            <>
-              <Field id={fid("cname")} label="Your name" error={errors.cname}>
-                <input {...describe(fid("cname"), errors.cname)} className={`${inputCls} ${border(errors.cname)}`} value={ct.name} onChange={(e) => set("contact", { name: e.target.value })} autoComplete="name" />
-              </Field>
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Field id={fid("phone")} label="Phone" error={errors.phone}>
-                  <input {...describe(fid("phone"), errors.phone)} type="tel" inputMode="tel" autoComplete="tel" className={`${inputCls} ${border(errors.phone)}`} value={ct.phone} onChange={(e) => set("contact", { phone: e.target.value })} placeholder="(201) 555-0123" />
-                </Field>
-                <Field id={fid("email")} label="Email" optional error={errors.email}>
-                  <input {...describe(fid("email"), errors.email)} type="email" autoComplete="email" className={`${inputCls} ${border(errors.email)}`} value={ct.email} onChange={(e) => set("contact", { email: e.target.value })} placeholder="you@company.com" />
-                </Field>
-              </div>
-              <Field id={fid("bestTime")} label="Best time to reach you">
-                <select id={fid("bestTime")} className={`${inputCls} ${border()}`} value={ct.bestTime} onChange={(e) => set("contact", { bestTime: e.target.value })}>
-                  {BEST_TIMES.map((o) => (
-                    <option key={o} className="">
-                      {o}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <fieldset>
-                <legend className="mb-2 text-sm font-medium text-ink/90">How should we contact you?</legend>
-                <div className="flex gap-2">
-                  {METHODS.map((m) => {
-                    const on = ct.method === m;
-                    return (
-                      <label key={m} className={`flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-center text-sm font-semibold transition focus-within:ring-2 focus-within:ring-teal/70 ${on ? "border-teal bg-teal/15 text-teal-ink" : "border-ink/15 bg-white text-ink/85 hover:border-ink/30"}`}>
-                        <input type="radio" name={fid("method")} value={m} checked={on} onChange={() => set("contact", { method: m })} className="sr-only" />
-                        {m}
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-              <div>
-                <label className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 ${errors.consent ? "border-red-400/70" : "border-ink/15"} bg-white`}>
-                  <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-[#0f766e]" checked={ct.consent} aria-invalid={errors.consent ? true : undefined} aria-describedby={errors.consent ? fid("consent-err") : undefined} onChange={(e) => set("contact", { consent: e.target.checked })} />
-                  <span className="text-sm text-ink/85">Yes, Overpeck Labs can contact me about my free mockup by phone, text or email. No spam, and no obligation.</span>
-                </label>
-                <GroupError id={fid("consent-err")} error={errors.consent} />
-              </div>
-              {status === "error" && (
-                <p role="alert" className="rounded-xl border border-red-400/50 bg-red-400/10 p-3 text-sm text-red-700">
-                  We couldn&apos;t send your request. Please call {PHONE_DISPLAY}. (You can also try again in a moment.)
-                </p>
-              )}
-            </>
-          )}
+            <div>
+              <label htmlFor={fid("gbp")} className="mb-2 block text-[16px] font-semibold">
+                Google Business Profile link
+              </label>
+              <input id={fid("gbp")} className={`${inputCls} ${border()}`} value={b.gbp} onChange={(e) => set("business", { gbp: e.target.value })} inputMode="url" placeholder="https://maps.app.goo.gl/…" />
+            </div>
+
+            <div>
+              <label htmlFor={fid("headache")} className="mb-2 block text-[16px] font-semibold">
+                Biggest headache right now
+              </label>
+              <textarea id={fid("headache")} rows={3} maxLength={400} className={`${inputCls} ${border()}`} value={data.goals.headache} onChange={(e) => set("goals", { headache: e.target.value })} placeholder="e.g. I miss calls while I'm on jobs" />
+            </div>
+          </div>
+        )}
+      </div>
+    </>,
+
+    // 7. contact (required)
+    <>
+      <Q as="div" id={fid("cname")} title="What's your name?">
+        <input {...describe("cname")} className={`${inputCls} ${border(errors.cname)}`} value={ct.name} onChange={(e) => set("contact", { name: e.target.value })} autoComplete="name" placeholder="First and last name" maxLength={120} />
+        <Err id={fid("cname-err")} error={errors.cname} />
+      </Q>
+      <Q id={fid("reach")} title="Where should we send your mockup?" hint="Email, phone, or both.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label htmlFor={fid("email")} className="mb-1.5 block text-[15px] font-semibold text-ink/75">
+              Email
+            </label>
+            <input
+              id={fid("email")}
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              aria-invalid={errors.email || errors.reach ? true : undefined}
+              aria-describedby={errors.email ? fid("email-err") : errors.reach ? fid("reach-err") : undefined}
+              className={`${inputCls} ${border(errors.email || errors.reach)}`}
+              value={ct.email}
+              onChange={(e) => set("contact", { email: e.target.value })}
+              placeholder="you@company.com"
+            />
+            <Err id={fid("email-err")} error={errors.email} />
+          </div>
+          <div>
+            <label htmlFor={fid("phone")} className="mb-1.5 block text-[15px] font-semibold text-ink/75">
+              Phone
+            </label>
+            <input
+              id={fid("phone")}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              aria-invalid={errors.phone || errors.reach ? true : undefined}
+              aria-describedby={errors.phone ? fid("phone-err") : errors.reach ? fid("reach-err") : undefined}
+              className={`${inputCls} ${border(errors.phone || errors.reach)}`}
+              value={ct.phone}
+              onChange={(e) => set("contact", { phone: e.target.value })}
+              placeholder="(201) 555-0123"
+            />
+            <Err id={fid("phone-err")} error={errors.phone} />
+          </div>
         </div>
+        <Err id={fid("reach-err")} error={errors.reach} />
+        <fieldset>
+          <legend className="mb-2 text-[15px] font-semibold text-ink/75">Best way to reach you</legend>
+          <div className="grid grid-cols-3 gap-2.5">
+            {METHODS.map((m) => (
+              <Choice key={m} type="radio" name={fid("method")} checked={ct.method === m} onChange={() => set("contact", { method: m })} className={`${chip} justify-center`}>
+                {m}
+              </Choice>
+            ))}
+          </div>
+        </fieldset>
+        <div>
+          <label className={`flex cursor-pointer items-start gap-3 rounded-2xl border-2 bg-white px-4 py-3.5 ${errors.consent ? "border-mk-red/70" : "border-ink/12"}`}>
+            <input
+              type="checkbox"
+              className="mt-0.5 h-5 w-5 shrink-0 accent-[#0f766e]"
+              checked={ct.consent}
+              aria-invalid={errors.consent ? true : undefined}
+              aria-describedby={errors.consent ? fid("consent-err") : undefined}
+              onChange={(e) => set("contact", { consent: e.target.checked })}
+            />
+            <span className="text-[15px] leading-snug text-ink/85">Yes, Overpeck Labs can contact me about my free mockup by phone, text or email. No spam, no obligation.</span>
+          </label>
+          <Err id={fid("consent-err")} error={errors.consent} />
+        </div>
+        {status === "error" && (
+          <p role="alert" className="rounded-2xl border border-mk-red/40 bg-mk-red/5 p-3 text-[15px] text-mk-red">
+            We couldn&apos;t send your request. Please try again in a moment, or call {PHONE_DISPLAY}.
+          </p>
+        )}
+      </Q>
+    </>,
+  ];
 
-        {/* nav buttons */}
-        <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink/10 pt-6">
-          {step > 0 ? (
-            <button type="button" onClick={() => goTo(step - 1)} className="btn-ghost">
-              ← Back
-            </button>
-          ) : (
-            <span />
-          )}
-          <button type="submit" className="btn-primary min-w-[9rem]" disabled={status === "sending"}>
-            {step < STEPS.length - 1 ? "Next →" : status === "sending" ? "Sending…" : "Get My Free Mockup"}
+  const last = step === STEPS - 1;
+  const showSkip = !required && !(a1 && a2);
+
+  return (
+    <form ref={formRef} onSubmit={onContinue} onKeyDown={onKeyDown} noValidate className="mx-auto max-w-[560px] scroll-mt-20" aria-busy={!ready}>
+      <HoneypotField ref={honeypot} />
+      {bar}
+
+      <div ref={screenRef} key={step} className={`${dir === "fwd" ? "mk-in-fwd" : "mk-in-back"} space-y-10 pt-6`}>
+        {screens[step]}
+      </div>
+
+      {/* Continue: sticky at the bottom on mobile, inline on larger screens. */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-[#f8f8f5]/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        <div className="mx-auto flex max-w-[560px] items-center gap-4">
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            className={`min-h-14 flex-1 rounded-full border-2 px-6 text-[17px] font-bold transition sm:flex-none sm:min-w-[14rem] ${
+              lit ? "border-ink/20 bg-teal text-[#06201c] shadow-[0_8px_22px_rgba(13,148,136,0.28)] hover:bg-[#3ff6dd]" : "border-ink/10 bg-ink/[0.07] text-ink/55"
+            } disabled:opacity-70`}
+          >
+            {last ? (status === "sending" ? "Sending…" : "Get my free mockup") : "Continue"}
           </button>
+          {showSkip && (
+            <button type="button" onClick={() => goTo(step + 1)} className="shrink-0 px-2 py-2 text-[16px] font-semibold text-ink/55 underline-offset-4 hover:text-ink hover:underline">
+              Skip
+            </button>
+          )}
         </div>
       </div>
     </form>
-  );
-}
-
-/* ---------- summary ---------- */
-
-function Summary({ d }: { d: MockupRequest }) {
-  const rows: [string, [string, string][]][] = [
-    [
-      "Your Business",
-      [
-        ["Business", d.business.name],
-        ["Industry", d.business.industry === "Other" ? d.business.industryOther : d.business.industry],
-        ["Service area", d.business.area],
-        ["Years in business", d.business.years],
-        ["Current website", d.business.noWebsite ? "None yet" : d.business.website],
-        ["Google profile", d.business.gbp],
-      ],
-    ],
-    [
-      "Customers & Services",
-      [
-        ["Top services", d.customers.services.filter(Boolean).join(", ")],
-        ["Ideal customer", d.customers.ideal],
-        ["Average job", d.customers.jobValue],
-        ["What makes you different", d.customers.different],
-      ],
-    ],
-    [
-      "Goals",
-      [
-        ["Timeline", TIMELINES.find((t) => t.value === d.goals.timeline)?.label ?? ""],
-        ["Goals", d.goals.goals.join(", ")],
-        ["Biggest headache", d.goals.headache],
-      ],
-    ],
-    [
-      "Look & Feel",
-      [
-        ["Style", d.look.style],
-        ["Colors", d.look.pickForMe ? "Pick for me" : `${d.look.primary} / ${d.look.accent}`],
-        ["Logo", d.look.logo?.name ?? ""],
-        ["Sites you like", d.look.likes.filter(Boolean).join(", ")],
-      ],
-    ],
-    ["Extras", [["Add-ons", d.extras.join(", ") || "None"]]],
-    [
-      "Contact",
-      [
-        ["Name", d.contact.name],
-        ["Phone", d.contact.phone],
-        ["Email", d.contact.email],
-        ["Best time", d.contact.bestTime],
-        ["Preferred contact", d.contact.method],
-      ],
-    ],
-  ];
-  return (
-    <div className="mt-8 space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-teal-ink">Your answers</h3>
-      {rows.map(([title, items]) => (
-        <div key={title} className="rounded-2xl border border-ink/10 bg-white p-4">
-          <h4 className="mb-2 text-sm font-semibold">{title}</h4>
-          <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
-            {items
-              .filter(([, v]) => v)
-              .map(([k, v]) => (
-                <div key={k} className="contents">
-                  <dt className="text-ink/70">{k}</dt>
-                  <dd className="break-words text-ink/90">
-                    {k === "Colors" && !d.look.pickForMe ? (
-                      <span className="inline-flex items-center gap-2">
-                        <span className="h-3.5 w-3.5 rounded-full border border-ink/20" style={{ background: d.look.primary }} />
-                        <span className="h-3.5 w-3.5 rounded-full border border-ink/20" style={{ background: d.look.accent }} />
-                        {v}
-                      </span>
-                    ) : (
-                      v
-                    )}
-                  </dd>
-                </div>
-              ))}
-          </dl>
-        </div>
-      ))}
-    </div>
   );
 }
