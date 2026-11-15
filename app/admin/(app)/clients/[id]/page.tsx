@@ -272,7 +272,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           </Card>
 
           <Card title="Danger zone">
-            <p className="mb-3 text-sm text-ink/65">Done working together? Set the status to Past to keep the history.</p>
+            <p className="mb-3 text-sm text-ink/65">Done working together? Move them to Old Clients to keep the history.</p>
             <ConfirmButton
               label="Delete client…"
               title={`Delete ${client.business_name}?`}

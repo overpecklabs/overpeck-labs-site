@@ -7,7 +7,7 @@ import { STAGE_LABEL, normalizeStage } from "@/lib/admin/labels";
 import { CLIENT_STATUSES, type Client, type ClientStage } from "@/lib/admin/types";
 import { ActionError } from "./controls";
 
-export default function ClientForm({ client, defaultStage = "lead" }: { client?: Client; defaultStage?: ClientStage }) {
+export default function ClientForm({ client, defaultStage = "prospect" }: { client?: Client; defaultStage?: ClientStage }) {
   const [state, action, pending] = useActionState(client ? updateClientAction : createClientAction, null);
   const v = (k: keyof Client) => (client?.[k] as string | null | undefined) ?? "";
 

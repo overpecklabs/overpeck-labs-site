@@ -426,6 +426,15 @@ export async function logCommunication(fd: FormData): Promise<ActionResult> {
     created_by: me,
   });
   if (error) return fail(friendlyError(error, "Couldn't save the entry."));
+
+  // Auto stage: reaching out (outgoing text, email or call) to a prospect makes them a lead.
+  if (v.direction === "out" && (v.channel === "sms" || v.channel === "email" || v.channel === "call")) {
+    const { data: c } = await supabase.from("clients").select("status").eq("id", v.client_id).maybeSingle<{ status: string }>();
+    if (c && normalizeStage(c.status) === "prospect") {
+      const { error: moveErr } = await supabase.from("clients").update({ status: "lead" }).eq("id", v.client_id).eq("status", c.status);
+      if (!moveErr) await logStageNote(supabase, me, v.client_id, "prospect", "lead");
+    }
+  }
   done();
   return { ok: true };
 }

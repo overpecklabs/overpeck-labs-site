@@ -6,6 +6,6 @@
 begin;
 
 update public.clients set status = 'client'   where status in ('active', 'paused');
-update public.clients set status = 'archived' where status = 'past';
+update public.clients set status = 'old_client' where status = 'past';
 
 commit;

@@ -86,7 +86,7 @@ export default async function DashboardPage() {
     <>
       <PageHeader title="Dashboard" subtitle={`Today is ${fmtDay(today)} (New York time)`} />
 
-      <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {CLIENT_STATUSES.map((s) => (
           <Link key={s} href={`/admin/clients?status=${s}`} className={`adm-card ${TONE[s] ?? "bg-white"} p-4 transition hover:-translate-y-0.5`}>
             <p className="text-xs font-semibold uppercase tracking-wide text-ink/60">{STAGE_COLUMN[s]}</p>

@@ -1,7 +1,7 @@
 // Hand-written row types for the admin back end (public schema). Statuses match the DB CHECK constraints.
 
 /** Pipeline stages, in board order. These are the only statuses the admin writes. */
-export const CLIENT_STATUSES = ["prospect", "lead", "hot_lead", "client", "archived"] as const;
+export const CLIENT_STATUSES = ["prospect", "lead", "hot_lead", "client", "old_client", "archived"] as const;
 /** Old values the DB still allows (until the migration runs). Read-only: mapped via normalizeStage(). */
 export const LEGACY_CLIENT_STATUSES = ["active", "paused", "past"] as const;
 export const PROJECT_TYPES = ["website", "workflow", "tracking", "ai", "marketing", "other"] as const;
