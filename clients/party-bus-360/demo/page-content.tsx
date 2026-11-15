@@ -1,30 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { data } from "./data";
 
 /* Party Bus 360 homepage mockup. Display-only: no form sends anything anywhere. */
 
-const PHONE_DISPLAY = "(201) 754-4285";
-const TEL = "tel:+12017544285";
-const SMS = "sms:+12017544285";
+const PHONE_DISPLAY = data.phone.display;
+const TEL = data.phone.tel;
+const SMS = data.sms;
 const DEMO_MSG = "Demo only, this form isn't connected yet.";
 
-const EVENTS = ["Wedding", "Night out / nightlife", "Corporate event", "Other booking"];
+const EVENTS = data.events;
+const FAQS = data.faqs;
 
-const SERVICES = [
-  { title: "Weddings", body: "Get the wedding party, family and guests between the ceremony, photos and reception together.", icon: "M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" },
-  { title: "Nightlife", body: "Birthdays, bachelor and bachelorette parties and nights out, with one ride for the whole group.", icon: "M12 3v2M12 19v2M5 12H3M21 12h-2M7 7 5.5 5.5M18.5 18.5 17 17M7 17l-1.5 1.5M18.5 5.5 17 7M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" },
-  { title: "Corporate events", body: "Team outings, client events and company parties, with everyone arriving together and on time.", icon: "M4 7h16v12H4zM9 7V5h6v2M4 12h16" },
-  { title: "Other bookings", body: "Have a different occasion in mind? Tell us about it and we'll let you know if we can help.", icon: "M12 5v14M5 12h14" },
+const SERVICE_ICONS = [
+  "M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z",
+  "M12 3v2M12 19v2M5 12H3M21 12h-2M7 7 5.5 5.5M18.5 18.5 17 17M7 17l-1.5 1.5M18.5 5.5 17 7M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+  "M4 7h16v12H4zM9 7V5h6v2M4 12h16",
+  "M12 5v14M5 12h14",
 ];
-
-const FAQS = [
-  { q: "Do you do airport trips?", a: "No. Party Bus 360 doesn't book airport transfers. We focus on weddings, nightlife, corporate events and other group outings." },
-  { q: "Which areas do you serve?", a: "We're based in Bergen County and serve all of New Jersey." },
-  { q: "How fast can I get a quote?", a: "Instantly. Fill out the quote form and you'll see your quote right away, followed by an email with the details." },
-  { q: "How many people fit on a party bus?", a: "[Placeholder: add passenger capacity for each vehicle.]" },
-  { q: "How far ahead should I book?", a: "[Placeholder: add your recommended booking window and deposit policy.]" },
-];
+const SERVICES = data.services.map((s, i) => ({ ...s, icon: SERVICE_ICONS[i % SERVICE_ICONS.length] }));
 
 function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
   return (
@@ -398,7 +393,7 @@ export default function PartyBus360() {
               </article>
             ))}
           </div>
-          <p className="mx-auto mt-6 max-w-6xl text-center text-sm text-slate-500">Please note: we don&apos;t offer airport trips.</p>
+          <p className="mx-auto mt-6 max-w-6xl text-center text-sm text-slate-500">Please note: we don&apos;t offer {data.excludes}.</p>
         </section>
 
         {/* quote + booking */}

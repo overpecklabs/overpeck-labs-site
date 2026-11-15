@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Marketing site for Overpeck Labs",
   "scripts": {
+    "predev": "node scripts/sync-demo-assets.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/sync-demo-assets.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "demo-assets": "node scripts/sync-demo-assets.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

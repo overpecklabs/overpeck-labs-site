@@ -96,14 +96,15 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
     : 'A "Get a free quote" button that scrolls to a quote request form';
   const services = r("top_services") || `typical core services for a ${industry || "local service"} business (label them as suggested)`;
   const differentiator = r("differentiator") || "nothing provided; use a short, generic why-us section with clearly labeled placeholder points";
-  const area = town ? `${town}, NJ and nearby Bergen County towns (only name ${town} specifically)` : "Bergen County, NJ";
+  const area = town ? `${town}, NJ and nearby Bergen County towns (name only places that appear in the business data below)` : "Bergen County, NJ";
   const features = extras.length ? extras.join(", ") : "none requested";
   const style = r("style") || "clean, modern and trustworthy";
   const colors = r("brand_colors") || "none given; pick a tasteful palette that suits the industry";
   const inspiration = r("inspiration_sites") || "none given";
 
+  const camel = slug.replace(/-([a-z0-9])/g, (_, ch: string) => ch.toUpperCase()).replace(/^[^a-z_]/, (ch) => `demo${ch}`);
   const logoLine = logo
-    ? `Logo: download it from this signed link (valid for 24 hours) and save it as public/demos/${slug}/logo.${logo.ext}, then use it in the header:\n${logo.url}`
+    ? `Logo: download it from this signed link (valid for 24 hours) and save it as clients/${slug}/assets/logo.${logo.ext} and public/demos/${slug}/logo.${logo.ext}, then set logo: "/demos/${slug}/logo.${logo.ext}" in data.ts and use it in the header:\n${logo.url}`
     : `Logo: none provided. Use a clean text logo of "${businessName}" in the header.`;
 
   const missing = !request ? `\nSome details are missing; use sensible defaults for a ${industry || "local service"} business in ${town || "Bergen County"}, NJ.\n` : "";
@@ -112,9 +113,13 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
 
 SETUP
 - Create a new branch demo/${slug} from admin-backend (that's where the /demo structure lives; if main already has app/demo/[slug], branch from main instead). Do NOT merge into main or push to main.
-- Add the company to the DEMOS list in lib/demos.ts: { slug: "${slug}", businessName: "${businessName.replace(/"/g, '\\"')}", load: () => import("@/components/demos/${slug}") }.
-- Build the page as components/demos/${slug}.tsx (default export). It is served at /demo/${slug} by app/demo/[slug]/page.tsx, which already adds noindex/nofollow, keeps it out of the sitemap and shows the "Free homepage mockup for ${businessName}" banner. Don't change those shared files, other demos, or any other page.
-- Put any images in public/demos/${slug}/.
+- Read clients/README.md first. Copy the clients/_template folder to clients/${slug}/ and build the whole demo inside that folder:
+  - clients/${slug}/demo/data.ts: set slug "${slug}", businessName "${businessName.replace(/"/g, '\\"')}", and fill in colors, services, phone and the other fields from the business data below. Replace every [PLACEHOLDER].
+  - clients/${slug}/demo/page-content.tsx: the homepage (all its sections), reading from data.ts.
+  - clients/${slug}/assets/: the logo and any images. Also copy them to public/demos/${slug}/ (npm run demo-assets does this) and reference them as /demos/${slug}/<file>. Commit both copies.
+  - clients/${slug}/notes.md: industry, town, today's date as the demo creation date, and the preview URL.
+- Register it in lib/demos.ts: import ${camel} from "@/clients/${slug}"; and add ${camel} to the DEMOS array.
+- The page is served at /demo/${slug} by app/demo/[slug]/page.tsx, which already adds noindex/nofollow, the view tracker, keeps it out of the sitemap and shows the "Free homepage mockup for ${businessName}" banner. Don't change those shared files, clients/_template, other clients' folders, or any other page.
 
 THE PAGE: one polished, mobile-first homepage
 - Hero: a clear headline about what they do and where, plus the primary CTA: ${primaryCta}.
@@ -138,6 +143,7 @@ ${lines.join("\n")}
 ${callLines.length ? `\nCALL SUMMARIES\n${callLines.join("\n")}\n` : ""}
 FINISH
 - Run npm run lint and npm run build and fix any errors.
+- Put the preview URL in clients/${slug}/notes.md.
 - Commit with the message "Demo: ${businessName}" and push the demo/${slug} branch to origin.
 - Reply with the Vercel preview URL for /demo/${slug} (the branch preview usually looks like https://overpeck-labs-site-git-demo-${slug}-markqsai-8173.vercel.app/demo/${slug}?preview=1; keep ?preview=1 on links you share with Overpeck Labs so our own views aren't counted; confirm the real URL from the Vercel deployment for the branch).
 `;
