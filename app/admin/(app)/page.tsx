@@ -1,0 +1,244 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { setDeliverableStatus } from "@/app/admin/actions";
+import { ActionButton } from "@/components/admin/controls";
+import { Badge, Card, ChannelIcon, DbError, Empty, PageHeader } from "@/components/admin/ui";
+import { requireAdmin } from "@/lib/admin/auth";
+import { fmtDateTime, fmtDay, todayNY } from "@/lib/admin/format";
+import { CHANNEL_LABEL, CLIENT_STATUS_LABEL, CLOSED_PROJECT_STATUSES, PROJECT_STATUS_LABEL } from "@/lib/admin/labels";
+import { PROJECT_STATUSES, type Communication, type ContactMessage, type Deliverable, type MockupRequest, type ProjectStatus } from "@/lib/admin/types";
+
+export const metadata: Metadata = { title: "Dashboard" };
+
+type DueRow = Deliverable & { projects: { id: string; name: string; clients: { id: string; business_name: string } | null } | null };
+type CommRow = Pick<Communication, "id" | "channel" | "direction" | "summary" | "body" | "occurred_at" | "client_id"> & { clients: { id: string; business_name: string } | null };
+
+export default async function DashboardPage() {
+  const { supabase } = await requireAdmin();
+  const today = todayNY();
+  const in7 = todayNY(7);
+  const weekEnd = todayNY(6);
+  const since = new Date(Date.now() - 14 * 86400000).toISOString();
+
+  const count = (status: string) => supabase.from("clients").select("id", { count: "exact", head: true }).eq("status", status);
+  const [lead, prospect, active, projects, due, comms, mockups, messages] = await Promise.all([
+    count("lead"),
+    count("prospect"),
+    count("active"),
+    supabase.from("projects").select("status").overrideTypes<{ status: ProjectStatus }[], { merge: false }>(),
+    supabase
+      .from("deliverables")
+      .select("*, projects(id, name, clients(id, business_name))")
+      .neq("status", "done")
+      .not("due_date", "is", null)
+      .lte("due_date", in7)
+      .order("due_date", { ascending: true })
+      .limit(100)
+      .overrideTypes<DueRow[], { merge: false }>(),
+    supabase
+      .from("communications")
+      .select("id, channel, direction, summary, body, occurred_at, client_id, clients(id, business_name)")
+      .order("occurred_at", { ascending: false })
+      .limit(15)
+      .overrideTypes<CommRow[], { merge: false }>(),
+    supabase
+      .from("mockup_requests")
+      .select("id, client_id, business_name, contact_name, phone, industry, town, timeline, source_page, retell_call_id, created_at")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(10)
+      .overrideTypes<MockupRequest[], { merge: false }>(),
+    supabase
+      .from("contact_messages")
+      .select("id, client_id, name, business_name, phone, services, message, created_at")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(10)
+      .overrideTypes<ContactMessage[], { merge: false }>(),
+  ]);
+
+  const err = [lead, prospect, active, projects, due, comms, mockups, messages].find((r) => r.error)?.error;
+  if (err) return <DbError error={err} />;
+
+  const byStatus = new Map<ProjectStatus, number>();
+  (projects.data ?? []).forEach((p) => byStatus.set(p.status, (byStatus.get(p.status) ?? 0) + 1));
+  const openProjects = (projects.data ?? []).filter((p) => !CLOSED_PROJECT_STATUSES.includes(p.status)).length;
+  const maxCount = Math.max(1, ...Array.from(byStatus.values()));
+
+  const dueRows = due.data ?? [];
+  const overdue = dueRows.filter((d) => d.due_date! < today);
+  const upcoming = dueRows.filter((d) => d.due_date! >= today);
+  const dueThisWeek = upcoming.filter((d) => d.due_date! <= weekEnd).length;
+
+  const stats = [
+    { label: CLIENT_STATUS_LABEL.lead + "s", value: lead.count ?? 0, href: "/admin/clients?status=lead", tone: "bg-note-yellow" },
+    { label: CLIENT_STATUS_LABEL.prospect + "s", value: prospect.count ?? 0, href: "/admin/clients?status=prospect", tone: "bg-note-blue" },
+    { label: "Active clients", value: active.count ?? 0, href: "/admin/clients?status=active", tone: "bg-note-green" },
+    { label: "Open projects", value: openProjects, href: "/admin/projects?open=1", tone: "bg-note-teal" },
+    { label: "Due this week", value: dueThisWeek, href: "#due", tone: "bg-white" },
+    { label: "Overdue", value: overdue.length, href: "#due", tone: overdue.length ? "bg-mk-red/10" : "bg-white" },
+  ];
+
+  return (
+    <>
+      <PageHeader title="Dashboard" subtitle={`Today is ${fmtDay(today)} (New York time)`} />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {stats.map((s) => (
+          <Link key={s.label} href={s.href} className={`adm-card ${s.tone} p-4 transition hover:-translate-y-0.5`}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink/60">{s.label}</p>
+            <p className={`mt-1 font-display text-3xl font-bold tabular-nums ${s.label === "Overdue" && s.value ? "text-mk-red" : ""}`}>{s.value}</p>
+          </Link>
+        ))}
+      </div>
+
+      <Card title="Projects by status" className="mt-6">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+          {PROJECT_STATUSES.map((s) => {
+            const n = byStatus.get(s) ?? 0;
+            return (
+              <Link key={s} href={`/admin/projects?status=${s}`} className="group rounded-xl border border-ink/[0.08] bg-white p-3 hover:border-ink/30">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs font-semibold text-ink/70">{PROJECT_STATUS_LABEL[s]}</span>
+                  <span className="font-display text-xl font-bold tabular-nums">{n}</span>
+                </div>
+                <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-ink/[0.07]">
+                  <span className="block h-full rounded-full bg-teal-ink" style={{ width: `${(n / maxCount) * 100}%` }} />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </Card>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div id="due" className="scroll-mt-20">
+          <Card title="Deliverables: overdue and due in the next 7 days">
+            {dueRows.length === 0 ? (
+              <Empty>Nothing due this week. Nice.</Empty>
+            ) : (
+              <ul className="space-y-2">
+                {[...overdue, ...upcoming].map((d) => {
+                  const late = d.due_date! < today;
+                  return (
+                    <li key={d.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-ink/[0.07] bg-white/70 p-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold">{d.title}</p>
+                        <p className="text-xs text-ink/60">
+                          {d.projects ? (
+                            <Link href={`/admin/projects/${d.projects.id}`} className="font-semibold hover:underline">
+                              {d.projects.name}
+                            </Link>
+                          ) : (
+                            "Project"
+                          )}
+                          {d.projects?.clients && (
+                            <>
+                              {" · "}
+                              <Link href={`/admin/clients/${d.projects.clients.id}`} className="hover:underline">
+                                {d.projects.clients.business_name}
+                              </Link>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                      <span className={`text-xs font-semibold ${late ? "text-mk-red" : "text-ink/65"}`}>
+                        {late ? "Overdue · " : "Due "}
+                        {fmtDay(d.due_date)}
+                      </span>
+                      <ActionButton run={setDeliverableStatus.bind(null, d.id, "done")} className="adm-btn !px-3 !py-1 text-xs" pendingLabel="Saving…">
+                        ✓ Mark done
+                      </ActionButton>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+        </div>
+
+        <Card title="Recent communications">
+          {(comms.data ?? []).length === 0 ? (
+            <Empty>No communications yet.</Empty>
+          ) : (
+            <ul className="divide-y divide-ink/[0.07]">
+              {(comms.data ?? []).map((c) => (
+                <li key={c.id} className="flex items-start gap-3 py-2.5">
+                  <ChannelIcon channel={c.channel} />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap gap-x-2 text-xs text-ink/60">
+                      <span className="font-semibold text-ink">{CHANNEL_LABEL[c.channel]}</span>
+                      {c.direction && <span>{c.direction === "in" ? "Incoming" : "Outgoing"}</span>}
+                      {c.clients && (
+                        <Link href={`/admin/clients/${c.clients.id}`} className="font-semibold text-teal-ink hover:underline">
+                          {c.clients.business_name}
+                        </Link>
+                      )}
+                    </p>
+                    <p className="truncate text-sm">{c.summary || c.body || <span className="text-ink/45">No summary</span>}</p>
+                  </div>
+                  <time className="shrink-0 text-xs text-ink/55">{fmtDateTime(c.occurred_at)}</time>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card title="New mockup requests (14 days)">
+          {(mockups.data ?? []).length === 0 ? (
+            <Empty>No new mockup requests.</Empty>
+          ) : (
+            <ul className="divide-y divide-ink/[0.07]">
+              {(mockups.data ?? []).map((m) => (
+                <IntakeRow
+                  key={m.id}
+                  href={m.client_id ? `/admin/clients/${m.client_id}#intake` : null}
+                  title={m.business_name || m.contact_name || "Mockup request"}
+                  sub={[m.contact_name, m.industry, m.town, m.timeline].filter(Boolean).join(" · ")}
+                  tag={m.retell_call_id ? "Phone (Mindy)" : "Web form"}
+                  when={fmtDateTime(m.created_at)}
+                />
+              ))}
+            </ul>
+          )}
+        </Card>
+        <Card title="New contact messages (14 days)">
+          {(messages.data ?? []).length === 0 ? (
+            <Empty>No new contact messages.</Empty>
+          ) : (
+            <ul className="divide-y divide-ink/[0.07]">
+              {(messages.data ?? []).map((m) => (
+                <IntakeRow
+                  key={m.id}
+                  href={m.client_id ? `/admin/clients/${m.client_id}#intake` : null}
+                  title={m.business_name || m.name || "Contact message"}
+                  sub={m.message ?? (m.services ?? []).join(", ")}
+                  tag={(m.services ?? []).slice(0, 2).join(", ") || "Contact form"}
+                  when={fmtDateTime(m.created_at)}
+                />
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+    </>
+  );
+}
+
+function IntakeRow({ href, title, sub, tag, when }: { href: string | null; title: string; sub: string; tag: string; when: string }) {
+  const inner = (
+    <>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{title}</p>
+        {sub && <p className="truncate text-xs text-ink/60">{sub}</p>}
+      </div>
+      <div className="shrink-0 text-right">
+        <Badge value="lead" label={tag} />
+        <p className="mt-1 text-xs text-ink/55">{when}</p>
+      </div>
+    </>
+  );
+  return <li className="py-2.5">{href ? <Link href={href} className="flex items-center gap-3 hover:opacity-80">{inner}</Link> : <div className="flex items-center gap-3">{inner}</div>}</li>;
+}

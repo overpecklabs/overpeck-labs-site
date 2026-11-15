@@ -1,0 +1,166 @@
+/* Admin-only styles (loaded by app/admin/layout.tsx). Uses the site's tokens and fonts. */
+.adm-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 1.5px solid rgba(26, 26, 26, 0.16);
+  background: #fff;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.adm-input:focus {
+  outline: none;
+  border-color: var(--color-teal-ink);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+textarea.adm-input {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+select.adm-input {
+  padding-right: 2rem;
+}
+.adm-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(26, 26, 26, 0.75);
+}
+.adm-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(26, 26, 26, 0.09);
+  background: var(--color-paper);
+  box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04);
+}
+.adm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #06201c;
+  background: var(--color-teal);
+  border: 1.5px solid rgba(6, 32, 28, 0.2);
+  transition: background-color 0.15s;
+  white-space: nowrap;
+}
+.adm-btn:hover {
+  background: #3ff6dd;
+}
+.adm-btn:disabled,
+.adm-btn-ghost:disabled,
+.adm-btn-danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.adm-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  background: #fff;
+  border: 1.5px solid rgba(26, 26, 26, 0.18);
+  transition: background-color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.adm-btn-ghost:hover {
+  border-color: rgba(26, 26, 26, 0.4);
+}
+.adm-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-mk-red);
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+}
+.adm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(26, 26, 26, 0.15);
+  background: #fff;
+  white-space: nowrap;
+}
+.adm-chip[aria-pressed="true"],
+.adm-chip[aria-current="true"] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #fff;
+}
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.adm-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(26, 26, 26, 0.6);
+  font-weight: 700;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.09);
+}
+.adm-table td {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+  vertical-align: middle;
+}
+.adm-table tbody tr:hover {
+  background: rgba(25, 240, 210, 0.06);
+}
+.adm-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+dialog.adm-dialog {
+  margin: auto;
+  max-width: min(28rem, calc(100vw - 2rem));
+  border-radius: 1rem;
+  border: 1px solid rgba(26, 26, 26, 0.12);
+  padding: 1.4rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 0 20px 60px rgba(26, 26, 26, 0.25);
+}
+dialog.adm-dialog::backdrop {
+  background: rgba(26, 26, 26, 0.45);
+}
+.adm-skeleton {
+  border-radius: 0.6rem;
+  background: linear-gradient(90deg, rgba(26, 26, 26, 0.06), rgba(26, 26, 26, 0.11), rgba(26, 26, 26, 0.06));
+  background-size: 200% 100%;
+  animation: adm-shimmer 1.2s linear infinite;
+}
+@keyframes adm-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adm-skeleton {
+    animation: none;
+  }
+}
