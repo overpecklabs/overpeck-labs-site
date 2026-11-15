@@ -1,3 +1,4 @@
+import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
 import type { DemoData } from "@/lib/demo-types";
 
 /**
@@ -20,4 +21,14 @@ export const data = {
   headline: "[PLACEHOLDER hero headline: what they do and where]",
   subhead: "[PLACEHOLDER one supporting sentence]",
   logo: null as string | null, // e.g. "/demos/{slug}/logo.png" (file in assets/, copied to public/demos/{slug}/)
+  /**
+   * [PLACEHOLDER] Stock photos, e.g. { src: "/demos/{slug}/hero.webp", alt: "Plumber's tools on a workbench" }.
+   * Download with `npm run demo-photos` (see clients/README.md). null shows a "Photo coming soon" panel.
+   */
+  photos: {
+    hero: null as DemoPhoto,
+    services: [null, null, null] as DemoPhoto[],
+    gallery: [null, null, null, null] as DemoPhoto[],
+    about: null as DemoPhoto,
+  },
 } satisfies DemoData & Record<string, unknown>;

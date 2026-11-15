@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { data } from "./data";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Party Bus 360 homepage mockup. Display-only: no form sends anything anywhere. */
 
@@ -19,6 +20,7 @@ const SERVICE_ICONS = [
   "M4 7h16v12H4zM9 7V5h6v2M4 12h16",
   "M12 5v14M5 12h14",
 ];
+const PH = data.photos;
 const SERVICES = data.services.map((s, i) => ({ ...s, icon: SERVICE_ICONS[i % SERVICE_ICONS.length] }));
 
 function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
@@ -38,11 +40,11 @@ function TextIcon({ className = "h-5 w-5" }: { className?: string }) {
 
 function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <Reveal className="mx-auto max-w-2xl text-center">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7c3aed]">{eyebrow}</p>
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0b1020] sm:text-4xl">{title}</h2>
       {sub && <p className="mt-3 text-[17px] leading-relaxed text-slate-600">{sub}</p>}
-    </div>
+    </Reveal>
   );
 }
 
@@ -304,95 +306,125 @@ function ChatWidget() {
 export default function PartyBus360() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   return (
-    <div className="bg-white font-sans text-[#0b1020] antialiased">
-      {/* header */}
-      <header className="border-b border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-          <a href="#top" className="text-xl font-extrabold tracking-tight">
-            Party Bus <span className="text-[#7c3aed]">360</span>
+    <MotionRoot className="bg-white font-sans text-[#0b1020] antialiased">
+      {/* header: sticky under the demo banner, shrinks on scroll */}
+      <StickyHeader barClassName="bg-white/90 border-b border-slate-100">
+        <a href="#top" className="text-xl font-extrabold tracking-tight">
+          Party Bus <span className="text-[#7c3aed]">360</span>
+        </a>
+        <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-semibold text-slate-600 md:flex">
+          <a href="#services" className="hover:text-[#0b1020]">
+            Services
           </a>
-          <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-semibold text-slate-600 md:flex">
-            <a href="#services" className="hover:text-[#0b1020]">
-              Services
-            </a>
-            <a href="#gallery" className="hover:text-[#0b1020]">
-              Gallery
-            </a>
-            <a href="#faq" className="hover:text-[#0b1020]">
-              FAQ
-            </a>
-            <a href="#quote" className="hover:text-[#0b1020]">
-              Quote & book
-            </a>
-          </nav>
-          <a href={TEL} className="inline-flex items-center gap-2 rounded-full bg-[#0b1020] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1e1b4b]">
-            <PhoneIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">{PHONE_DISPLAY}</span>
-            <span className="sm:hidden">Call</span>
+          <a href="#gallery" className="hover:text-[#0b1020]">
+            Gallery
           </a>
-        </div>
-      </header>
+          <a href="#faq" className="hover:text-[#0b1020]">
+            FAQ
+          </a>
+          <a href="#quote" className="hover:text-[#0b1020]">
+            Quote & book
+          </a>
+        </nav>
+        <a href={TEL} className="demo-lift inline-flex items-center gap-2 rounded-full bg-[#0b1020] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1e1b4b]">
+          <PhoneIcon className="h-4 w-4" />
+          <span className="hidden sm:inline">{PHONE_DISPLAY}</span>
+          <span className="sm:hidden">Call</span>
+        </a>
+      </StickyHeader>
 
       <main id="top">
         {/* hero */}
         <section className="relative overflow-hidden bg-[#0b1020] text-white">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_20%,rgba(124,58,237,0.45),transparent),radial-gradient(ellipse_50%_40%_at_10%_90%,rgba(56,189,248,0.25),transparent)]" aria-hidden />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:px-6 md:grid-cols-[1.1fr_1fr] md:pb-24 md:pt-20">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white/80">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" aria-hidden />
-                Based in Bergen County · Serving all of New Jersey
-              </p>
-              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                Party buses &amp; limos for New Jersey&apos;s{" "}
-                <span className="bg-gradient-to-r from-[#f472b6] via-[#a78bfa] to-[#38bdf8] bg-clip-text text-transparent">best nights out.</span>
-              </h1>
-              <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">Weddings, nightlife and corporate events. Get an instant quote online and book your ride in minutes.</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a href={TEL} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#fbbf24] px-7 py-4 text-base font-extrabold text-[#0b1020] shadow-[0_10px_30px_-8px_rgba(251,191,36,0.8)] transition hover:bg-[#fcd34d]">
-                  <PhoneIcon />
-                  Call {PHONE_DISPLAY}
+          {PH.hero ? (
+            <HeroImage>
+              <DemoImage photo={PH.hero} priority sizes="100vw" className="absolute inset-0" tagPosition="bottom-right" />
+            </HeroImage>
+          ) : null}
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(11,16,32,0.94)_0%,rgba(11,16,32,0.78)_45%,rgba(11,16,32,0.35)_100%)]" aria-hidden />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_20%,rgba(124,58,237,0.35),transparent)]" aria-hidden />
+          <div className={`relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:px-6 md:pb-28 md:pt-24 ${PH.hero ? "" : "md:grid-cols-[1.1fr_1fr]"}`}>
+            <HeroIntro className="max-w-2xl">
+              <HeroItem>
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" aria-hidden />
+                  Based in Bergen County · Serving all of New Jersey
+                </p>
+                <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+                  Party buses &amp; limos for New Jersey&apos;s{" "}
+                  <span className="bg-gradient-to-r from-[#f472b6] via-[#a78bfa] to-[#38bdf8] bg-clip-text text-transparent">best nights out.</span>
+                </h1>
+              </HeroItem>
+              <HeroItem>
+                <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">Weddings, nightlife and corporate events. Get an instant quote online and book your ride in minutes.</p>
+              </HeroItem>
+              <HeroItem>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a href={TEL} className="demo-lift inline-flex items-center justify-center gap-2 rounded-full bg-[#fbbf24] px-7 py-4 text-base font-extrabold text-[#0b1020] shadow-[0_10px_30px_-8px_rgba(251,191,36,0.8)] hover:bg-[#fcd34d]">
+                    <PhoneIcon />
+                    Call {PHONE_DISPLAY}
+                  </a>
+                  <a href="#quote" className="demo-lift inline-flex items-center justify-center rounded-full border-2 border-white/30 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur hover:border-white/60">
+                    Get a free quote
+                  </a>
+                </div>
+                <a href={SMS} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white">
+                  <TextIcon className="h-4 w-4" />
+                  Prefer texting? Text us at {PHONE_DISPLAY}
                 </a>
-                <a href="#quote" className="inline-flex items-center justify-center rounded-full border-2 border-white/25 px-7 py-4 text-base font-bold text-white transition hover:border-white/60 hover:bg-white/5">
-                  Get a free quote
-                </a>
+              </HeroItem>
+            </HeroIntro>
+            {!PH.hero && (
+              <div className="mx-auto w-full max-w-md md:max-w-none">
+                <BusArt />
               </div>
-              <a href={SMS} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/75 hover:text-white">
-                <TextIcon className="h-4 w-4" />
-                Prefer texting? Text us at {PHONE_DISPLAY}
-              </a>
-            </div>
-            <div className="mx-auto w-full max-w-md md:max-w-none">
-              <BusArt />
-            </div>
+            )}
           </div>
         </section>
 
         {/* quick facts strip (all true details) */}
         <section aria-label="Highlights" className="border-b border-slate-100 bg-slate-50">
-          <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-2 text-center text-sm font-semibold text-slate-700 sm:px-6 md:grid-cols-4">
-            {["Instant online quotes", "Book online", "Text or call us", "All of New Jersey"].map((t) => (
-              <li key={t} className="px-2 py-3">
-                {t}
-              </li>
-            ))}
-          </ul>
+          <Stagger as="ul" className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-3 text-center sm:px-6 md:grid-cols-4">
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold text-[#7c3aed]">
+                <CountUp to={21} />
+              </span>
+              <span className="text-sm font-semibold text-slate-600">NJ counties served</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold text-[#7c3aed]">
+                <CountUp to={data.services.length} />
+              </span>
+              <span className="text-sm font-semibold text-slate-600">kinds of events</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold text-[#7c3aed]">Instant</span>
+              <span className="text-sm font-semibold text-slate-600">online quotes</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold text-[#7c3aed]">Text</span>
+              <span className="text-sm font-semibold text-slate-600">or call us</span>
+            </StaggerItem>
+          </Stagger>
         </section>
 
         {/* services */}
         <section id="services" className="scroll-mt-16 px-4 py-16 sm:px-6 md:py-24">
           <SectionHead eyebrow="What we do" title="Rides for every celebration" sub="From the wedding party to the office party, we get your whole group there together." />
-          <div className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {SERVICES.map((s) => (
-              <article key={s.title} className="rounded-3xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(15,23,42,0.3)]">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#ede9fe] text-[#7c3aed]">
-                  <Icon d={s.icon} />
-                </span>
-                <h3 className="mt-4 text-lg font-extrabold">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{s.body}</p>
-              </article>
+          <Stagger className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {SERVICES.map((s, i) => (
+              <StaggerItem key={s.title} as="article" className="demo-lift overflow-hidden rounded-3xl border border-slate-200 bg-white">
+                <DemoImage photo={PH.services[i] ?? null} className="aspect-[4/3]" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" />
+                <div className="p-6">
+                  <span className="-mt-12 relative z-10 grid h-12 w-12 place-items-center rounded-2xl bg-[#ede9fe] text-[#7c3aed] shadow-md ring-4 ring-white">
+                    <Icon d={s.icon} />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold">{s.title}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{s.body}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
           <p className="mx-auto mt-6 max-w-6xl text-center text-sm text-slate-500">Please note: we don&apos;t offer {data.excludes}.</p>
         </section>
 
@@ -435,13 +467,18 @@ export default function PartyBus360() {
         {/* why us (placeholder) */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
           <SectionHead eyebrow="Why Party Bus 360" title="Why groups ride with us" sub="[Placeholder: replace these points with what really sets Party Bus 360 apart.]" />
-          <div className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
-            {["[Placeholder: your fleet]", "[Placeholder: your drivers]", "[Placeholder: your service promise]"].map((t) => (
-              <div key={t} className="rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 p-6">
-                <h3 className="text-lg font-extrabold text-slate-700">{t}</h3>
-                <p className="mt-2 text-[15px] text-slate-500">[Placeholder: one or two sentences backing this up.]</p>
-              </div>
-            ))}
+          <div className="mx-auto mt-10 grid max-w-6xl items-center gap-6 lg:grid-cols-[1fr_1.2fr]">
+            <Reveal>
+              <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+            </Reveal>
+            <Stagger className="grid gap-4">
+              {["[Placeholder: your fleet]", "[Placeholder: your drivers]", "[Placeholder: your service promise]"].map((t) => (
+                <StaggerItem key={t} className="demo-lift rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 p-6">
+                  <h3 className="text-lg font-extrabold text-slate-700">{t}</h3>
+                  <p className="mt-2 text-[15px] text-slate-500">[Placeholder: one or two sentences backing this up.]</p>
+                </StaggerItem>
+              ))}
+            </Stagger>
           </div>
         </section>
 
@@ -450,22 +487,16 @@ export default function PartyBus360() {
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#fbbf24]">Gallery</p>
             <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Inside the ride</h2>
-            <p className="mt-3 text-white/65">[Placeholder: add real photos of your buses, limos and events.]</p>
+            <p className="mt-3 text-white/65">Real photos of your buses, limos and events will replace these.</p>
           </div>
-          <div className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
-            {["Interior lighting", "Wedding party", "Night out", "Corporate group", "Exterior", "Limo", "Bar area", "Sound system"].map((t, i) => (
-              <div
-                key={t}
-                className={`grid place-items-center rounded-2xl border border-white/10 p-3 text-center text-sm font-semibold text-white/70 ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-[4/3]"}`}
-                style={{ background: `linear-gradient(135deg, hsl(${260 + i * 14} 60% 22%), hsl(${290 + i * 10} 55% 14%))` }}
-              >
-                <span>
-                  Photo placeholder
-                  <span className="block text-xs font-normal text-white/45">{t}</span>
-                </span>
-              </div>
+          <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
+            {PH.gallery.map((ph, i) => (
+              <StaggerItem key={i} className={i === 0 ? "col-span-2 row-span-2" : ""}>
+                <DemoImage photo={ph} className={`demo-lift rounded-2xl ${i === 0 ? "aspect-square" : "aspect-[4/3]"}`} sizes={i === 0 ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
+          <p className="mx-auto mt-4 max-w-6xl text-center text-xs text-white/45">Stock photos for the mockup. Your own fleet and event photos go here.</p>
         </section>
 
         {/* reviews (placeholder) */}
@@ -600,6 +631,6 @@ export default function PartyBus360() {
       </div>
 
       <ChatWidget />
-    </div>
+    </MotionRoot>
   );
 }

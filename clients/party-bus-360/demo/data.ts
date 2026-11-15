@@ -1,3 +1,4 @@
+import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
 import type { DemoData } from "@/lib/demo-types";
 
 /** Party Bus 360: true details only (from their free-mockup request and call notes). */
@@ -26,4 +27,23 @@ export const data = {
     { q: "How far ahead should I book?", a: "[Placeholder: add your recommended booking window and deposit policy.]" },
   ],
   logo: null as string | null,
+  /** Placeholder stock photos (files in ../assets, credits in ../assets/CREDITS.md). null = not chosen yet. */
+  photos: {
+    hero: { src: "/demos/party-bus-360/hero.webp", alt: "Colorful party lights glowing inside a vehicle at night" } as DemoPhoto,
+    services: [
+      { src: "/demos/party-bus-360/service-weddings.webp", alt: "Wedding bouquet tied to a car door" },
+      { src: "/demos/party-bus-360/service-nightlife.webp", alt: "Manhattan skyline at night seen across the Hudson River" },
+      { src: "/demos/party-bus-360/service-corporate.webp", alt: "Event hall with tables under purple stage lighting" },
+      { src: "/demos/party-bus-360/service-other.webp", alt: "Gold coupe glasses lined up for a celebration" },
+    ] as DemoPhoto[],
+    gallery: [
+      { src: "/demos/party-bus-360/gallery-1.webp", alt: "Bus interior lit with blue ceiling lights" },
+      { src: "/demos/party-bus-360/gallery-2.webp", alt: "Mirror ball glowing in red and purple light" },
+      { src: "/demos/party-bus-360/gallery-3.webp", alt: "New York skyline at night from a New Jersey waterfront" },
+      { src: "/demos/party-bus-360/gallery-4.webp", alt: "Flowers decorating the hood of a black car" },
+      { src: "/demos/party-bus-360/gallery-5.webp", alt: "Vehicle ceiling with blue accent lights" },
+      { src: "/demos/party-bus-360/gallery-6.webp", alt: "Hands raising glasses in a toast" },
+    ] as DemoPhoto[],
+    about: { src: "/demos/party-bus-360/about.webp", alt: "Purple and blue disco ball lights" } as DemoPhoto,
+  },
 } satisfies DemoData & Record<string, unknown>;

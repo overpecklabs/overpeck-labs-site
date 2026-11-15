@@ -134,6 +134,15 @@ THE PAGE: one polished, mobile-first homepage
 - Style: ${style}. Brand colors: ${colors}. Inspiration sites: ${inspiration}.
 - ${logoLine}
 
+PHOTOS (required)
+- Use real free-license stock photos (Pexels preferred, or Unsplash) that fit a ${industry || "local service"} business and the ${town || "Bergen County"}, NJ vibe: hero, each service, a gallery (4+), and an about/why-us photo.
+- Never hotlink. Use the script (key in .env.local as PEXELS_API_KEY or UNSPLASH_ACCESS_KEY): \`npm run demo-photos -- search "<query>"\`, look at the candidates (open/screenshot the contact sheet it prints), then \`npm run demo-photos -- get ${slug} <source>:<id> <name> --alt "<what it shows>"\`. It saves WebP (max 1600px) to clients/${slug}/assets/ and public/demos/${slug}/ and writes clients/${slug}/assets/CREDITS.md (source URL + photographer). If no key is set, stop and ask for one instead of guessing.
+- No photos of identifiable people presented as the business's staff, and no other companies' logos, signs or branded vehicles. Only if no fitting stock photo exists, use an AI-generated image and mark it "AI-generated" in CREDITS.md.
+- Put the paths in data.photos and render every image with <DemoImage> from @/components/demos/motion (it adds the small "Placeholder photo" tag; only the hero gets priority, everything else lazy-loads).
+
+MOTION (required)
+- Use the shared components in @/components/demos/motion (read its header comment): MotionRoot around the page, StickyHeader for the header, HeroIntro/HeroItem for the hero text, HeroImage for the hero photo, Reveal and Stagger/StaggerItem on sections and card grids, CountUp only for true numbers, and className="demo-lift" on cards and buttons. Don't add another animation library.
+
 RULES
 - Use only true details from the business data below. Do not invent reviews, ratings, awards, licenses, certifications, years in business, or stats. Anything you must fill in is an obvious placeholder (e.g. "[Your license #]", "Sample review").
 - All forms on the demo are display-only: no network requests, no submissions, no emails. On submit, show an inline "Demo only, this form isn't connected yet" message.

@@ -1,0 +1,32 @@
+/* Shared demo motion helpers. Everything here switches off under prefers-reduced-motion. */
+
+/* In-page links land below the sticky banner + header (StickyHeader sets --demo-offset). */
+.demo-root [id] {
+  scroll-margin-top: var(--demo-offset, 6rem);
+}
+
+/* Hover lift for cards and buttons. Transform + shadow only, so nothing reflows. */
+.demo-lift {
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.25s ease;
+  will-change: transform;
+}
+@media (hover: hover) {
+  .demo-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.35);
+  }
+}
+.demo-lift:active {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-lift,
+  .demo-lift:hover,
+  .demo-lift:active {
+    transition: none;
+    transform: none;
+  }
+}

@@ -34,6 +34,21 @@ clients/
    import mainsAndDrains from "@/clients/mains-and-drains";
    export const DEMOS: Demo[] = [mainsAndDrains];
    ```
-7. If the demo was shared at an older URL, add it to `LEGACY_DEMO_REDIRECTS` in `next.config.mjs`.
-8. `npm run lint && npm run build`, then open `/demo/{slug}?preview=1` (`?preview=1` keeps your
+7. Photos and motion (every demo has both):
+   - **Photos:** free-license stock photos (Pexels preferred, or Unsplash) for the hero, services, gallery and
+     about sections. Never hotlink: download them with the script, which saves WebP (max 1600px wide) to
+     `assets/`, copies to `public/demos/{slug}/` and records source + photographer in `assets/CREDITS.md`:
+     ```
+     npm run demo-photos -- search "dog walking park"            # check the contact sheet it prints
+     npm run demo-photos -- get {slug} pexels:12345 hero --alt "Dog on a leash in a park"
+     ```
+     Needs `PEXELS_API_KEY` (or `UNSPLASH_ACCESS_KEY`) in `.env.local`. No identifiable people presented
+     as the business's staff, no other companies' logos or branded vehicles. AI-generated images only if no
+     fitting stock photo exists, marked "AI-generated" in CREDITS.md. Put the paths in `data.photos` and
+     render every image with `<DemoImage>` (adds the "Placeholder photo" tag; lazy unless `priority`).
+   - **Motion:** use `@/components/demos/motion`: `MotionRoot`, `StickyHeader`, `HeroIntro`/`HeroItem`,
+     `HeroImage`, `Reveal`, `Stagger`/`StaggerItem`, `CountUp` (true numbers only) and the `demo-lift` class.
+     They respect prefers-reduced-motion and animate transform/opacity only.
+8. If the demo was shared at an older URL, add it to `LEGACY_DEMO_REDIRECTS` in `next.config.mjs`.
+9. `npm run lint && npm run build`, then open `/demo/{slug}?preview=1` (`?preview=1` keeps your
    own visits out of the view counts).

@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { data } from "./data";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Paws and Tails (dog sitting) homepage mockup. Display-only: no form sends anything anywhere. */
 
 const DEMO_MSG = "Demo only, this form isn't connected yet.";
 const C = data.colors;
+const PH = data.photos;
 
 const SERVICE_ICONS = [
   "M5 20l2-6 4-2 2-5 3 1-1 4 3 3-2 5M9 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z", // walking
@@ -39,7 +41,7 @@ const TEXT_D = "M4 5h16v11H8l-4 4z";
 
 function Head({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <Reveal className="mx-auto max-w-2xl text-center">
       <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: C.primary }}>
         {eyebrow}
       </p>
@@ -47,7 +49,7 @@ function Head({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: s
         {title}
       </h2>
       {sub && <p className="mt-3 text-[17px] leading-relaxed text-stone-600">{sub}</p>}
-    </div>
+    </Reveal>
   );
 }
 
@@ -216,102 +218,167 @@ export default function PawsAndTails() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const phone = data.phone;
   return (
-    <div className="bg-[#fffaf3] font-sans text-stone-900 antialiased">
-      {/* header */}
-      <header className="border-b border-stone-200/70 bg-[#fffaf3]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-          <a href="#top" className="flex items-center gap-2.5" aria-label={data.businessName}>
-            <span className="grid h-10 w-10 place-items-center rounded-full text-white" style={{ background: C.primary }}>
-              <Paw className="h-5 w-5" />
+    <MotionRoot className="bg-[#fffaf3] font-sans text-stone-900 antialiased">
+      {/* header: sticky under the demo banner, shrinks on scroll */}
+      <StickyHeader barClassName="bg-[#fffaf3]/90 border-b border-stone-200/70">
+        <a href="#top" className="flex items-center gap-2.5" aria-label={data.businessName}>
+          <span className="grid h-10 w-10 place-items-center rounded-full text-white" style={{ background: C.primary }}>
+            <Paw className="h-5 w-5" />
+          </span>
+          <span className="leading-tight">
+            <span className="block text-lg font-extrabold tracking-tight" style={{ color: C.dark }}>
+              {data.logoName}
             </span>
-            <span className="leading-tight">
-              <span className="block text-lg font-extrabold tracking-tight" style={{ color: C.dark }}>
-                {data.logoName}
-              </span>
-              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{data.logoTagline}</span>
-            </span>
+            <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{data.logoTagline}</span>
+          </span>
+        </a>
+        <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-semibold text-stone-600 md:flex">
+          <a href="#services" className="hover:text-stone-900">
+            Services
           </a>
-          <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-semibold text-stone-600 md:flex">
-            <a href="#services" className="hover:text-stone-900">
-              Services
-            </a>
-            <a href="#book" className="hover:text-stone-900">
-              Book
-            </a>
-            <a href="#faq" className="hover:text-stone-900">
-              FAQ
-            </a>
-          </nav>
-          <a href={phone.tel} className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-white" style={{ background: C.dark }}>
-            <Icon d={PHONE_D} className="h-4 w-4" />
-            <span className="hidden sm:inline">{phone.display}</span>
-            <span className="sm:hidden">Call</span>
+          <a href="#gallery" className="hover:text-stone-900">
+            Gallery
           </a>
-        </div>
-      </header>
+          <a href="#book" className="hover:text-stone-900">
+            Book
+          </a>
+          <a href="#faq" className="hover:text-stone-900">
+            FAQ
+          </a>
+        </nav>
+        <a href={phone.tel} className="demo-lift inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-white" style={{ background: C.dark }}>
+          <Icon d={PHONE_D} className="h-4 w-4" />
+          <span className="hidden sm:inline">{phone.display}</span>
+          <span className="sm:hidden">Call</span>
+        </a>
+      </StickyHeader>
 
       <main id="top">
         {/* hero */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-14 pt-10 sm:px-6 md:grid-cols-[1.1fr_1fr] md:pb-20 md:pt-16">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-700">
-                <Paw className="h-3.5 w-3.5" fill={C.primary} />
-                {data.town}, NJ
-              </p>
-              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl" style={{ color: C.dark }}>
-                Loving dog sitting in <span style={{ color: C.primary }}>Ridgefield Park</span>
-              </h1>
-              <p className="mt-5 max-w-xl text-lg leading-relaxed text-stone-600">{data.subhead}</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a href={phone.tel} className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-base font-extrabold text-stone-900 shadow-[0_10px_28px_-10px_rgba(244,162,89,0.9)] transition hover:brightness-105" style={{ background: C.accent }}>
-                  <Icon d={PHONE_D} className="h-5 w-5" />
-                  Call {phone.display}
+          <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-14 pt-10 sm:px-6 md:grid-cols-[1.05fr_1fr] md:pb-20 md:pt-16">
+            <HeroIntro>
+              <HeroItem>
+                <p className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-700">
+                  <Paw className="h-3.5 w-3.5" fill={C.primary} />
+                  {data.town}, NJ
+                </p>
+                <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl" style={{ color: C.dark }}>
+                  Loving dog sitting in <span style={{ color: C.primary }}>Ridgefield Park</span>
+                </h1>
+              </HeroItem>
+              <HeroItem>
+                <p className="mt-5 max-w-xl text-lg leading-relaxed text-stone-600">{data.subhead}</p>
+              </HeroItem>
+              <HeroItem>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a href={phone.tel} className="demo-lift inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-base font-extrabold text-stone-900 shadow-[0_10px_28px_-10px_rgba(244,162,89,0.9)]" style={{ background: C.accent }}>
+                    <Icon d={PHONE_D} className="h-5 w-5" />
+                    Call {phone.display}
+                  </a>
+                  <a href="#book" className="demo-lift inline-flex items-center justify-center rounded-full border-2 bg-white/60 px-7 py-4 text-base font-bold" style={{ borderColor: C.dark, color: C.dark }}>
+                    Request a meet &amp; greet
+                  </a>
+                </div>
+                <a href={data.sms} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-900">
+                  <Icon d={TEXT_D} className="h-4 w-4" />
+                  Prefer texting? Text {phone.display}
                 </a>
-                <a href="#book" className="inline-flex items-center justify-center rounded-full border-2 px-7 py-4 text-base font-bold transition hover:bg-white" style={{ borderColor: C.dark, color: C.dark }}>
-                  Request a meet &amp; greet
-                </a>
+              </HeroItem>
+            </HeroIntro>
+            {PH.hero ? (
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] shadow-[0_30px_60px_-30px_rgba(31,42,36,0.55)] md:max-w-none">
+                <HeroImage>
+                  <DemoImage photo={PH.hero} priority sizes="(min-width: 768px) 45vw, 100vw" className="absolute inset-0" />
+                </HeroImage>
               </div>
-              <a href={data.sms} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-900">
-                <Icon d={TEXT_D} className="h-4 w-4" />
-                Prefer texting? Text {phone.display}
-              </a>
-            </div>
-            <div className="mx-auto w-full max-w-sm md:max-w-md">
-              <DogArt />
-            </div>
+            ) : (
+              <div className="mx-auto w-full max-w-sm md:max-w-md">
+                <DogArt />
+              </div>
+            )}
           </div>
+        </section>
+
+        {/* quick facts (true details only) */}
+        <section aria-label="Highlights" className="border-y border-stone-200/70 bg-white">
+          <Stagger as="ul" className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-3 text-center sm:px-6 md:grid-cols-4">
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
+                <CountUp to={data.services.length} />
+              </span>
+              <span className="text-sm font-semibold text-stone-600">ways we care for your dog</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
+                Local
+              </span>
+              <span className="text-sm font-semibold text-stone-600">based in Ridgefield Park</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
+                Text
+              </span>
+              <span className="text-sm font-semibold text-stone-600">or call to book</span>
+            </StaggerItem>
+            <StaggerItem as="li" className="px-2 py-3">
+              <span className="block text-2xl font-extrabold" style={{ color: C.primary }}>
+                At home
+              </span>
+              <span className="text-sm font-semibold text-stone-600">care in your own home</span>
+            </StaggerItem>
+          </Stagger>
         </section>
 
         {/* services */}
         <section id="services" className="scroll-mt-16 bg-white px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="Services" title="Care that fits your dog's routine" sub="Suggested services: [Placeholder: confirm which of these Paws and Tails offers]" />
-          <div className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Stagger className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {data.services.map((s, i) => (
-              <article key={s.title} className="rounded-3xl border border-stone-200 bg-[#fffaf3] p-6">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl text-white" style={{ background: C.primary }}>
-                  <Icon d={SERVICE_ICONS[i % SERVICE_ICONS.length]} />
-                </span>
-                <h3 className="mt-4 text-lg font-extrabold">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-stone-600">{s.body}</p>
-                <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-stone-400">Suggested service</p>
-              </article>
+              <StaggerItem key={s.title} as="article" className="demo-lift overflow-hidden rounded-3xl border border-stone-200 bg-[#fffaf3]">
+                <DemoImage photo={PH.services[i] ?? null} className="aspect-[4/3]" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" />
+                <div className="p-6">
+                  <span className="relative z-10 -mt-12 grid h-12 w-12 place-items-center rounded-2xl text-white shadow-md ring-4 ring-[#fffaf3]" style={{ background: C.primary }}>
+                    <Icon d={SERVICE_ICONS[i % SERVICE_ICONS.length]} />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold">{s.title}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-stone-600">{s.body}</p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-stone-400">Suggested service</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
 
         {/* why us (placeholder) */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="Why Paws and Tails" title="Why pet parents choose us" sub="[Placeholder: replace these points with what makes Paws and Tails special.]" />
-          <div className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
-            {["[Placeholder: your experience with dogs]", "[Placeholder: how you keep owners updated]", "[Placeholder: safety / insurance details]"].map((t) => (
-              <div key={t} className="rounded-3xl border-2 border-dashed border-stone-300 bg-white/60 p-6">
-                <Paw className="h-6 w-6" fill={C.accent} />
-                <h3 className="mt-3 text-lg font-extrabold text-stone-700">{t}</h3>
-                <p className="mt-2 text-[15px] text-stone-500">[Placeholder: one or two sentences backing this up.]</p>
-              </div>
-            ))}
+          <div className="mx-auto mt-10 grid max-w-6xl items-center gap-6 lg:grid-cols-[1fr_1.2fr]">
+            <Reveal>
+              <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+            </Reveal>
+            <Stagger className="grid gap-4">
+              {["[Placeholder: your experience with dogs]", "[Placeholder: how you keep owners updated]", "[Placeholder: safety / insurance details]"].map((t) => (
+                <StaggerItem key={t} className="demo-lift rounded-3xl border-2 border-dashed border-stone-300 bg-white/60 p-6">
+                  <Paw className="h-6 w-6" fill={C.accent} />
+                  <h3 className="mt-3 text-lg font-extrabold text-stone-700">{t}</h3>
+                  <p className="mt-2 text-[15px] text-stone-500">[Placeholder: one or two sentences backing this up.]</p>
+                </StaggerItem>
+              ))}
+            </Stagger>
           </div>
+        </section>
+
+        {/* gallery */}
+        <section id="gallery" className="px-4 pb-16 sm:px-6 md:pb-24">
+          <Head eyebrow="Gallery" title="Happy dogs, happy owners" sub="Stock photos for the mockup. Your own photos of the dogs you care for go here." />
+          <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
+            {PH.gallery.map((ph, i) => (
+              <StaggerItem key={i}>
+                <DemoImage photo={ph} className="demo-lift aspect-square rounded-2xl" sizes="(min-width: 768px) 25vw, 50vw" />
+              </StaggerItem>
+            ))}
+          </Stagger>
         </section>
 
         {/* booking + checklist */}
@@ -449,6 +516,6 @@ export default function PawsAndTails() {
           <Icon d={TEXT_D} className="h-4 w-4" /> Text
         </a>
       </div>
-    </div>
+    </MotionRoot>
   );
 }
