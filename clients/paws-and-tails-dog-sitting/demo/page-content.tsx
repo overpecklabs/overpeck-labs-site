@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { data } from "./data";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag } from "@/components/demos/sample";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
+import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Paws and Tails (dog sitting) homepage mockup. Display-only: no form sends anything anywhere. */
@@ -10,6 +11,9 @@ import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal,
 const DEMO_MSG = "Demo only, this form isn't connected yet.";
 const C = data.colors;
 const PH = data.photos;
+const LIGHT: LeadTheme = { tone: "light", primary: C.primary, accent: C.accent, ctaBg: C.primary, ctaText: "#ffffff" };
+const GLASS_DARK: LeadTheme = { tone: "dark", primary: C.primary, accent: C.accent, ctaBg: C.accent, ctaText: "#1c1917" };
+const RATING = averageRating(data.reviews);
 
 const SERVICE_ICONS = [
   "M5 20l2-6 4-2 2-5 3 1-1 4 3 3-2 5M9 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z", // walking
@@ -221,7 +225,7 @@ export default function PawsAndTails() {
   return (
     <MotionRoot className="bg-[#fffaf3] font-sans text-stone-900 antialiased">
       {/* header: sticky under the demo banner, shrinks on scroll */}
-      <StickyHeader barClassName="bg-[#fffaf3]/90 border-b border-stone-200/70">
+      <StickyHeader height={64} shrunk={56} barClassName="bg-[#fffaf3]/90 border-b border-stone-200/70">
         <a href="#top" className="flex items-center gap-2.5" aria-label={data.businessName}>
           <span className="grid h-10 w-10 place-items-center rounded-full text-white" style={{ background: C.primary }}>
             <Paw className="h-5 w-5" />
@@ -255,49 +259,54 @@ export default function PawsAndTails() {
       </StickyHeader>
 
       <main id="top">
-        {/* hero */}
+        {/* hero: copy + call on the left, short lead form on the right (mobile: headline, form, call) */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-14 pt-10 sm:px-6 md:grid-cols-[1.05fr_1fr] md:pb-20 md:pt-16">
-            <HeroIntro>
+          {PH.hero && (
+            <HeroImage>
+              <DemoImage photo={PH.hero} priority sizes="100vw" className="absolute inset-0" imgClassName="object-cover object-[70%_center]" />
+            </HeroImage>
+          )}
+          <div className="pointer-events-none absolute inset-0 bg-[#fffaf3]/85 md:bg-transparent md:bg-[linear-gradient(90deg,#fffaf3_0%,rgba(255,250,243,0.92)_42%,rgba(255,250,243,0.35)_75%,rgba(255,250,243,0.1)_100%)]" aria-hidden />
+          <div className="relative mx-auto grid max-w-6xl gap-4 px-4 pb-10 pt-5 sm:px-6 md:grid-cols-[1fr_minmax(0,25rem)] md:items-center md:gap-x-12 md:gap-y-5 md:pb-20 md:pt-14">
+            <HeroIntro className="md:col-start-1 md:row-start-1">
               <HeroItem>
-                <p className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-700">
+                <p className="hidden items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-700 md:inline-flex">
                   <Paw className="h-3.5 w-3.5" fill={C.primary} />
                   {data.town}, NJ
                 </p>
-                <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl" style={{ color: C.dark }}>
+                <h1 className="text-[30px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl md:mt-5 lg:text-6xl" style={{ color: C.dark }}>
                   Loving dog sitting in <span style={{ color: C.primary }}>Ridgefield Park</span>
                 </h1>
               </HeroItem>
-              <HeroItem>
-                <p className="mt-5 max-w-xl text-lg leading-relaxed text-stone-600">{data.subhead}</p>
-              </HeroItem>
-              <HeroItem>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <a href={phone.tel} className="demo-lift inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-base font-extrabold text-stone-900 shadow-[0_10px_28px_-10px_rgba(244,162,89,0.9)]" style={{ background: C.accent }}>
-                    <Icon d={PHONE_D} className="h-5 w-5" />
-                    Call {phone.display}
-                  </a>
-                  <a href="#book" className="demo-lift inline-flex items-center justify-center rounded-full border-2 bg-white/60 px-7 py-4 text-base font-bold" style={{ borderColor: C.dark, color: C.dark }}>
-                    Request a meet &amp; greet
-                  </a>
-                </div>
-                <a href={data.sms} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-900">
-                  <Icon d={TEXT_D} className="h-4 w-4" />
-                  Prefer texting? Text {phone.display}
-                </a>
-              </HeroItem>
             </HeroIntro>
-            {PH.hero ? (
-              <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] shadow-[0_30px_60px_-30px_rgba(31,42,36,0.55)] md:max-w-none">
-                <HeroImage>
-                  <DemoImage photo={PH.hero} priority sizes="(min-width: 768px) 45vw, 100vw" className="absolute inset-0" />
-                </HeroImage>
+
+            <div className="md:col-start-2 md:row-span-3 md:row-start-1">
+              <div className="rounded-3xl border border-white/70 bg-white/75 p-4 shadow-[0_30px_60px_-30px_rgba(31,42,36,0.5)] backdrop-blur-xl sm:p-6">
+                <LeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} title={data.lead.title} ask={data.lead.ask} cta={data.lead.cta} theme={LIGHT} details={data.lead.details} />
               </div>
-            ) : (
-              <div className="mx-auto w-full max-w-sm md:max-w-md">
-                <DogArt />
-              </div>
-            )}
+            </div>
+
+            <div className="md:col-start-1 md:row-start-3">
+              <a href={phone.tel} className="demo-lift flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-base font-extrabold text-stone-900 shadow-[0_10px_28px_-10px_rgba(244,162,89,0.9)] md:inline-flex md:w-auto" style={{ background: C.accent }}>
+                <Icon d={PHONE_D} className="h-5 w-5" />
+                Call {phone.display}
+              </a>
+              <a href={data.sms} className="mt-3 hidden items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-900 md:flex">
+                <Icon d={TEXT_D} className="h-4 w-4" />
+                Prefer texting? Text {phone.display}
+              </a>
+            </div>
+
+            <div className="md:col-start-1 md:row-start-2">
+              <p className="max-w-xl text-lg leading-relaxed text-stone-700">{data.subhead}</p>
+              <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-stone-700">
+                <Stars rating={RATING} color={C.accent} />
+                <span>
+                  {RATING.toFixed(1)} rating from {data.reviews.length} pet parents
+                  <SampleMark className="text-stone-500" />
+                </span>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -334,6 +343,8 @@ export default function PawsAndTails() {
             ))}
           </Stagger>
         </section>
+
+        <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={data.phone} bg={`linear-gradient(120deg, ${C.primary}, ${C.dark})`} ctaBg={C.accent} ctaText="#1c1917" />
 
         {/* about + why us */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
@@ -482,19 +493,20 @@ export default function PawsAndTails() {
           </div>
         </section>
 
-        {/* closing CTA */}
+        {/* final CTA: same short form */}
         <section className="px-4 py-16 sm:px-6 md:py-20">
-          <div className="mx-auto max-w-4xl rounded-[2rem] px-6 py-12 text-center text-white sm:px-12" style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.dark})` }}>
-            <Paw className="mx-auto h-10 w-10" fill={C.accent} />
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{data.ctaTitle}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/80">{data.ctaBody}</p>
-            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href={phone.tel} className="demo-lift rounded-full px-7 py-4 font-extrabold text-stone-900" style={{ background: C.accent }}>
+          <div className="mx-auto grid max-w-6xl items-center gap-8 rounded-[2rem] px-6 py-10 text-white sm:px-12 md:grid-cols-[1fr_minmax(0,24rem)]" style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.dark})` }}>
+            <Reveal>
+              <Paw className="h-10 w-10" fill={C.accent} />
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{data.lead.finalTitle}</h2>
+              <p className="mt-3 max-w-xl text-white/80">{data.lead.finalBody}</p>
+              <a href={phone.tel} className="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-white/40 px-6 py-3 font-bold hover:bg-white/10">
+                <Icon d={PHONE_D} className="h-4 w-4" />
                 Call {phone.display}
               </a>
-              <a href={data.sms} className="rounded-full border-2 border-white/40 px-7 py-4 font-bold hover:bg-white/10">
-                Send a text
-              </a>
+            </Reveal>
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl sm:p-6">
+              <LeadForm slug={data.slug} source="final" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS_DARK} details={data.lead.details} />
             </div>
           </div>
         </section>
@@ -534,15 +546,12 @@ export default function PawsAndTails() {
         </div>
       </footer>
 
-      {/* sticky mobile call/text bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-stone-200 bg-[#fffaf3]/95 p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
-        <a href={phone.tel} className="flex items-center justify-center gap-1.5 rounded-full py-3 text-sm font-bold text-white" style={{ background: C.dark }}>
-          <Icon d={PHONE_D} className="h-4 w-4" /> Call
-        </a>
-        <a href={data.sms} className="flex items-center justify-center gap-1.5 rounded-full py-3 text-sm font-extrabold text-stone-900" style={{ background: C.accent }}>
-          <Icon d={TEXT_D} className="h-4 w-4" /> Text
-        </a>
-      </div>
+      {/* sticky mobile bar: appears once the hero form is scrolled past */}
+      <MobileLeadBar phone={data.phone} ctaLabel="Check availability" callBg={C.dark} ctaBg={C.accent} ctaText="#1c1917" surface="bg-[#fffaf3]/95 border-stone-200" />
+
+      <ExitIntent slug={data.slug} title="Before you go, check availability" sub="Takes 20 seconds. We'll get back to you to set up a meet & greet.">
+        <LeadForm slug={data.slug} source="exit" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={LIGHT} />
+      </ExitIntent>
     </MotionRoot>
   );
 }

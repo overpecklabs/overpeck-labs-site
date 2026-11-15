@@ -1,4 +1,5 @@
 import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
+import type { DetailStep } from "@/components/demos/lead";
 import type { Faq, Review } from "@/components/demos/sample";
 import type { DemoData } from "@/lib/demo-types";
 
@@ -37,6 +38,40 @@ export const data = {
   excludes: "airport trips",
   events: ["Wedding", "Night out / nightlife", "Corporate event", "Other booking"],
   vehicles: ["Party bus", "Stretch limo", "Not sure, help me choose"],
+  /** Above-the-fold lead capture (short form + optional multi-step details). */
+  lead: {
+    title: "Free quote in 20 seconds",
+    ask: { label: "What's the occasion?", options: ["Wedding", "Night out", "Corporate", "Other"] },
+    cta: "Get my free quote",
+    finalTitle: "Lock in your date",
+    finalBody: "Weekends fill up fast, especially in wedding and prom season. Send your details and get your quote right away.",
+    bandTitle: "Planning a night out or a wedding?",
+    bandBody: "Get an instant quote for your group in under a minute.",
+    details: [
+      {
+        title: "Your event",
+        fields: [
+          { name: "date", label: "Event date", type: "date" },
+          { name: "pickup", label: "Pickup town", type: "text", placeholder: "e.g. Hackensack" },
+          { name: "guests", label: "Number of guests", type: "number", placeholder: "e.g. 20" },
+        ],
+      },
+      {
+        title: "Your ride",
+        fields: [
+          { name: "hours", label: "Hours needed", type: "select", options: ["3 hours", "4 hours", "5 hours", "6+ hours"] },
+          { name: "vehicle", label: "Vehicle", type: "select", options: ["Party bus", "Stretch limo", "Not sure, help me choose"] },
+        ],
+      },
+      {
+        title: "Anything else?",
+        fields: [
+          { name: "email", label: "Email", type: "email", optional: true },
+          { name: "notes", label: "Notes", type: "textarea", placeholder: "Stops, timing, music requests…", optional: true },
+        ],
+      },
+    ] satisfies DetailStep[],
+  },
   heroSub: "Weddings, nightlife and corporate events across New Jersey. Get an instant quote online and book your ride in minutes.",
   whyUs: [
     { title: "Instant online quotes", body: "Pick your date, group size and pickup town and see your price right away, then get every detail by email. No waiting on a callback." },

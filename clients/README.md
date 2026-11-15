@@ -48,6 +48,10 @@ clients/
      as the business's staff, no other companies' logos or branded vehicles. AI-generated images only if no
      fitting stock photo exists, marked "AI-generated" in CREDITS.md. Put the paths in `data.photos` and
      render every image with `<DemoImage>` (lazy unless `priority`).
+   - **Lead capture:** use `@/components/demos/lead`: a short `<LeadForm>` above the fold (desktop right
+     column; on phones headline, form and call button all fit the first 375x667 screen), `<CtaBand>` after
+     services, the same form in the final CTA, `<MobileLeadBar>` and desktop-only `<ExitIntent>`. Forms are
+     display-only; `submitLead()` is where a live site would save to Supabase.
    - **Motion:** use `@/components/demos/motion`: `MotionRoot`, `StickyHeader`, `HeroIntro`/`HeroItem`,
      `HeroImage`, `Reveal`, `Stagger`/`StaggerItem`, `CountUp` (true numbers only) and the `demo-lift` class.
      They respect prefers-reduced-motion and animate transform/opacity only.

@@ -1,4 +1,5 @@
 import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
+import type { DetailStep } from "@/components/demos/lead";
 import type { Faq, Review } from "@/components/demos/sample";
 import type { DemoData } from "@/lib/demo-types";
 
@@ -24,6 +25,21 @@ export const data = {
     { title: "[PLACEHOLDER Service 2]", body: "[PLACEHOLDER one-sentence description]" },
     { title: "[PLACEHOLDER Service 3]", body: "[PLACEHOLDER one-sentence description]" },
   ],
+  /** Above-the-fold lead capture: 3 fields max (name, phone, one industry question as chips) + action CTA. */
+  lead: {
+    title: "[PLACEHOLDER e.g. Free quote in 20 seconds]",
+    ask: { label: "[PLACEHOLDER e.g. What do you need?]", options: ["[PLACEHOLDER]", "[PLACEHOLDER]", "[PLACEHOLDER]", "Other"] },
+    cta: "[PLACEHOLDER action wording, e.g. Get my free quote / Check availability]",
+    finalTitle: "[PLACEHOLDER final CTA headline]",
+    finalBody: "[PLACEHOLDER one line with a reason to act now]",
+    bandTitle: "[PLACEHOLDER mid-page CTA headline]",
+    bandBody: "[PLACEHOLDER one line]",
+    /** Optional longer multi-step form shown after the short form succeeds ("Add details"). */
+    details: [
+      { title: "[PLACEHOLDER step]", fields: [{ name: "date", label: "[PLACEHOLDER Date]", type: "date" }] },
+      { title: "[PLACEHOLDER step]", fields: [{ name: "notes", label: "[PLACEHOLDER Notes]", type: "textarea", optional: true }, { name: "photos", label: "Photos", type: "photos", optional: true }] },
+    ] satisfies DetailStep[],
+  },
   headline: "[PLACEHOLDER hero headline: what they do and where]",
   subhead: "[PLACEHOLDER one supporting sentence]",
   /** 3-4 points. Unknown facts get sample: true. */

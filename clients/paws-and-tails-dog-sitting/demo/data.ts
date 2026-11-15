@@ -1,4 +1,5 @@
 import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
+import type { DetailStep } from "@/components/demos/lead";
 import type { Faq, Review } from "@/components/demos/sample";
 import type { DemoData } from "@/lib/demo-types";
 
@@ -36,6 +37,40 @@ export const data = {
       body: "Extra potty breaks and gentle training reinforcement for puppies, and slower walks, medications and lots of patience for seniors. We follow your instructions to the letter.",
     },
   ],
+  /** Above-the-fold lead capture (short form + optional multi-step details). */
+  lead: {
+    title: "Check availability in 20 seconds",
+    ask: { label: "What do you need?", options: ["Walks", "Drop-ins", "Overnight", "Puppy care"] },
+    cta: "Check availability",
+    finalTitle: "Going away soon?",
+    finalBody: "Holidays and summer weekends book up early. Send your details and we'll get back to you to set up a meet & greet.",
+    bandTitle: "Need a sitter this month?",
+    bandBody: "Check availability in under a minute. No commitment.",
+    details: [
+      {
+        title: "Your dates",
+        fields: [
+          { name: "start", label: "Start date", type: "date" },
+          { name: "end", label: "End date", type: "date", optional: true },
+        ],
+      },
+      {
+        title: "Your dog",
+        fields: [
+          { name: "dog", label: "Dog's name", type: "text", placeholder: "e.g. Biscuit" },
+          { name: "size", label: "Size", type: "select", options: ["Small (under 25 lb)", "Medium (25–50 lb)", "Large (50+ lb)", "Puppy"] },
+          { name: "notes", label: "Anything we should know?", type: "textarea", placeholder: "Feeding, medications, walking quirks…", optional: true },
+        ],
+      },
+      {
+        title: "Photos & email",
+        fields: [
+          { name: "photos", label: "Photos of your dog", type: "photos", optional: true },
+          { name: "email", label: "Email", type: "email", optional: true },
+        ],
+      },
+    ] satisfies DetailStep[],
+  },
   headline: "Loving dog sitting in Ridgefield Park",
   subhead: "Walks, drop-in visits and overnight care in your own home, so your dog stays happy and on routine while you're away.",
   whyUs: [

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { data } from "./data";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag } from "@/components/demos/sample";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
+import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Party Bus 360 homepage mockup. Display-only: no form sends anything anywhere. */
@@ -22,6 +23,9 @@ const SERVICE_ICONS = [
   "M12 5v14M5 12h14",
 ];
 const PH = data.photos;
+const GLASS: LeadTheme = { tone: "dark", primary: "#7c3aed", accent: "#fbbf24", ctaBg: "#fbbf24", ctaText: "#0b1020" };
+const LIGHT: LeadTheme = { tone: "light", primary: "#7c3aed", accent: "#fbbf24", ctaBg: "#7c3aed", ctaText: "#ffffff" };
+const RATING = averageRating(data.reviews);
 const SERVICES = data.services.map((s, i) => ({ ...s, icon: SERVICE_ICONS[i % SERVICE_ICONS.length] }));
 
 function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
@@ -252,9 +256,16 @@ const CHAT = [
 /** AI assistant preview. Scripted, display-only. */
 function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 500);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
   const [sent, setSent] = useState(false);
   return (
-    <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end gap-3 sm:bottom-6">
+    <div className={`fixed bottom-24 right-4 z-40 flex-col items-end gap-3 sm:bottom-6 sm:flex ${scrolled || open ? "flex" : "hidden"}`}>
       {open && (
         <div id="pb-chat" role="dialog" aria-label="Party Bus 360 assistant (demo)" className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
           <div className="flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white">
@@ -310,7 +321,7 @@ export default function PartyBus360() {
   return (
     <MotionRoot className="bg-white font-sans text-[#0b1020] antialiased">
       {/* header: sticky under the demo banner, shrinks on scroll */}
-      <StickyHeader barClassName="bg-white/90 border-b border-slate-100">
+      <StickyHeader height={64} shrunk={56} barClassName="bg-white/90 border-b border-slate-100">
         <a href="#top" className="text-xl font-extrabold tracking-tight">
           Party Bus <span className="text-[#7c3aed]">360</span>
         </a>
@@ -336,51 +347,56 @@ export default function PartyBus360() {
       </StickyHeader>
 
       <main id="top">
-        {/* hero */}
+        {/* hero: copy + call on the left, short lead form on the right (mobile: headline, form, call) */}
         <section className="relative overflow-hidden bg-[#0b1020] text-white">
           {PH.hero ? (
             <HeroImage>
-              <DemoImage photo={PH.hero} priority sizes="100vw" className="absolute inset-0" tagPosition="bottom-right" />
+              <DemoImage photo={PH.hero} priority sizes="100vw" className="absolute inset-0" />
             </HeroImage>
           ) : null}
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(11,16,32,0.94)_0%,rgba(11,16,32,0.78)_45%,rgba(11,16,32,0.35)_100%)]" aria-hidden />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(11,16,32,0.94)_0%,rgba(11,16,32,0.8)_50%,rgba(11,16,32,0.55)_100%)]" aria-hidden />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_20%,rgba(124,58,237,0.35),transparent)]" aria-hidden />
-          <div className={`relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:px-6 md:pb-28 md:pt-24 ${PH.hero ? "" : "md:grid-cols-[1.1fr_1fr]"}`}>
-            <HeroIntro className="max-w-2xl">
+          <div className="relative mx-auto grid max-w-6xl gap-4 px-4 pb-10 pt-5 sm:px-6 md:grid-cols-[1fr_minmax(0,25rem)] md:items-center md:gap-x-12 md:gap-y-5 md:pb-20 md:pt-14">
+            <HeroIntro className="md:col-start-1 md:row-start-1">
               <HeroItem>
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 backdrop-blur">
+                <p className="hidden items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 backdrop-blur md:inline-flex">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" aria-hidden />
                   Based in Bergen County · Serving all of New Jersey
                 </p>
-                <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+                <h1 className="text-[30px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl md:mt-5 lg:text-6xl">
                   Party buses &amp; limos for New Jersey&apos;s{" "}
                   <span className="bg-gradient-to-r from-[#f472b6] via-[#a78bfa] to-[#38bdf8] bg-clip-text text-transparent">best nights out.</span>
                 </h1>
               </HeroItem>
-              <HeroItem>
-                <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{data.heroSub}</p>
-              </HeroItem>
-              <HeroItem>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <a href={TEL} className="demo-lift inline-flex items-center justify-center gap-2 rounded-full bg-[#fbbf24] px-7 py-4 text-base font-extrabold text-[#0b1020] shadow-[0_10px_30px_-8px_rgba(251,191,36,0.8)] hover:bg-[#fcd34d]">
-                    <PhoneIcon />
-                    Call {PHONE_DISPLAY}
-                  </a>
-                  <a href="#quote" className="demo-lift inline-flex items-center justify-center rounded-full border-2 border-white/30 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur hover:border-white/60">
-                    Get a free quote
-                  </a>
-                </div>
-                <a href={SMS} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white">
-                  <TextIcon className="h-4 w-4" />
-                  Prefer texting? Text us at {PHONE_DISPLAY}
-                </a>
-              </HeroItem>
             </HeroIntro>
-            {!PH.hero && (
-              <div className="mx-auto w-full max-w-md md:max-w-none">
-                <BusArt />
+
+            <div className="md:col-start-2 md:row-span-3 md:row-start-1">
+              <div className="rounded-3xl border border-white/20 bg-white/10 p-4 shadow-2xl backdrop-blur-xl sm:p-6">
+                <LeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} title={data.lead.title} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} details={data.lead.details} />
               </div>
-            )}
+            </div>
+
+            <div className="md:col-start-1 md:row-start-3">
+              <a href={TEL} className="demo-lift flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 bg-white/5 px-7 py-3.5 text-base font-bold text-white backdrop-blur hover:border-white/60 md:inline-flex md:w-auto">
+                <PhoneIcon />
+                Call {PHONE_DISPLAY}
+              </a>
+              <a href={SMS} className="mt-3 hidden items-center gap-2 text-sm font-semibold text-white/80 hover:text-white md:flex">
+                <TextIcon className="h-4 w-4" />
+                Prefer texting? Text us at {PHONE_DISPLAY}
+              </a>
+            </div>
+
+            <div className="md:col-start-1 md:row-start-2">
+              <p className="max-w-xl text-lg leading-relaxed text-white/80">{data.heroSub}</p>
+              <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-white/85">
+                <Stars rating={RATING} color="#fbbf24" />
+                <span>
+                  {RATING.toFixed(1)} rating from {data.reviews.length} reviews
+                  <SampleMark className="text-white/70" />
+                </span>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -418,6 +434,8 @@ export default function PartyBus360() {
           </Stagger>
           <p className="mx-auto mt-6 max-w-6xl text-center text-sm text-slate-500">Please note: we don&apos;t offer {data.excludes}.</p>
         </section>
+
+        <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={data.phone} bg="linear-gradient(120deg,#1e1b4b,#4c1d95 55%,#0c4a6e)" ctaBg="#fbbf24" ctaText="#0b1020" />
 
         {/* quote + booking */}
         <section id="quote" className="scroll-mt-16 bg-gradient-to-b from-slate-50 to-white px-4 py-16 sm:px-6 md:py-24">
@@ -573,18 +591,19 @@ export default function PartyBus360() {
           </div>
         </section>
 
-        {/* closing CTA */}
+        {/* final CTA: same short form */}
         <section className="px-4 pb-16 sm:px-6 md:pb-24">
-          <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#1e1b4b] via-[#4c1d95] to-[#0c4a6e] px-6 py-12 text-center text-white sm:px-12">
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{data.ctaTitle}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/75">{data.ctaBody}</p>
-            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href="#quote" className="demo-lift rounded-full bg-[#fbbf24] px-7 py-4 font-extrabold text-[#0b1020] hover:bg-[#fcd34d]">
-                Get a free quote
-              </a>
-              <a href={TEL} className="rounded-full border-2 border-white/30 px-7 py-4 font-bold hover:bg-white/10">
+          <div className="mx-auto grid max-w-6xl items-center gap-8 overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#1e1b4b] via-[#4c1d95] to-[#0c4a6e] px-6 py-10 text-white sm:px-12 md:grid-cols-[1fr_minmax(0,24rem)]">
+            <Reveal>
+              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{data.lead.finalTitle}</h2>
+              <p className="mt-3 max-w-xl text-white/80">{data.lead.finalBody}</p>
+              <a href={TEL} className="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-white/30 px-6 py-3 font-bold hover:bg-white/10">
+                <PhoneIcon className="h-4 w-4" />
                 Call {PHONE_DISPLAY}
               </a>
+            </Reveal>
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl sm:p-6">
+              <LeadForm slug={data.slug} source="final" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} details={data.lead.details} />
             </div>
           </div>
         </section>
@@ -624,20 +643,14 @@ export default function PartyBus360() {
         </div>
       </footer>
 
-      {/* sticky mobile action bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 gap-2 border-t border-slate-200 bg-white/95 p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
-        <a href={TEL} className="flex items-center justify-center gap-1.5 rounded-full bg-[#0b1020] py-3 text-sm font-bold text-white">
-          <PhoneIcon className="h-4 w-4" /> Call
-        </a>
-        <a href={SMS} className="flex items-center justify-center gap-1.5 rounded-full border-2 border-slate-200 py-3 text-sm font-bold">
-          <TextIcon className="h-4 w-4" /> Text
-        </a>
-        <a href="#quote" className="flex items-center justify-center rounded-full bg-[#fbbf24] py-3 text-sm font-extrabold text-[#0b1020]">
-          Quote
-        </a>
-      </div>
+      {/* sticky mobile bar: appears once the hero form is scrolled past */}
+      <MobileLeadBar phone={data.phone} ctaLabel="Get quote" callBg="#0b1020" ctaBg="#fbbf24" ctaText="#0b1020" />
 
       <ChatWidget />
+
+      <ExitIntent slug={data.slug} sub="Get your instant quote now. It takes 20 seconds.">
+        <LeadForm slug={data.slug} source="exit" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={LIGHT} />
+      </ExitIntent>
     </MotionRoot>
   );
 }

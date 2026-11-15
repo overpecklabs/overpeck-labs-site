@@ -125,7 +125,12 @@ SETUP
 
 THE PAGE: one polished, mobile-first homepage
 - The page must look FINISHED: polished, specific, local-sounding copy everywhere (hero subhead, 2-3 sentence service descriptions, why-us points, about section, 3 process steps, service area blurb, CTA text, footer). No brackets, "TBD", "placeholder" or "suggested" labels anywhere on the page.
-- Hero: a clear headline about what they do and where, plus the primary CTA: ${primaryCta}.
+- Lead generation first. Use @/components/demos/lead (see clients/_template):
+  - Hero: desktop is two columns: headline, subhead, a trust line (<Stars /> rating + <SampleMark />) and tap-to-call on the left; a short glass-card <LeadForm> on the right. Mobile order: headline, then the form, then the call button, all visible on the first 375x667 screen without scrolling.
+  - <LeadForm>: 3 fields max (name, phone with inputmode="tel" + autocomplete, and one industry-specific question as tap chips), a big CTA with action wording (e.g. "Get my free quote", "Check availability"), and "Takes 20 seconds · No spam" under it. Its inline success state is labeled as a demo ("Demo only, nothing was sent") and offers "Add details", which expands a multi-step <DetailsSteps> form (dates, photos, etc.).
+  - Repeat capture: <CtaBand> right after services, the same short form in the final CTA section, <MobileLeadBar> (Call / Get quote) and desktop-only <ExitIntent> (once per session) with the same 3 fields.
+  - Forms stay display-only: submitLead() in lead.tsx is the single place a live site would save to Supabase. Keep the first screen fast: no layout shift, nothing slow above the fold.
+- Primary CTA: ${primaryCta}.
 - Services: ${services}.
 - Why us: ${differentiator}.
 - Service area: ${area}.
