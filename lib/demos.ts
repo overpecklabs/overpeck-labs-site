@@ -1,25 +1,17 @@
-import type { ComponentType } from "react";
-
 /**
- * Private homepage mockups, served at /demo/[slug]. Not linked anywhere, noindex, and kept out of
- * the sitemap: share the URL directly with the business.
+ * Registry of private homepage mockups, served at /demo/[slug] by app/demo/[slug]/page.tsx.
+ * Each client lives in its own folder: clients/{slug}/ (see clients/README.md).
+ * Not linked anywhere, noindex, and kept out of the sitemap: share the URL directly.
  *
- * To add a demo:
- *   1. Build the page as its own component in components/demos/<slug>.tsx (default export).
- *   2. Add an entry below. The slug is the business name, lowercase and hyphenated
- *      ("Mains and drains" -> "mains-and-drains"); demoSlug() does this for you.
- *   3. If the mockup was ever shared at another URL, add it to LEGACY_DEMO_REDIRECTS in
- *      next.config.mjs so that link permanently (308) redirects here.
+ * To add a client: copy clients/_template to clients/{slug}, fill it in, then import its
+ * index.ts here and add it to DEMOS. Old URLs go in LEGACY_DEMO_REDIRECTS in next.config.mjs.
  */
-export type Demo = {
-  slug: string;
-  businessName: string;
-  /** Lazy so each demo's code only loads on its own page. */
-  load: () => Promise<{ default: ComponentType }>;
-};
+import type { Demo } from "./demo-types";
+
+export type { Demo, DemoData } from "./demo-types";
 
 export const DEMOS: Demo[] = [
-  // { slug: "mains-and-drains", businessName: "Mains and Drains", load: () => import("@/components/demos/mains-and-drains") },
+  // e.g. import mainsAndDrains from "@/clients/mains-and-drains"; then list mainsAndDrains here
 ];
 
 export const demoBySlug = (slug: string) => DEMOS.find((d) => d.slug === slug);
