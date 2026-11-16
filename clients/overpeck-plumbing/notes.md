@@ -9,7 +9,7 @@
 ## Notes
 - Fictional sample brand by Overpeck Labs that shows off everything we can build. Not a client. Phone (201) 555-0147 is a fictional 555-01xx number.
 - Banner variant "showcase": "Sample site by Overpeck Labs ..." + "Get yours" -> /free-mockup.
-- AI chat: app/api/demo/overpeck-plumbing/chat/route.ts (AI SDK + Google Gemini, default gemini-2.5-flash). Needs GOOGLE_GENERATIVE_AI_API_KEY
+- AI chat: app/api/demo/overpeck-plumbing/chat/route.ts (AI SDK + Vercel AI Gateway, default google/gemini-2.5-flash-lite). Needs AI_GATEWAY_API_KEY
   (optional OVERPECK_PLUMBING_AI_MODEL); without it the widget runs a scripted demo. Rate-limited per IP, 8 messages per session.
 - AI receptionist number: NEXT_PUBLIC_OVERPECK_PLUMBING_PHONE (shows "Coming soon" if unset; build-time variable).
 - No licenses, awards, years or stats are claimed; sample facts carry <SampleMark />.

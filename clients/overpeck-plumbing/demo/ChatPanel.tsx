@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { data } from "./data";
 
 /**
- * Chat panel: AI SDK useChat -> /api/demo/overpeck-plumbing/chat (Google Gemini).
+ * Chat panel: AI SDK useChat -> /api/demo/overpeck-plumbing/chat (Vercel AI Gateway).
  * If the AI isn't configured (or errors), it switches to a scripted demo conversation. Capped per session.
  */
 

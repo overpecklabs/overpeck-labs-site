@@ -66,12 +66,12 @@ export const data = {
   reviews: [
     { name: "Karen M.", town: "Teaneck", rating: 5, service: "Emergency", text: "Pipe burst in the basement at 11 p.m. They picked up on the first ring and had someone here within the hour. Water was off and the pipe fixed before midnight." },
     { name: "Luis R.", town: "Hackensack", rating: 5, service: "Drain cleaning", text: "Our kitchen drain kept backing up. They ran a camera, showed us the grease buildup, cleared it and gave us tips to keep it clear." },
-    { name: "Priya S.", town: "Fort Lee", rating: 5, service: "Water heater", text: "No hot water on a Sunday morning. Got a text confirming the visit, the plumber explained repair vs. replace honestly, and we had hot water by the afternoon." },
+    { name: "Priya S.", town: "Fort Lee", rating: 5, service: "Water heater", text: "No hot water on a Sunday morning. They fit us in that morning, the plumber explained repair vs. replace honestly, and we had hot water by the afternoon." },
     { name: "Tom B.", town: "Paramus", rating: 4, service: "Toilet repair", text: "Fixed a running toilet and a leaky faucet in one visit. Fair price, quick work. Only wish the arrival window was a little narrower." },
     { name: "Dana K.", town: "Ridgewood", rating: 5, service: "Remodel", text: "They did all the plumbing for our bathroom remodel. Clean, on schedule, and the inspector signed off first try." },
     { name: "Marco P.", town: "Lodi", rating: 5, service: "Sewer line", text: "Sewer backed up into the basement. They found roots in the line with a camera and fixed it without digging up the whole yard." },
     { name: "Jenna W.", town: "Englewood", rating: 5, service: "Leak repair", text: "Water stain on the ceiling turned out to be a pinhole leak. Found it fast, patched the pipe and left everything spotless." },
-    { name: "Chris L.", town: "Fair Lawn", rating: 4, service: "Drain cleaning", text: "Main line clog cleared quickly. The online booking and text updates made it easy." },
+    { name: "Chris L.", town: "Fair Lawn", rating: 4, service: "Drain cleaning", text: "Main line clog cleared quickly. Booking online took a minute and they showed up right on time." },
   ] satisfies Review[],
   faqs: [
     { q: "Do you offer 24/7 emergency plumbing?", a: "Yes. Call any time, day or night, including weekends and holidays. For a burst pipe or flooding, call instead of using the form so we can talk you through shutting off the water while we're on the way." },
