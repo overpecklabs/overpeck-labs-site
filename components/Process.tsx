@@ -234,7 +234,7 @@ function StaticList() {
 
 export default function Process() {
   return (
-    <section id="process" className="board-bg relative lg:h-[520vh] motion-reduce:lg:h-auto">
+    <section id="process" style={{ ["--cv-h" as string]: "1119px" }} className="cv-m board-bg relative lg:h-[520vh] motion-reduce:lg:h-auto">
       <div className="hidden h-full lg:block motion-reduce:lg:hidden">
         <PinnedSequence />
       </div>

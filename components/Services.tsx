@@ -24,7 +24,7 @@ export default function Services() {
   usePanelIn(root, "left");
 
   return (
-    <section ref={root} id="services" className="hex-paper relative overflow-hidden px-5 py-24">
+    <section ref={root} id="services" style={{ ["--cv-h" as string]: "1981px" }} className="cv-m hex-paper relative overflow-hidden px-5 py-24">
       <div data-panel className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">The Complete Formula</p>
         <div className="mt-3 flex flex-wrap items-end gap-x-6 gap-y-2">

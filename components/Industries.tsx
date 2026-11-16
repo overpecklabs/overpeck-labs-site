@@ -159,16 +159,31 @@ export default function Industries({ workflowTags = {} }: { workflowTags?: Recor
   usePanelIn(section, "depth");
   const velocity = useRef(0);
   const visible = useRef(false);
-  const [mode, setMode] = useState<Mode>("marquee");
+  // null until the section is near the viewport: the ~800-element card rows are below the fold, so they mount
+  // late (already in the right mode for the screen) and the placeholder reserves their exact height.
+  const [mode, setMode] = useState<Mode | null>(null);
 
   useEffect(() => {
+    const el = section.current;
+    if (!el) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const small = window.matchMedia("(max-width: 767px)");
     const pick = () => setMode(reduced.matches ? "grid" : small.matches ? "swipe" : "marquee");
-    pick();
-    reduced.addEventListener("change", pick);
-    small.addEventListener("change", pick);
+    let started = false;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting || started) return;
+        started = true;
+        io.disconnect();
+        pick();
+        reduced.addEventListener("change", pick);
+        small.addEventListener("change", pick);
+      },
+      { rootMargin: "1000px 0px" }
+    );
+    io.observe(el);
     return () => {
+      io.disconnect();
       reduced.removeEventListener("change", pick);
       small.removeEventListener("change", pick);
     };
@@ -197,7 +212,7 @@ export default function Industries({ workflowTags = {} }: { workflowTags?: Recor
   }, [mode]);
 
   return (
-    <section ref={section} id="industries" className="board-bg relative overflow-hidden py-24">
+    <section ref={section} id="industries" style={{ ["--cv-h" as string]: "1118px" }} className="cv-m board-bg relative overflow-hidden py-24">
             <div className="relative mx-auto max-w-6xl px-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Industries we build for</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -215,6 +230,10 @@ export default function Industries({ workflowTags = {} }: { workflowTags?: Recor
       </div>
 
       <div data-panel className="relative mt-12">
+        {mode === null && (
+          // same height as the rows that mount here: swipe row 384px (<768px), marquee 736px; reduced-motion grid 1/2/3 columns
+          <div aria-hidden className="h-[384px] md:h-[736px] motion-reduce:h-[4248px] motion-reduce:sm:h-[2112px] motion-reduce:lg:h-[1400px]" />
+        )}
         {mode === "marquee" && (
           <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
             <MarqueeRow items={ROW_A} dir={1} velocity={velocity} visible={visible} tags={workflowTags} />

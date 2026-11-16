@@ -1,15 +1,12 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { RECEPTIONIST_PHONE as EXTERIOR_RECEPTIONIST } from "@/flagships/overpeck-exterior-care/phone";
 import { RECEPTIONIST_PHONE as ELECTRIC_RECEPTIONIST } from "@/flagships/overpeck-electric/phone";
-import { Parallax } from "@/components/demos/motion";
+import ScrollParallax from "@/components/ScrollParallax";
 
 /**
  * Homepage "See what we build": our two flagship sample businesses (fictional), as showcase blocks that
- * stack on mobile and alternate left/right on desktop. Static screenshots live in /public/showcase. Image-only
- * parallax via <Parallax> (about 10% on desktop, half on phones, none with reduced motion). Demo links have no
+ * stack on mobile and alternate left/right on desktop. Server component; static screenshots live in /public/showcase
+ * (lazy, with explicit sizes). Image-only parallax via the tiny <ScrollParallax> island (about 10% on desktop, half on phones, none with reduced motion). Demo links have no
  * ?preview=1, so visits count as real views. A receptionist call link only shows when that demo has a number.
  */
 
@@ -58,9 +55,8 @@ const FLAGSHIPS: Flagship[] = [
       "A single quote form with “What needs cleaning?” chips",
       "Scroll-driven window-cleaning effect plus a before/after slider",
       "AI chat that answers soft-wash vs. power-wash questions",
-      ...(EXTERIOR_RECEPTIONIST ? ["AI receptionist that answers every call 24/7"] : []),
     ],
-    receptionist: EXTERIOR_RECEPTIONIST,
+    receptionist: null,
     shots: {
       desktop: "/showcase/overpeck-exterior-care-desktop.webp",
       phone: "/showcase/overpeck-exterior-care-phone.webp",
@@ -84,9 +80,9 @@ function Preview({ f }: { f: Flagship }) {
             <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
             <span className="ml-2 min-w-0 flex-1 truncate rounded-md bg-white px-3 py-1 text-[11px] text-ink/70">{f.url}</span>
           </div>
-          <Parallax className="aspect-[16/10]" amount={10}>
+          <ScrollParallax className="aspect-[16/10]" amount={10}>
             <Image src={f.shots.desktop} width={1440} height={900} loading="lazy" sizes="(min-width: 1024px) 640px, 92vw" alt={f.shots.desktopAlt} className="h-full w-full object-cover object-top" style={{ background: f.shots.bg }} />
-          </Parallax>
+          </ScrollParallax>
         </div>
       </Link>
       <PhoneFrame src={f.shots.phone} alt={f.shots.phoneAlt} bg={f.shots.bg} />
@@ -167,7 +163,7 @@ function Copy({ f }: { f: Flagship }) {
 
 export default function Showcase() {
   return (
-    <section id="showcase" aria-labelledby="showcase-title" className="board-bg relative overflow-hidden px-5 py-24">
+    <section id="showcase" aria-labelledby="showcase-title" style={{ ["--cv-h" as string]: "2417px" }} className="cv-m board-bg relative overflow-hidden px-5 py-24">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">See it in action</p>

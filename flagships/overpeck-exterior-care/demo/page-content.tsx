@@ -7,7 +7,6 @@ import HeroLeadForm from "./HeroLeadForm";
 import EventButton from "@/components/demos/EventButton";
 import CloseDialogOnClick from "@/components/demos/CloseDialogOnClick";
 import WindowWipe from "./WindowWipe";
-import { RECEPTIONIST_PHONE } from "../phone";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
 import { averageRating } from "@/components/demos/rating";
 import { CtaBand, ExitIntent, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
@@ -191,7 +190,6 @@ export default function OverpeckExteriorCare() {
                 <Icon d={PHONE_D} className="h-5 w-5" />
                 Call {PHONE.display}
               </a>
-              {RECEPTIONIST_PHONE && <p className="mt-2 text-center text-xs font-semibold text-white/75 md:text-left">Call our AI receptionist, it&apos;s live 24/7 (demo line).</p>}
             </div>
 
             <div className="md:col-start-1 md:row-start-2">
@@ -360,7 +358,7 @@ export default function OverpeckExteriorCare() {
           </Stagger>
         </section>
 
-        {/* AI assistant + AI receptionist */}
+        {/* AI assistant + call us */}
         <section id="ai" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
           <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
             <Reveal className="relative overflow-hidden rounded-3xl bg-[#06232a] p-6 text-white sm:p-8">
@@ -378,27 +376,20 @@ export default function OverpeckExteriorCare() {
             </Reveal>
 
             <Reveal delay={0.08} className={`p-6 sm:p-8 ${glass}`}>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0e7490]">AI phone receptionist</p>
-              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-[#06232a] sm:text-3xl">{data.receptionist.title}</h2>
-              <p className="mt-3 text-slate-600">{data.receptionist.body}</p>
-              {RECEPTIONIST_PHONE ? (
-                <a href={RECEPTIONIST_PHONE.tel} className="demo-lift mt-5 inline-flex items-center gap-4 rounded-3xl bg-[#06232a] py-3 pl-3 pr-6 text-white shadow-[0_14px_40px_-12px_rgba(6,35,42,0.6)]">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#0e7490] to-[#34d399]">
-                    <Icon d={PHONE_D} className="h-5 w-5" />
-                  </span>
-                  <span className="leading-tight">
-                    <span className="block text-2xl font-extrabold tracking-tight">{RECEPTIONIST_PHONE.display}</span>
-                    <span className="mt-0.5 block text-sm font-bold text-[#6ee7b7]">Call to test it live</span>
-                  </span>
-                </a>
-              ) : (
-                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-5 py-2.5 text-sm font-bold text-slate-700">
-                  <Icon d={PHONE_D} className="h-4 w-4" />
-                  Demo line coming soon
-                </p>
-              )}
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0e7490]">Call us</p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-[#06232a] sm:text-3xl">{data.callUs.title}</h2>
+              <p className="mt-3 text-slate-600">{data.callUs.body}</p>
+              <a href={PHONE.tel} className="demo-lift mt-5 inline-flex items-center gap-4 rounded-3xl bg-[#06232a] py-3 pl-3 pr-6 text-white shadow-[0_14px_40px_-12px_rgba(6,35,42,0.6)]">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#0e7490] to-[#34d399]">
+                  <Icon d={PHONE_D} className="h-5 w-5" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-2xl font-extrabold tracking-tight">{PHONE.display}</span>
+                  <span className="mt-0.5 block text-sm font-bold text-[#6ee7b7]">Call for a free estimate</span>
+                </span>
+              </a>
               <ol className="mt-6 space-y-3">
-                {data.receptionist.steps.map((st, i) => (
+                {data.callUs.steps.map((st, i) => (
                   <li key={st.title} className="flex gap-3">
                     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#0e7490] to-[#34d399] text-sm font-extrabold text-white">{i + 1}</span>
                     <span>

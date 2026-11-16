@@ -6,7 +6,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePanelIn } from "@/lib/usePanelIn";
 import { CONTACT_OPTIONS, PHONE_DISPLAY, PHONE_TEL, type ServiceKey } from "@/lib/services";
-import { getSupabase } from "@/lib/supabase";
 import HoneypotField from "./HoneypotField";
 
 const field =
@@ -84,6 +83,7 @@ export default function Contact() {
     setSentName(null);
     try {
       // Anon is INSERT-only: plain .insert(), no .select(); id/created_at are set by the database.
+      const { getSupabase } = await import("@/lib/supabase"); // loaded on submit, not with the page
       const { error } = await getSupabase()
         .from("contact_messages")
         .insert({
@@ -105,7 +105,7 @@ export default function Contact() {
   };
 
   return (
-    <section ref={root} id="contact" className="board-bg relative overflow-hidden px-5 py-24">
+    <section ref={root} id="contact" style={{ ["--cv-h" as string]: "1558px" }} className="cv-m board-bg relative overflow-hidden px-5 py-24">
       {/* Bright accent section #3: a marker-blue band behind the copy, with an arrow to the form */}
       <div className="absolute inset-x-0 top-16 bottom-16 -skew-y-2 bg-mk-blue shadow-[0_14px_40px_rgba(31,111,235,0.25)] lg:inset-y-24" aria-hidden />
       <div data-panel className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-12">

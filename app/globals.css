@@ -309,3 +309,12 @@ body {
   font-family: "Space Grotesk", "Grotesk Hero Fallback", var(--font-inter), ui-sans-serif, sans-serif;
 }
 
+
+/* Phones: below-the-fold homepage sections skip layout/paint until they near the viewport (no visual change);
+   --cv-h is each section's measured height at 412px, and `auto` remembers the real size once rendered. */
+@media (max-width: 767px) {
+  .cv-m {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto var(--cv-h, 1200px);
+  }
+}

@@ -7,7 +7,7 @@ import { EXTERIOR_PHONE } from "../phone";
  * Overpeck Exterior Care: a FICTIONAL sample brand, Overpeck Labs' second flagship showcase.
  * No licenses, awards, years or stats are claimed. Anything that sounds like a business fact (insurance, prices,
  * policies, timings) is flagged `sample: true` and shown with <SampleMark />; reviews are sample reviews.
- * Phone: see ../phone.ts (AI receptionist line when set, otherwise the Overpeck Labs office line).
+ * Phone: see ../phone.ts (the Overpeck Labs office line).
  */
 export const data = {
   slug: "overpeck-exterior-care",
@@ -92,13 +92,13 @@ export const data = {
     { name: "Summer Curb Appeal", from: 349, body: "Make the outside of your home shine for summer.", items: ["Driveway & walkway power wash", "Patio or pavers cleaned", "Exterior window washing"], featured: true },
     { name: "Fall Gutter & Window", from: 299, body: "Clear the leaves and let the light in before winter.", items: ["Gutters hand-cleared", "Downspouts flushed", "Windows inside & out"] },
   ],
-  receptionist: {
-    title: "Call our AI receptionist 24/7",
-    body: "No voicemail, no hold music. An AI receptionist picks up every call, day or night, answers questions and books your free estimate.",
+  callUs: {
+    title: "Prefer to talk? Give us a call.",
+    body: "Tell us what needs cleaning and we'll answer your questions and set up your free estimate.",
     steps: [
-      { title: "Answers every call 24/7", body: "Picks up on the first ring, day or night, and asks what needs cleaning." },
-      { title: "Handles questions and books the estimate", body: "Explains the services and books a free estimate on the calendar." },
-      { title: "Logs every call so nothing slips through", body: "Every call is logged with the caller's details and what they need." },
+      { title: "Tell us what needs cleaning", body: "Windows, siding, driveway, roof or gutters: one call covers it." },
+      { title: "Get your free estimate", body: "We confirm the details and book a time that works for you." },
+      { title: "We show up and make it shine", body: "Careful crews, spotless results, and we clean up after ourselves." },
     ],
   },
   areaTowns: ["Ridgefield Park", "Teaneck", "Hackensack", "Paramus", "Fort Lee", "Englewood", "Ridgewood", "Fair Lawn", "River Edge", "Oradell"],

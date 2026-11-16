@@ -7,7 +7,7 @@ import { PLUMBING_PHONE } from "../phone";
  * Overpeck Plumbing: a FICTIONAL sample brand, Overpeck Labs' flagship showcase demo.
  * There are no real facts here: no licenses, awards, years or stats are claimed. Anything that sounds like a
  * business fact is flagged `sample: true` (shown with <SampleMark />), and the reviews are sample reviews.
- * The phone number is the Overpeck Labs office line (see ../phone.ts).
+ * The phone number is the Overpeck Labs office line (see ../phone.ts). No AI receptionist on this page.
  */
 export const data = {
   slug: "overpeck-plumbing",
@@ -38,7 +38,7 @@ export const data = {
     bandBody: "Send a request in 20 seconds, or call and talk to a plumber.",
   },
   headline: "Burst pipe? Flooding? We're on the way.",
-  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Day or night, our AI receptionist picks up and gets a plumber moving.",
+  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Day or night, we pick up and get a plumber moving.",
   stats: ([
     { value: 7, label: "plumbing services" },
     { text: "24/7", label: "emergency line" },
@@ -51,15 +51,6 @@ export const data = {
     { title: "Licensed & insured", body: "Fully licensed and insured plumbers on every job.", sample: true },
     { title: "Work guaranteed", body: "Every repair is backed by a written workmanship guarantee.", sample: true },
   ],
-  receptionist: {
-    title: "Call our AI receptionist 24/7",
-    body: "No voicemail, no hold music. An AI receptionist picks up every call, day or night, and keeps the job moving.",
-    steps: [
-      { title: "Answers every call 24/7", body: "Picks up on the first ring, day or night, and asks what's going on." },
-      { title: "Handles emergencies and books the job", body: "Spots urgent problems, gets help moving and books the visit on the calendar." },
-      { title: "Logs every call so nothing slips through", body: "Every call is logged with the caller's details and what they need." },
-    ],
-  },
   areaTowns: [
     "Hackensack", "Teaneck", "Englewood", "Fort Lee", "Ridgefield Park", "Paramus", "Fair Lawn", "Bergenfield",
     "Ridgewood", "Lodi", "Little Ferry", "Leonia", "Bogota", "Garfield", "Rutherford",

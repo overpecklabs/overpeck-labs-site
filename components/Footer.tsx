@@ -72,7 +72,7 @@ const COLUMNS: { title: string; body: React.ReactNode }[] = [
 
 export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
   return (
-    <footer className="relative z-10">
+    <footer style={{ ["--cv-h" as string]: "1005px" }} className="cv-m relative z-10">
       {/* pre-footer CTA band */}
       {!hideCta && (
         <div className="px-5 pb-12 pt-6">

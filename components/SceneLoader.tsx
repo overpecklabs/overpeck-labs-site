@@ -3,7 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-// 3D is code-split and only fetched on the client after first paint.
+// 3D is code-split and only fetched on the first interaction (scroll, touch, key, mouse move): it only shows once
+// you scroll into the pinned chapters, so the initial load never pays for three.js.
 const Scene = dynamic(() => import("./three/Scene"), { ssr: false });
 
 function hasWebGL() {
@@ -21,9 +22,14 @@ export default function SceneLoader() {
 
   useEffect(() => {
     if (!hasWebGL()) return;
-    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-    if (w.requestIdleCallback) w.requestIdleCallback(() => setReady(true), { timeout: 1200 });
-    else setTimeout(() => setReady(true), 200);
+    const EVENTS = ["scroll", "wheel", "touchstart", "pointerdown", "pointermove", "keydown"] as const;
+    const go = () => {
+      EVENTS.forEach((e) => window.removeEventListener(e, go));
+      setReady(true);
+    };
+    if (window.scrollY > 0) return go(); // landed mid-page (hash link / restored scroll)
+    EVENTS.forEach((e) => window.addEventListener(e, go, { passive: true }));
+    return () => EVENTS.forEach((e) => window.removeEventListener(e, go));
   }, []);
 
   // Only render while one of the pinned 3D chapters is on screen.

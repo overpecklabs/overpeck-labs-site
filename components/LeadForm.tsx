@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { getSupabase } from "@/lib/supabase";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
 import { INDUSTRY_SLUGS, SERVICE_SLUGS } from "@/lib/slugs";
 import { TIMELINES } from "@/lib/submitMockupRequest";
@@ -91,6 +90,7 @@ export default function LeadForm({ source, service, questions = [], defaults = {
 
     setStatus("sending");
     try {
+      const { getSupabase } = await import("@/lib/supabase"); // loaded on submit, not with the page
       const { error } = await getSupabase()
         .from("contact_messages")
         .insert({

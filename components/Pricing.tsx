@@ -156,7 +156,7 @@ export default function Pricing() {
   }, []);
 
   return (
-    <section id="pricing" className="graph-paper relative px-5 py-24">
+    <section id="pricing" style={{ ["--cv-h" as string]: "2277px" }} className="cv-m graph-paper relative px-5 py-24">
       <div className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Pricing</p>
         <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold text-ink sm:text-5xl">Simple pricing. Real results.</h2>

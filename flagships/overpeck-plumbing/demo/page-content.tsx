@@ -18,7 +18,6 @@ const PH = data.photos;
 const PHONE = data.phone;
 const EMERGENCY_BG = `linear-gradient(90deg, ${data.emergency.from}, ${data.emergency.to})`;
 const RATING = averageRating(data.reviews);
-const RECEPTIONIST = data.phone; // the business line IS the live AI receptionist demo line
 
 const GLASS: LeadTheme = { tone: "dark", primary: C.primary, accent: C.accent, ctaBg: `linear-gradient(90deg, ${C.accent}, #60a5fa)`, ctaText: "#04101f" };
 const LIGHT: LeadTheme = { tone: "light", primary: C.primary, accent: C.accent, ctaBg: C.primary, ctaText: "#ffffff" };
@@ -155,7 +154,6 @@ export default function OverpeckPlumbing() {
                 <Icon d={PHONE_D} className="h-5 w-5" />
                 Call {PHONE.display}
               </a>
-              <p className="mt-2 text-center text-xs font-semibold text-slate-300 md:text-left">Call our AI receptionist, it&apos;s live 24/7 (demo line).</p>
             </div>
 
             <div className="md:col-start-1 md:row-start-2">
@@ -268,38 +266,6 @@ export default function OverpeckPlumbing() {
               </figure>
             </Reveal>
           </div>
-        </section>
-
-        {/* 3. AI phone receptionist */}
-        <section id="receptionist" className="px-4 pb-16 sm:px-6 md:pb-24">
-          <Reveal className={`relative mx-auto max-w-6xl overflow-hidden p-6 sm:p-10 ${glass}`}>
-            <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#22d3ee]/15 blur-3xl" aria-hidden />
-            <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_1.2fr]">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#67e8f9]">AI phone receptionist</p>
-                <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white">{data.receptionist.title}</h2>
-                <p className="mt-3 text-slate-300">{data.receptionist.body}</p>
-                <a href={RECEPTIONIST.tel} className="demo-lift mt-6 inline-flex items-center gap-4 rounded-3xl bg-white py-3.5 pl-4 pr-7 text-[#050d1f] shadow-[0_14px_40px_-12px_rgba(34,211,238,0.6)]">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#2563eb] to-[#22d3ee] text-white">
-                      <Icon d={PHONE_D} className="h-6 w-6" />
-                    </span>
-                    <span className="leading-tight">
-                      <span className="block text-2xl font-extrabold tracking-tight sm:text-3xl">{RECEPTIONIST.display}</span>
-                      <span className="mt-0.5 block text-sm font-bold text-[#2563eb]">Call to test it live</span>
-                    </span>
-                  </a>
-              </div>
-              <Stagger as="ol" className="grid gap-3 sm:grid-cols-3">
-                {data.receptionist.steps.map((st, i) => (
-                  <StaggerItem key={st.title} as="li" className="rounded-2xl border border-white/10 bg-[#050d1f]/40 p-5">
-                    <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-[#2563eb] to-[#22d3ee] text-sm font-extrabold text-white">{i + 1}</span>
-                    <p className="mt-3 font-bold text-white">{st.title}</p>
-                    <p className="mt-1 text-sm text-slate-400">{st.body}</p>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </div>
-          </Reveal>
         </section>
 
         {/* 4. gallery: before/after + grid (image-only parallax on the grid) */}

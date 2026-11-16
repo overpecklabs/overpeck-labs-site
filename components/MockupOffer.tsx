@@ -16,7 +16,7 @@ export default function MockupOffer() {
   const root = useRef<HTMLElement>(null);
   usePanelIn(root, "right");
   return (
-    <section ref={root} id="mockup" className="board-bg relative overflow-hidden px-5 py-24">
+    <section ref={root} id="mockup" style={{ ["--cv-h" as string]: "1046px" }} className="cv-m board-bg relative overflow-hidden px-5 py-24">
       <div data-panel className="relative mx-auto max-w-5xl">
         <div className="sticky-note tilt-l relative rounded-[4px] p-7 sm:p-12">
           <span className="tape" style={{ left: "18%" }} />
