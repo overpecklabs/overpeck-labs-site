@@ -89,15 +89,24 @@ export default function Hero() {
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#0d9488]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#19f0d2]" /> Bergen County, NJ
               </p>
-              <h1 className="font-display text-[2.45rem] font-bold leading-[1.03] tracking-tight sm:text-6xl lg:text-[4.1rem]">
-                Websites, leads &amp; AI that{" "}
+              {/*
+                Line breaks are pinned (and wrapping is off) so the headline has the same number of lines in the
+                webfont and in its fallback: no layout shift when Space Grotesk swaps in. 3 lines on phones and
+                desktop, 4 on tablets. Font sizes scale with the column and leave ~6% width headroom over the
+                widest line in either font (see .hero-title in globals.css for the bold-matched fallback face).
+              */}
+              <h1 className="hero-title whitespace-nowrap text-[length:min(2.45rem,calc((100vw-2.5rem)/8.65))] font-bold leading-[1.03] tracking-tight sm:text-[length:min(3.75rem,calc((100vw-2.5rem)/8.65))] md:text-[length:min(3.75rem,calc((100vw-5rem)*0.0665))] lg:text-[length:min(4.1rem,calc((min(100vw,72rem)-5rem)*0.0584))]">
+                Websites, leads
+                <br className="hidden md:max-lg:inline" /> &amp;
+                <br className="md:max-lg:hidden" /> AI that
+                <br className="hidden md:max-lg:inline" />{" "}
                 <span className="relative inline-block whitespace-nowrap">
                   work while
                   <svg className="hero-underline pointer-events-none absolute -bottom-2 left-0 h-3 w-full overflow-visible" viewBox="0 0 240 12" preserveAspectRatio="none" aria-hidden>
                     <path d="M3 8 Q60 2 120 7 T237 6" fill="none" stroke="#19f0d2" strokeWidth="6" strokeLinecap="round" pathLength={1} strokeDasharray="1" className="[stroke-dashoffset:0] md:[stroke-dashoffset:1] motion-reduce:md:[stroke-dashoffset:0]" />
                   </svg>
-                </span>{" "}
-                you work.
+                </span>
+                <br /> you work.
               </h1>
               <p className="mt-5 max-w-md text-base text-[#3a3a3c] sm:text-lg">
                 We build websites that win business, automate the busywork, track what&apos;s working and add AI that never misses a lead. For local plumbers, HVAC pros, electricians and remodelers.

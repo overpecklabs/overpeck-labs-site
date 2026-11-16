@@ -293,3 +293,19 @@ body {
   0%, 100% { translate: -50% 0; }
   50% { translate: -50% -5px; }
 }
+
+/* ---------- hero headline: bold-matched fallback (no layout shift on font swap) ----------
+   next/font's automatic fallback is tuned for regular weight; in bold it runs ~5% wider than Space Grotesk and
+   wraps differently. Arial Bold at 98.6% is never wider than Space Grotesk Bold for the hero lines (measured),
+   so the brief fallback looks the same and fits the pinned line breaks in Hero.tsx. */
+@font-face {
+  font-family: "Grotesk Hero Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Arial");
+  font-weight: 700;
+  font-style: normal;
+  size-adjust: 98.6%;
+}
+.hero-title {
+  font-family: "Space Grotesk", "Grotesk Hero Fallback", var(--font-inter), ui-sans-serif, sans-serif;
+}
+
