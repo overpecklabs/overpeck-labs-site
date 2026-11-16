@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { data } from "./data";
 
 /**
- * Chat panel: AI SDK useChat -> /api/demo/overpeck-plumbing/chat (Vercel AI Gateway).
+ * Chat panel: AI SDK useChat -> /api/demo/overpeck-plumbing/chat (Google Gemini).
  * If the AI isn't configured (or errors), it switches to a scripted demo conversation. Capped per session.
  */
 
@@ -76,7 +76,11 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
   useEffect(() => {
     if (!error || mode !== "ai") return;
     setNote(/limit|many/i.test(error.message) ? "The AI is busy right now, so this continues as a scripted demo." : "The AI isn't available right now, so this continues as a scripted demo.");
-    setScripted(messages.map((m): Line => ({ id: m.id, role: m.role === "user" ? "user" : "assistant", text: m.parts.map((p) => (p.type === "text" ? p.text : "")).join("") })).filter((l) => l.text));
+    const kept = messages.map((m): Line => ({ id: m.id, role: m.role === "user" ? "user" : "assistant", text: m.parts.map((p) => (p.type === "text" ? p.text : "")).join("") })).filter((l) => l.text);
+    // answer the message the AI couldn't, so the visitor isn't left hanging
+    const last = kept[kept.length - 1];
+    if (last?.role === "user") kept.push({ id: `${last.id}-r`, role: "assistant", text: scriptedReply(last.text) });
+    setScripted(kept);
     setMode("scripted");
   }, [error, mode, messages]);
 

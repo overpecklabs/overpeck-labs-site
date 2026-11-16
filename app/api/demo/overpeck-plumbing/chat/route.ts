@@ -1,11 +1,16 @@
+import { google } from "@ai-sdk/google";
 import { convertToModelMessages, createUIMessageStreamResponse, streamText, toUIMessageStream, type UIMessage } from "ai";
 
 /**
- * AI chat for the Overpeck Plumbing showcase demo (/demo/overpeck-plumbing), via Vercel AI Gateway.
+ * AI chat for the Overpeck Plumbing showcase demo (/demo/overpeck-plumbing), via Google's Gemini API (free tier).
  *
  * Env:
- *   AI_GATEWAY_API_KEY            enables the AI (without it, GET reports ai:false and the widget runs a scripted demo)
- *   OVERPECK_PLUMBING_AI_MODEL    optional gateway model id (default below)
+ *   GOOGLE_GENERATIVE_AI_API_KEY  enables the AI (read by @ai-sdk/google; without it, GET reports ai:false and the
+ *                                 widget runs a scripted demo). Never logged or returned.
+ *   OVERPECK_PLUMBING_AI_MODEL    optional Gemini model id (default below)
+ *
+ * If Gemini errors or rate-limits mid-conversation, the stream ends with an error and the widget continues
+ * with its scripted demo.
  *
  * Guard rails: per-IP rate limit (best effort, per server instance), a cap on messages per conversation,
  * short inputs, short answers, and only plain user/assistant text is forwarded to the model.
@@ -14,7 +19,7 @@ import { convertToModelMessages, createUIMessageStreamResponse, streamText, toUI
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-const MODEL = process.env.OVERPECK_PLUMBING_AI_MODEL || "anthropic/claude-haiku-5.5";
+const MODEL = process.env.OVERPECK_PLUMBING_AI_MODEL?.trim() || "gemini-2.5-flash";
 /** Matches the widget's per-session cap. */
 const MAX_USER_MESSAGES = 8;
 const MAX_CHARS = 500;
@@ -42,7 +47,7 @@ function rateLimited(ip: string): boolean {
   return recent.length > MAX_REQUESTS_PER_WINDOW;
 }
 
-const enabled = () => Boolean(process.env.AI_GATEWAY_API_KEY);
+const enabled = () => Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim());
 
 export async function GET() {
   return Response.json({ ai: enabled(), maxUserMessages: MAX_USER_MESSAGES }, { headers: { "Cache-Control": "no-store" } });
@@ -79,7 +84,7 @@ export async function POST(req: Request) {
   if (userCount > MAX_USER_MESSAGES) return Response.json({ error: "Message limit reached for this demo chat." }, { status: 429 });
 
   const result = streamText({
-    model: MODEL,
+    model: google(MODEL),
     instructions: INSTRUCTIONS,
     messages: await convertToModelMessages(messages),
     maxOutputTokens: 350,
