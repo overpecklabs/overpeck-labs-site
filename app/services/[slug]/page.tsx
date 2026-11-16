@@ -155,7 +155,7 @@ export default async function ServicePageRoute({ params }: Params) {
             </p>
           </div>
           <div>
-            <SectionHead kicker="Pricing" title={s.pricing === "website" ? "Start free, then launch" : "Custom quote"} />
+            <SectionHead kicker="Pricing" title={s.pricing === "website" ? "Start free, then launch" : "Included in our plans"} />
             {s.pricing === "website" ? (
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[4px] border border-ink/10 bg-[#fff6b8] p-5 shadow-[0_10px_22px_rgba(26,26,26,0.08)]">
@@ -167,10 +167,10 @@ export default async function ServicePageRoute({ params }: Params) {
                   </Link>
                 </div>
                 <div className="rounded-[4px] border-[3px] border-[#0f766e] bg-[#c8f5ec] p-5 shadow-[0_10px_22px_rgba(26,26,26,0.08)]">
-                  <div className="text-xs font-bold uppercase tracking-widest text-ink/80">Launch</div>
-                  <div className="font-display mt-1 text-3xl font-bold text-ink">$500</div>
-                  <div className="text-sm font-semibold text-ink/85">+ $50/month</div>
-                  <p className="mt-1 text-sm text-ink/85">Site, hosting, SSL, basic SEO, lead form and small monthly edits.</p>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/80">Starter</div>
+                  <div className="font-display mt-1 text-3xl font-bold text-ink">$500 setup</div>
+                  <div className="text-sm font-semibold text-ink/85">+ $50/mo</div>
+                  <p className="mt-1 text-sm text-ink/85">Custom mobile-first site, hosting, SSL, small edits and a contact/quote form. No contracts.</p>
                   <Link href="/#pricing" className="mt-3 inline-block text-sm font-semibold text-teal-ink underline">
                     See all plans
                   </Link>
@@ -179,12 +179,12 @@ export default async function ServicePageRoute({ params }: Params) {
             ) : (
               <div className="mt-6 rounded-[4px] border border-ink/10 bg-[#dbe8ff] p-5 shadow-[0_10px_22px_rgba(26,26,26,0.08)]">
                 <p className="text-ink/90">
-                  {meta.name} is part of our <strong>Growth</strong> and <strong>Operator</strong> plans, quoted to fit your business.
+                  {meta.name} is part of our <strong>Growth</strong> ($1,000 setup + $149/mo) and <strong>Pro</strong> ($1,500 setup + $349/mo) plans. No contracts, cancel anytime.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <a href="#lead-form" className="btn-primary !py-2.5 text-sm">
-                    Book a call
-                  </a>
+                  <Link href="/free-mockup" className="btn-primary !py-2.5 text-sm">
+                    Get my free homepage design
+                  </Link>
                   <Link href="/#pricing" className="btn-ghost !py-2.5 text-sm">
                     See all plans
                   </Link>

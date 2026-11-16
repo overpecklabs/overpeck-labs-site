@@ -30,7 +30,7 @@ export const SERVICE_PAGES: ServicePage[] = [
     slug: "websites",
     title: "Small Business Websites in Bergen County, NJ | Overpeck Labs",
     description:
-      "Custom, mobile-first websites for Bergen County, NJ service businesses, built to turn local searches into calls and booked jobs. Free mockup first, Launch sites from $500.",
+      "Custom, mobile-first websites for Bergen County, NJ service businesses, built to turn local searches into calls and booked jobs. Free mockup first, Starter sites from $500 setup + $50/mo.",
     h1: "Websites that bring in calls, not just compliments.",
     sub: "Custom, fast, mobile-first sites for Bergen County service businesses, built around the jobs you want more of.",
     promise: "A site built to turn local searches into calls and booked jobs.",
@@ -66,10 +66,10 @@ export const SERVICE_PAGES: ServicePage[] = [
     pricing: "website",
     faqs: [
       { q: "What does the free mockup include?", a: "A custom design of your homepage based on your answers to our questionnaire, so you can see the direction before paying anything. There's no obligation." },
-      { q: "How much does a website cost?", a: "Launch websites start at $500 upfront plus $50/month, which covers hosting, SSL, basic SEO setup, a contact/lead form and small monthly edits. Larger sites are quoted on a call." },
+      { q: "How much does a website cost?", a: "Starter is $500 setup plus $50/month and covers a custom mobile-first site, hosting, SSL, small edits and a contact/quote form. Growth ($1,000 + $149/mo) adds AI website chat, text lead alerts, Google Business Profile setup and monthly content updates; Pro ($1,500 + $349/mo) adds an AI phone receptionist. No contracts, cancel anytime." },
       { q: "How long does a new site take?", a: "It depends on the size of the site and how quickly photos and details come together. We give you a timeline when we scope the project, before any work starts." },
       { q: "Will my site work well on phones?", a: "Yes. Every site is built mobile-first, with tap-to-call buttons and short forms that are easy to use on a phone." },
-      { q: "Can you help me show up on Google?", a: "Every Launch site includes basic SEO setup: page titles, service and town content, and a fast, mobile-friendly build. Ongoing local SEO is part of Track & Optimize." },
+      { q: "Can you help me show up on Google?", a: "Every site we build includes basic SEO setup: page titles, service and town content, and a fast, mobile-friendly build. Ongoing local SEO is part of Track & Optimize." },
     ],
     questions: [
       { key: "current_site", label: "Current website (or “none”)", type: "text" },

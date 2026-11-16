@@ -4,12 +4,14 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { scrollToId } from "@/lib/journey";
-import { prefillContact, type ServiceKey } from "@/lib/services";
+import { RECEPTIONIST_PHONE as ELECTRIC_LINE, OFFICE_PHONE } from "@/flagships/overpeck-electric/phone";
+import { RECEPTIONIST_PHONE as EXTERIOR_LINE } from "@/flagships/overpeck-exterior-care/phone";
 import ElementBadge from "./ElementBadge";
-import Annotation from "./Annotation";
 
-type Price = { kind: "free" } | { kind: "fixed"; upfront: string; monthly: string } | { kind: "quote" };
+type Price = { setup: string; monthly: string };
+
+/** "Hear it" demo line for the Pro card: a flagship AI receptionist line once its env var is set, otherwise the office. */
+const DEMO_LINE = ELECTRIC_LINE ?? EXTERIOR_LINE ?? OFFICE_PHONE;
 
 type Plan = {
   name: string;
@@ -18,7 +20,6 @@ type Plan = {
   blurb: string;
   items: string[];
   price: Price;
-  cta: { label: string } & ({ href: string } | { prefill: ServiceKey[] });
   mol: string[]; // the matching molecule (which elements this tier combines)
   glow: string; // hover glow
   card: string; // index-card color
@@ -26,67 +27,62 @@ type Plan = {
   tilt: string;
   badge?: string;
   featured?: boolean;
+  /** Item that gets the "Hear it: call our demo line" link. */
+  demoItem?: string;
 };
+
+const CTA = { label: "Get my free homepage design", href: "/free-mockup" };
+const RECEPTIONIST = "AI phone receptionist that answers every call 24/7, books jobs and texts you each lead";
 
 // Array order = display order on every screen size (cards stack in this order on mobile).
 const PLANS: Plan[] = [
   {
-    name: "Free Mockup",
-    el: { num: "01", sym: "Fm" },
-    tag: "Start here",
-    blurb: "A custom design of your new homepage, no cost, no obligation.",
-    price: { kind: "free" },
-    items: ["Custom homepage design", "Built around your trade and towns", "Ready in 2–3 business days", "No credit card needed"],
-    cta: { label: "Get My Free Mockup", href: "/free-mockup" },
-    mol: [],
-    glow: "rgba(247,201,72,0.35)",
-    card: "#fff6b8",
-    tile: "#fffbe0",
-    tilt: "tilt-l",
-  },
-  {
-    name: "Launch",
-    el: { num: "02", sym: "Ln" },
-    tag: "Websites That Win Business",
+    name: "Starter",
+    el: { num: "01", sym: "St" },
+    tag: "Your website, done right",
     blurb: "A custom website built to bring in calls and jobs.",
-    price: { kind: "fixed", upfront: "$500", monthly: "+ $50/month" },
-    items: ["Custom, mobile-friendly website", "Hosting and SSL included", "Basic SEO setup", "Contact / lead form", "Small monthly edits"],
-    cta: { label: "Get Started", href: "/free-mockup" },
+    price: { setup: "$500", monthly: "$50" },
+    items: ["Custom mobile-first website", "Hosting and SSL", "Small edits", "Contact / quote form"],
     mol: ["Ws"],
     glow: "rgba(15,118,110,0.28)",
     card: "#c8f5ec",
     tile: "#e8fbf7",
-    tilt: "tilt-r",
-    badge: "Recommended",
-    featured: true,
-  },
-  {
-    name: "Growth",
-    el: { num: "03", sym: "Gr" },
-    tag: "Automation + Tracking",
-    blurb: "Everything in Launch, plus systems that follow up for you and show what's working.",
-    price: { kind: "quote" },
-    items: ["Everything in Launch", "Workflows & Automation", "Track, Monitor & Optimize", "Ongoing improvements"],
-    cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking"] },
-    mol: ["Ws", "Au", "Op"],
-    glow: "rgba(31,111,235,0.25)",
-    card: "#dbe8ff",
-    tile: "#eef4ff",
     tilt: "tilt-l",
   },
   {
-    name: "Operator",
-    el: { num: "04", sym: "Or" },
-    tag: "Everything, including AI",
-    blurb: "The full system, with AI covering calls, chats and overflow.",
-    price: { kind: "quote" },
-    items: ["Everything in Growth", "AI Chat Bot", "AI Call Receptionist", "AI Agents for overflow tasks"],
-    cta: { label: "Book a call", prefill: ["websites", "workflows", "tracking", "ai"] },
+    name: "Growth",
+    el: { num: "02", sym: "Gr" },
+    tag: "Never miss a lead online",
+    blurb: "Everything in Starter, plus AI and alerts that turn visitors into jobs.",
+    price: { setup: "$1,000", monthly: "$149" },
+    items: [
+      "Everything in Starter",
+      "AI website chat that answers questions and captures leads 24/7",
+      "Instant lead alerts by text",
+      "Google Business Profile setup",
+      "Monthly content updates",
+    ],
+    mol: ["Ws", "Au", "Ai"],
+    glow: "rgba(31,111,235,0.25)",
+    card: "#dbe8ff",
+    tile: "#eef4ff",
+    tilt: "tilt-r",
+    badge: "Most popular",
+    featured: true,
+  },
+  {
+    name: "Pro",
+    el: { num: "03", sym: "Pr" },
+    tag: "Every call answered",
+    blurb: "Everything in Growth, plus an AI receptionist on your phone line.",
+    price: { setup: "$1,500", monthly: "$349" },
+    items: ["Everything in Growth", RECEPTIONIST],
+    demoItem: RECEPTIONIST,
     mol: ["Ws", "Au", "Op", "Ai"],
     glow: "rgba(47,158,68,0.25)",
     card: "#dcf3df",
     tile: "#eefaef",
-    tilt: "tilt-r",
+    tilt: "tilt-l",
   },
 ];
 
@@ -121,24 +117,15 @@ function Molecule({ atoms }: { atoms: string[] }) {
 }
 
 function PriceBlock({ price }: { price: Price }) {
-  if (price.kind === "free")
-    return (
-      <>
-        <div className="font-display text-5xl font-bold text-ink">Free</div>
-        <div className="mt-1 text-sm text-ink/80">No obligation</div>
-      </>
-    );
-  if (price.kind === "fixed")
-    return (
-      <>
-        <div className="font-display text-5xl font-bold text-ink">{price.upfront}</div>
-        <div className="mt-1 text-sm font-semibold text-ink/85">{price.monthly}</div>
-      </>
-    );
   return (
     <>
-      <div className="font-display text-3xl font-bold leading-[3rem] text-ink">Custom quote</div>
-      <div className="mt-1 text-sm text-ink/80">Book a call</div>
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-display text-5xl font-bold text-ink">{price.setup}</span>
+        <span className="text-sm font-semibold text-ink/85">setup</span>
+      </div>
+      <div className="mt-1 text-sm font-semibold text-ink/85">
+        + <span className="font-display text-xl font-bold text-ink">{price.monthly}</span>/mo
+      </div>
     </>
   );
 }
@@ -147,7 +134,7 @@ export default function Pricing() {
   const grid = useRef<HTMLDivElement>(null);
 
   // Desktop: cards start stacked in depth like lab tiles, fan out into a row as you scroll,
-  // then "Recommended" gets circled in red marker as they land. Phones / reduced motion: static.
+  // then "Most popular" gets circled in red marker as they land. Phones / reduced motion: static.
   useEffect(() => {
     const el = grid.current;
     if (!el) return;
@@ -159,7 +146,7 @@ export default function Pricing() {
       gsap.set("[data-circle]", { strokeDashoffset: 1 });
       const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: "top 88%", end: "top 30%", scrub: 0.6 } });
       cards.forEach((c, i) => {
-        const off = 1.5 - i; // distance from the center of the row
+        const off = (cards.length - 1) / 2 - i; // distance from the center of the row
         tl.fromTo(
           c,
           { x: off * w, z: -120 - i * 70, rotationY: 32, rotationZ: -off * 3, opacity: 0.35 },
@@ -176,12 +163,12 @@ export default function Pricing() {
     <section id="pricing" className="graph-paper relative px-5 py-24">
       <div className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-ink">Pricing</p>
-        <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold text-ink sm:text-5xl">Start free. Add what you need.</h2>
+        <h2 className="font-display mt-3 max-w-2xl text-4xl font-bold text-ink sm:text-5xl">Simple pricing. Real results.</h2>
         <p className="mt-4 max-w-xl text-ink/85">
-          Results, not experiments on your budget. See your design before you spend anything; Growth and Operator are quoted to fit your business.
+          Three plans, clear prices. Every plan starts with a free homepage design, so you see your new site before you spend anything.
         </p>
 
-        <div ref={grid} className="mt-24 grid gap-x-7 gap-y-20 [perspective:1600px] sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={grid} className="mx-auto mt-24 grid max-w-md gap-x-7 gap-y-20 [perspective:1600px] lg:max-w-none lg:grid-cols-3">
           {PLANS.map((p) => (
             <div
               key={p.name}
@@ -192,7 +179,7 @@ export default function Pricing() {
               style={{ background: p.card, ["--glow" as string]: p.glow }}
             >
               {/* the tier's molecule, floating above the card */}
-              <div className="float-y absolute -top-14 left-1/2 -translate-x-1/2" title={p.mol.length ? `Combines: ${p.mol.join(", ")}` : "Your mockup"}>
+              <div className="float-y absolute -top-14 left-1/2 -translate-x-1/2" title={`Combines: ${p.mol.join(", ")}`}>
                 <Molecule atoms={p.mol} />
               </div>
               {p.badge && (
@@ -215,7 +202,7 @@ export default function Pricing() {
                 <PriceBlock price={p.price} />
               </div>
               <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-ink/75">
-                {p.mol.length ? (p.mol.length === 4 ? "The full formula" : `${p.mol.join(" + ")}`) : "Your design, free"}
+                {p.mol.length === 4 ? "The full formula" : p.mol.join(" + ")}
               </div>
               <p className="mt-3 text-sm text-ink/85">{p.blurb}</p>
               <ul className="mt-5 flex-1 space-y-2 text-sm text-ink/90">
@@ -224,34 +211,27 @@ export default function Pricing() {
                     <svg width="14" height="14" viewBox="0 0 24 24" className="mt-0.5 shrink-0" fill="none" stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                       <path d="M4 13 l5 5 L20 6" />
                     </svg>
-                    {i}
+                    <span>
+                      {i}
+                      {p.demoItem === i && (
+                        <a href={DEMO_LINE.tel} className="mt-1.5 flex flex-wrap items-center gap-x-1.5 font-semibold text-teal-ink underline underline-offset-4 hover:no-underline">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                            <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+                          </svg>
+                          Hear it: call our demo line <span className="whitespace-nowrap font-normal">{DEMO_LINE.display}</span>
+                        </a>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
-              {"href" in p.cta ? (
-                <Link href={p.cta.href} className="btn-primary mt-7">
-                  {p.cta.label}
-                </Link>
-              ) : (
-                <button
-                  className="btn-ghost mt-7"
-                  onClick={() => {
-                    if ("prefill" in p.cta) prefillContact(p.cta.prefill);
-                    scrollToId("contact");
-                  }}
-                >
-                  {p.cta.label}
-                </button>
-              )}
-              {p.price.kind === "free" && (
-                <Annotation arrow="up" color="#d93f44" size="text-lg" showFrom="lg" className="absolute -bottom-14 left-6 rotate-[-3deg]">
-                  start here
-                </Annotation>
-              )}
+              <Link href={CTA.href} className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7 text-center`}>
+                {CTA.label}
+              </Link>
             </div>
           ))}
         </div>
-        <p className="mt-16 text-xs text-ink/75">Final pricing depends on site size and features. We confirm it with you before any work begins.</p>
+        <p className="mt-16 text-center text-base font-semibold text-ink/85">No contracts. Cancel anytime.</p>
       </div>
     </section>
   );
