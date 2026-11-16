@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { preload } from "react-dom";
+import "./exterior.css";
 import { data } from "./data";
 import BeforeAfter from "./BeforeAfter";
 import ChatAssistant, { OPEN_CHAT } from "./ChatAssistant";
 import DetailsWizard from "./DetailsWizard";
+import WindowWipe from "./WindowWipe";
 import { RECEPTIONIST_PHONE } from "../phone";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
 import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadBasics, type LeadTheme } from "@/components/demos/lead";
-import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, StickyHeader } from "@/components/demos/motion";
+import { AppearObserver, Reveal, Stagger, StaggerItem } from "./Appear";
 
 /*
  * Overpeck Exterior Care: Overpeck Labs' second flagship (a fictional brand). Single lead flow: the hero form is
@@ -21,6 +25,8 @@ const PHONE = data.phone;
 const INK = C.dark;
 const RATING = averageRating(data.reviews);
 const CTA_BG = `linear-gradient(90deg, ${C.accent}, #5eead4)`;
+/** Responsive hero (images are unoptimized site-wide, so phones get the 828px file instead of the 1600px one). */
+const HERO_SRCSET = "/demos/overpeck-exterior-care/hero-828.webp 828w, /demos/overpeck-exterior-care/hero-1200.webp 1200w, /demos/overpeck-exterior-care/hero.webp 1600w";
 
 const GLASS: LeadTheme = { tone: "dark", primary: C.primary, accent: C.accent, ctaBg: CTA_BG, ctaText: INK };
 const renderDetails = (basics: LeadBasics) => <DetailsWizard basics={basics} accent={C.accent} />;
@@ -35,6 +41,7 @@ const ICONS: Record<string, string> = {
 };
 const PHONE_D = "M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z";
 const CHECK_D = "M5 12l5 5L20 7";
+const DROP_D = "M12 2.5s6.5 7 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.5 12 2.5 12 2.5z";
 const SPARKLE_D = "M12 3l1.8 4.9L19 9.7l-4.6 2.6L13 18l-1-5-5-1.8 5-1.8zM5 3v4M3 5h4M19 15v4M17 17h4";
 
 function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
@@ -43,6 +50,39 @@ function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
       <path d={d} />
     </svg>
   );
+}
+
+/** Droplet bullet icon. */
+function Drop({ className = "h-4 w-4", light = false }: { className?: string; light?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <defs>
+        <linearGradient id={light ? "oe-drop-l" : "oe-drop"} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={light ? "#a7f3d0" : "#38bdf8"} />
+          <stop offset="1" stopColor={light ? "#34d399" : "#0e7490"} />
+        </linearGradient>
+      </defs>
+      <path d={DROP_D} fill={`url(#${light ? "oe-drop-l" : "oe-drop"})`} />
+      <path d="M9.2 13.2a3 3 0 0 0 2 2.6" fill="none" stroke="#fff" strokeOpacity=".8" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Wave-shaped section divider (fixed height, so no layout shift). `fill` is the color of the section it leads into. */
+function Wave({ fill, flip = false, className = "" }: { fill: string; flip?: boolean; className?: string }) {
+  return (
+    <div className={`pointer-events-none relative h-10 w-full overflow-hidden sm:h-14 ${className}`} aria-hidden>
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className={`absolute inset-0 h-full w-full ${flip ? "rotate-180" : ""}`}>
+        <path d="M0 48c120-22 240-30 360-14s240 40 360 30 240-46 360-50 240 26 360 30v36H0z" fill={fill} opacity=".55" />
+        <path d="M0 58c160-20 300-12 440 6s280 18 420-4 300-26 580 4v16H0z" fill={fill} />
+      </svg>
+    </div>
+  );
+}
+
+/** A quick "rinse" wipe across a card the first time it scrolls into view (CSS, see exterior.css). */
+function Rinse() {
+  return <span aria-hidden className="oe-rinse pointer-events-none absolute inset-0 z-10" />;
 }
 
 function Logo({ light = false }: { light?: boolean }) {
@@ -70,10 +110,13 @@ function Head({ eyebrow, title, sub, children }: { eyebrow: string; title: React
 }
 
 /** Frosted light card. */
-const glass = "rounded-3xl border border-white/80 bg-white/70 shadow-[0_20px_50px_-30px_rgba(6,35,42,0.35)] backdrop-blur-xl";
+/* no backdrop-blur below the fold: on this light, near-flat background it adds little and costs a lot to paint on phones */
+const glass = "rounded-3xl border border-white/90 bg-white/75 shadow-[0_20px_50px_-30px_rgba(6,35,42,0.35)]";
 
 export default function OverpeckExteriorCare() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  // high-priority preload of the right-sized hero image (emitted into <head> during SSR)
+  preload("/demos/overpeck-exterior-care/hero-828.webp", { as: "image", imageSrcSet: HERO_SRCSET, imageSizes: "100vw", fetchPriority: "high" });
   return (
     <MotionRoot className="relative bg-[#eef6f7] font-sans text-slate-800 antialiased">
       {/* soft background washes (static, no animation cost) */}
@@ -113,11 +156,13 @@ export default function OverpeckExteriorCare() {
         <section className="relative overflow-hidden">
           {PH.hero && (
             <HeroImage>
-              <DemoImage photo={PH.hero} priority sizes="100vw" className="absolute inset-0" imgClassName="object-cover object-[60%_center]" />
+              {/* eslint-disable-next-line @next/next/no-img-element -- responsive srcset; next/image is unoptimized here */}
+              <img src="/demos/overpeck-exterior-care/hero-1200.webp" srcSet={HERO_SRCSET} sizes="100vw" alt={PH.hero.alt} fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[60%_center]" />
             </HeroImage>
           )}
           <div className="pointer-events-none absolute inset-0 bg-[#06232a]/75 md:bg-transparent md:bg-[linear-gradient(90deg,rgba(6,35,42,0.94)_0%,rgba(6,35,42,0.82)_42%,rgba(6,35,42,0.35)_78%,rgba(6,35,42,0.2)_100%)]" aria-hidden />
           <div className="pointer-events-none absolute -right-24 top-10 h-80 w-80 rounded-full bg-[#34d399]/20 blur-3xl" aria-hidden />
+          <Wave fill="#eef6f7" className="!absolute inset-x-0 bottom-0 z-[1]" />
 
           <div className="relative mx-auto grid max-w-6xl gap-4 px-4 pb-10 pt-5 sm:px-6 md:grid-cols-[1fr_minmax(0,26rem)] md:items-center md:gap-x-12 md:gap-y-5 md:pb-24 md:pt-16">
             <HeroIntro className="md:col-start-1 md:row-start-1">
@@ -163,8 +208,11 @@ export default function OverpeckExteriorCare() {
           </div>
         </section>
 
-        {/* stats (all true for this page) */}
-        <section aria-label="Highlights" className="relative -mt-2 px-4 sm:px-6">
+        {/* signature: scroll-scrubbed window cleaning */}
+        <WindowWipe view={PH.windowView} cta={data.lead.cta} />
+
+        {/* stats (all true for this page; numbers count up) */}
+        <section aria-label="Highlights" className="relative px-4 sm:px-6">
           <Stagger className={`mx-auto grid max-w-6xl grid-cols-2 divide-slate-200/70 md:grid-cols-4 md:divide-x ${glass}`}>
             {data.stats.map((s) => (
               <StaggerItem key={s.label} className="px-4 py-5 text-center">
@@ -176,11 +224,13 @@ export default function OverpeckExteriorCare() {
         </section>
 
         {/* services */}
-        <section id="services" className="relative scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <Wave fill="#f8fcfc" className="mt-10" />
+        <section id="services" className="oe-shimmer relative scroll-mt-24 bg-[#f8fcfc] px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="What we clean" title="Every surface, cleaned the right way" sub="The right method for each surface: gentle where it matters, powerful where it counts." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {data.services.map((s) => (
-              <StaggerItem key={s.key} className={`demo-lift overflow-hidden ${glass}`}>
+              <StaggerItem key={s.key} className={`demo-lift relative overflow-hidden ${glass}`}>
+                <Rinse />
                 <DemoImage photo={PH.services[s.key] ?? null} className="aspect-[16/10]" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
                 <div className="p-6">
                   <div className="flex items-center gap-3">
@@ -192,7 +242,8 @@ export default function OverpeckExteriorCare() {
                   <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{s.body}</p>
                   <ul className="mt-4 flex flex-wrap gap-1.5">
                     {s.points.map((p) => (
-                      <li key={p} className="rounded-full bg-[#0e7490]/8 px-2.5 py-1 text-xs font-semibold text-[#0e5566] ring-1 ring-[#0e7490]/15">
+                      <li key={p} className="inline-flex items-center gap-1 rounded-full bg-[#0e7490]/8 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-[#0e5566] ring-1 ring-[#0e7490]/15">
+                        <Drop className="h-3.5 w-3.5" />
                         {p}
                       </li>
                     ))}
@@ -202,6 +253,8 @@ export default function OverpeckExteriorCare() {
             ))}
           </Stagger>
         </section>
+
+        <Wave fill="#f8fcfc" flip />
 
         <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={PHONE} bg="linear-gradient(120deg, #06232a, #0e7490 60%, #0f766e)" ctaBg={C.accent} ctaText={INK} />
 
@@ -235,7 +288,7 @@ export default function OverpeckExteriorCare() {
                     <ul className="mt-3 space-y-2 text-sm text-slate-700">
                       {c.points.map((p) => (
                         <li key={p} className="flex gap-2">
-                          <Icon d={CHECK_D} className={`mt-0.5 h-4 w-4 shrink-0 ${i === 1 ? "text-emerald-600" : "text-slate-400"}`} />
+                          <Drop className={`mt-0.5 h-4 w-4 shrink-0 ${i === 1 ? "" : "opacity-50 grayscale"}`} />
                           {p}
                         </li>
                       ))}
@@ -273,7 +326,7 @@ export default function OverpeckExteriorCare() {
         </section>
 
         {/* seasonal packages */}
-        <section id="packages" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="packages" className="oe-shimmer scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="Seasonal packages" title="Seasonal bundles" sub="Popular combinations for each season. Every quote is free and tailored to your home." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-5 md:grid-cols-3">
             {data.packages.map((p) => (
@@ -292,7 +345,7 @@ export default function OverpeckExteriorCare() {
                 <ul className="mt-5 flex-1 space-y-2 text-sm">
                   {p.items.map((it) => (
                     <li key={it} className="flex gap-2">
-                      <Icon d={CHECK_D} className={`mt-0.5 h-4 w-4 shrink-0 ${"featured" in p && p.featured ? "text-[#6ee7b7]" : "text-emerald-600"}`} />
+                      <Drop className="mt-0.5 h-4 w-4 shrink-0" light={"featured" in p && !!p.featured} />
                       {it}
                     </li>
                   ))}
@@ -372,7 +425,7 @@ export default function OverpeckExteriorCare() {
           >
             <RatingSummary reviews={data.reviews} color="#f59e0b" className="mt-4 text-[#06232a]" />
           </Head>
-          <ReviewGrid reviews={data.reviews} color="#f59e0b" cardClassName="bg-white/75 border-white text-slate-800 backdrop-blur" />
+          <ReviewGrid reviews={data.reviews} color="#f59e0b" cardClassName="bg-white/80 border-white text-slate-800" />
         </section>
 
         {/* service area */}
@@ -394,13 +447,13 @@ export default function OverpeckExteriorCare() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="faq" className="oe-shimmer scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
             {data.faqs.map((f, i) => {
               const open = openFaq === i;
               return (
-                <div key={f.q} className="overflow-hidden rounded-2xl border border-white bg-white/75 shadow-sm backdrop-blur">
+                <div key={f.q} className="overflow-hidden rounded-2xl border border-white bg-white/80 shadow-sm">
                   <h3>
                     <button type="button" aria-expanded={open} aria-controls={`oe-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-[#06232a] hover:bg-white">
                       {f.q}
@@ -438,6 +491,7 @@ export default function OverpeckExteriorCare() {
         </section>
       </main>
 
+      <Wave fill="#06232a" className="-mb-px" />
       <footer className="relative bg-[#06232a] px-4 pb-28 pt-12 text-white/70 sm:px-6 sm:pb-12">
         <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-3">
           <div>
@@ -469,6 +523,7 @@ export default function OverpeckExteriorCare() {
       <MobileLeadBar phone={PHONE} ctaLabel="Free quote" callBg={INK} ctaBg={C.accent} ctaText={INK} surface="bg-white/90 border-slate-200" />
 
       <ChatAssistant />
+      <AppearObserver />
 
       {/* desktop exit intent: no second form, the button goes to the hero form (dialog closes first so focus can land) */}
       <ExitIntent slug={data.slug} title="Before you go, get your free quote" sub="Takes 20 seconds. No pressure, no obligation.">

@@ -38,7 +38,7 @@ export default function ChatAssistant() {
   }, []);
 
   return (
-    <div className={`fixed bottom-24 right-4 z-40 flex-col items-end gap-3 sm:bottom-6 sm:flex ${scrolled || open ? "flex" : "hidden"}`}>
+    <div className={`oe-chat-wrap fixed bottom-24 right-4 z-40 flex-col items-end gap-3 sm:bottom-6 sm:flex ${scrolled || open ? "flex" : "hidden"} ${open ? "oe-chat-open" : ""}`}>
       {loaded && <ChatPanel open={open} onClose={() => setOpen(false)} />}
       <button
         type="button"

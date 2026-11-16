@@ -1,0 +1,92 @@
+/* Overpeck Exterior Care: water-theme motion. Transform/opacity only; everything stops under reduced motion. */
+
+/* soapy droplets running down the glass */
+.oe-drip {
+  animation: oe-drip 3.6s cubic-bezier(0.45, 0, 0.8, 1) infinite;
+  will-change: transform, opacity;
+}
+@keyframes oe-drip {
+  0% { transform: translate3d(0, -12px, 0) scale(0.6); opacity: 0; }
+  12% { opacity: 1; }
+  85% { opacity: 0.9; }
+  100% { transform: translate3d(0, var(--oe-drip-run, 340px), 0) scale(1); opacity: 0; }
+}
+
+/* bubbles that drift and pop */
+.oe-bubble {
+  animation: oe-bubble 2.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes oe-bubble {
+  0% { transform: translate3d(0, 6px, 0) scale(0.4); opacity: 0; }
+  30% { opacity: 0.9; }
+  80% { transform: translate3d(4px, -18px, 0) scale(1); opacity: 0.8; }
+  100% { transform: translate3d(6px, -24px, 0) scale(1.15); opacity: 0; }
+}
+
+/* light glint sweeping across the clean glass */
+.oe-glint { animation: oe-glint 1.3s ease-out 1 forwards; }
+@keyframes oe-glint {
+  0% { transform: translate3d(0, 0, 0) skewX(-20deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate3d(480%, 0, 0) skewX(-20deg); opacity: 0; }
+}
+
+/* caustic light shimmer on section backgrounds (very low opacity) */
+.oe-shimmer { position: relative; isolation: isolate; overflow: clip; }
+.oe-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: -80px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%230e7490' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M0 40c30-18 52 14 82-4s46-30 76-8 54 6 82-10'/%3E%3Cpath d='M0 104c22 14 48-18 78-2s40 28 72 10 58-16 90 2'/%3E%3Cpath d='M0 170c34-10 46 22 80 8s50-30 80-12 50 18 80 2'/%3E%3Cpath d='M40 0c-14 30 16 50 4 80s-22 50 2 78 2 54 14 82'/%3E%3Cpath d='M150 0c12 26-14 48 0 76s24 46 4 74-6 58 6 90'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 420px 420px;
+  animation: oe-caustic 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes oe-caustic {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-48px, 36px, 0) scale(1.06); }
+}
+
+/* water-spray shimmer along the before/after divider while dragging */
+.oe-spray {
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0 10px, rgba(255, 255, 255, 0.85) 10px 13px, rgba(125, 211, 252, 0.5) 13px 16px);
+  animation: oe-spray 0.5s linear infinite;
+  will-change: transform;
+}
+@keyframes oe-spray {
+  from { transform: translate3d(0, -32px, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* phones: hide the closed chat bubble while the window-cleaning section is pinned, so it never covers the copy */
+.oe-chat-wrap { transition: opacity 0.2s ease; }
+@media (max-width: 639px) {
+  html[data-oe-wipe="1"] .oe-chat-wrap:not(.oe-chat-open) { opacity: 0; pointer-events: none; }
+}
+
+/* lightweight scroll reveals (Appear.tsx): fade + rise, staggered children */
+.oe-appear { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.oe-appear.is-in { opacity: 1; transform: none; }
+.oe-stagger > .oe-appear:nth-child(2) { transition-delay: 90ms; }
+.oe-stagger > .oe-appear:nth-child(3) { transition-delay: 180ms; }
+.oe-stagger > .oe-appear:nth-child(4) { transition-delay: 270ms; }
+.oe-stagger > .oe-appear:nth-child(5) { transition-delay: 360ms; }
+.oe-stagger > .oe-appear:nth-child(6) { transition-delay: 450ms; }
+.oe-stagger > .oe-appear:nth-child(n + 7) { transition-delay: 540ms; }
+
+/* service cards: a quick "rinse" sheet wipes across once they reveal */
+.oe-rinse {
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0) 25%, rgba(224, 247, 250, 0.95) 45%, rgba(125, 211, 252, 0.55) 55%, rgba(255, 255, 255, 0) 75%, transparent 100%);
+  transform: translate3d(-120%, 0, 0);
+}
+.oe-appear.is-in .oe-rinse { transform: translate3d(120%, 0, 0); transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .oe-appear { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .oe-rinse { display: none; }
+  .oe-drip, .oe-bubble, .oe-glint, .oe-spray, .oe-shimmer::before { animation: none !important; }
+}

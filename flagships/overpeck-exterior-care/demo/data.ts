@@ -127,6 +127,7 @@ export const data = {
   footerBlurb: "Window washing, power washing, soft washing and gutter cleaning for homes and storefronts across Bergen County, NJ.",
   photos: {
     hero: { src: "/demos/overpeck-exterior-care/hero.webp", alt: "Two-story house with a covered porch and a clean front walk" } as DemoPhoto,
+    windowView: { src: "/demos/overpeck-exterior-care/window-view.webp", alt: "Bright backyard with a lawn, patio and garden shed, seen through a window" },
     services: {
       windows: { src: "/demos/overpeck-exterior-care/service-windows.webp", alt: "Spotless white-framed windows" },
       power: { src: "/demos/overpeck-exterior-care/service-power.webp", alt: "Long paved driveway in front of a white house" },
