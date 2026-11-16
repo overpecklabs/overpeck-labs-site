@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { data } from "./data";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
-import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
-import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
+import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Party Bus 360 homepage mockup. Display-only: no form sends anything anywhere. */
 
@@ -13,7 +13,6 @@ const TEL = data.phone.tel;
 const SMS = data.sms;
 const DEMO_MSG = "Demo only, this form isn't connected yet.";
 
-const EVENTS = data.events;
 const FAQS = data.faqs;
 
 const SERVICE_ICONS = [
@@ -91,124 +90,6 @@ function BusArt() {
         PARTY BUS 360
       </text>
     </svg>
-  );
-}
-
-function QuoteForm() {
-  const [sent, setSent] = useState(false);
-  const [step, setStep] = useState<"quote" | "book">("quote");
-  const field = "mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base text-[#0b1020] placeholder:text-slate-400 focus:border-[#7c3aed] focus:outline-none focus:ring-4 focus:ring-[#7c3aed]/15";
-  const label = "block text-sm font-semibold text-slate-700";
-  return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] sm:p-7">
-      <div className="grid grid-cols-2 gap-1 rounded-full bg-slate-100 p-1 text-sm font-bold" role="tablist" aria-label="Quote or book">
-        {(["quote", "book"] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            role="tab"
-            aria-selected={step === s}
-            onClick={() => {
-              setStep(s);
-              setSent(false);
-            }}
-            className={`rounded-full px-3 py-2.5 transition ${step === s ? "bg-[#0b1020] text-white shadow" : "text-slate-600 hover:text-[#0b1020]"}`}
-          >
-            {s === "quote" ? "Instant quote" : "Book online"}
-          </button>
-        ))}
-      </div>
-      <form
-        className="mt-5 grid gap-4 sm:grid-cols-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSent(true);
-        }}
-      >
-        <div className="sm:col-span-2">
-          <label htmlFor="pb-event" className={label}>
-            What&apos;s the occasion?
-          </label>
-          <select id="pb-event" className={field} defaultValue="">
-            <option value="" disabled>
-              Choose one
-            </option>
-            {EVENTS.map((e) => (
-              <option key={e}>{e}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="pb-date" className={label}>
-            Date
-          </label>
-          <input id="pb-date" type="date" className={field} />
-        </div>
-        <div>
-          <label htmlFor="pb-guests" className={label}>
-            Number of guests
-          </label>
-          <input id="pb-guests" type="number" inputMode="numeric" min={1} className={field} placeholder="e.g. 20" />
-        </div>
-        <div>
-          <label htmlFor="pb-pickup" className={label}>
-            Pickup town
-          </label>
-          <input id="pb-pickup" className={field} placeholder="e.g. Hackensack" autoComplete="address-level2" />
-        </div>
-        <div>
-          <label htmlFor="pb-hours" className={label}>
-            Hours needed
-          </label>
-          <select id="pb-hours" className={field} defaultValue="">
-            <option value="" disabled>
-              Choose
-            </option>
-            {["3 hours", "4 hours", "5 hours", "6+ hours"].map((h) => (
-              <option key={h}>{h}</option>
-            ))}
-          </select>
-        </div>
-        {step === "book" && (
-          <div className="sm:col-span-2">
-            <label htmlFor="pb-vehicle" className={label}>
-              Vehicle
-            </label>
-            <select id="pb-vehicle" className={field} defaultValue="">
-              <option value="" disabled>
-                Choose a vehicle
-              </option>
-              {data.vehicles.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </div>
-        )}
-        <div>
-          <label htmlFor="pb-name" className={label}>
-            Your name
-          </label>
-          <input id="pb-name" className={field} autoComplete="name" />
-        </div>
-        <div>
-          <label htmlFor="pb-contact" className={label}>
-            Phone or email
-          </label>
-          <input id="pb-contact" className={field} autoComplete="email" />
-        </div>
-        <div className="sm:col-span-2">
-          <button type="submit" className="w-full rounded-full bg-[#fbbf24] px-6 py-4 text-base font-extrabold text-[#0b1020] shadow-[0_10px_24px_-8px_rgba(251,191,36,0.8)] transition hover:bg-[#fcd34d] active:scale-[0.99]">
-            {step === "quote" ? "See my instant quote" : "Request this booking"}
-          </button>
-          <p className="mt-2.5 text-center text-xs text-slate-500">
-            {step === "quote" ? "Your quote appears instantly, then we email you the details." : "Pick your date and vehicle, and we'll confirm your booking."} No airport trips.
-          </p>
-        </div>
-        <div className="sm:col-span-2">
-          <DemoNote show={sent} />
-        </div>
-      </form>
-    </div>
   );
 }
 
@@ -335,9 +216,7 @@ export default function PartyBus360() {
           <a href="#faq" className="hover:text-[#0b1020]">
             FAQ
           </a>
-          <a href="#quote" className="hover:text-[#0b1020]">
-            Quote & book
-          </a>
+          <LeadJump className="hover:text-[#0b1020]">Free quote</LeadJump>
         </nav>
         <a href={TEL} className="demo-lift inline-flex items-center gap-2 rounded-full bg-[#0b1020] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1e1b4b]">
           <PhoneIcon className="h-4 w-4" />
@@ -435,50 +314,33 @@ export default function PartyBus360() {
           <p className="mx-auto mt-6 max-w-6xl text-center text-sm text-slate-500">Please note: we don&apos;t offer {data.excludes}.</p>
         </section>
 
-        <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={data.phone} bg="linear-gradient(120deg,#1e1b4b,#4c1d95 55%,#0c4a6e)" ctaBg="#fbbf24" ctaText="#0b1020" />
-
-        {/* quote + booking */}
-        <section id="quote" className="scroll-mt-16 bg-gradient-to-b from-slate-50 to-white px-4 py-16 sm:px-6 md:py-24">
-          <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[1fr_1.15fr]">
-            <div>
-              <SectionHead eyebrow="Instant quote" title="Know your price in seconds" />
-              <ol className="mx-auto mt-8 max-w-md space-y-5 lg:mx-0">
-                {[
-                  ["Tell us about your event", "Occasion, date, group size and pickup town."],
-                  ["See your quote instantly", "Your price shows right away, and we email you the details."],
-                  ["Book online", "Pick your vehicle and lock in your date, no phone tag needed."],
-                ].map(([t, d], i) => (
-                  <li key={t} className="flex gap-4">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#0b1020] text-sm font-extrabold text-[#fbbf24]">{i + 1}</span>
-                    <span>
-                      <span className="block font-bold">{t}</span>
-                      <span className="block text-[15px] text-slate-600">{d}</span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <p className="mx-auto mt-8 max-w-md rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 lg:mx-0">
-                Questions before you book? Tap the chat button, call{" "}
-                <a href={TEL} className="font-bold text-[#7c3aed] underline">
-                  {PHONE_DISPLAY}
-                </a>{" "}
-                or{" "}
-                <a href={SMS} className="font-bold text-[#7c3aed] underline">
-                  send us a text
-                </a>
-                .
-              </p>
-            </div>
-            <QuoteForm />
-          </div>
-        </section>
+        {/* quote band (replaces the old long quote/booking form): the button goes to the hero form */}
+        <CtaBand id="quote" title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={data.phone} bg="linear-gradient(120deg,#1e1b4b,#4c1d95 55%,#0c4a6e)" ctaBg="#fbbf24" ctaText="#0b1020">
+          <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+            {[
+              ["Tell us about your event", "Occasion, date, group size and pickup town."],
+              ["Get your quote", "We send your price fast, with no phone tag."],
+              ["Lock in your date", "Pick your vehicle and you're booked."],
+            ].map(([t, d], i) => (
+              <li key={t} className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0b1020] text-sm font-extrabold text-[#fbbf24]">{i + 1}</span>
+                <span>
+                  <span className="block font-bold">{t}</span>
+                  <span className="block text-sm text-slate-600">{d}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </CtaBand>
 
         {/* why us + about */}
         <section className="px-4 py-16 sm:px-6 md:py-24">
           <SectionHead eyebrow="Why Party Bus 360" title="Why groups ride with us" sub="Simple booking, one ride for everyone, and a night your group will be talking about for weeks." />
           <div className="mx-auto mt-10 grid max-w-6xl items-start gap-8 lg:grid-cols-[1fr_1.15fr]">
             <Reveal>
-              <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+              <Parallax className="aspect-[4/3] rounded-3xl bg-slate-100">
+                <DemoImage photo={PH.about} className="absolute inset-0" sizes="(min-width: 1024px) 40vw, 100vw" />
+              </Parallax>
               <h3 className="mt-6 text-2xl font-extrabold">{data.about.title}</h3>
               <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{data.about.body}</p>
             </Reveal>
@@ -509,7 +371,13 @@ export default function PartyBus360() {
           <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
             {PH.gallery.slice(0, 5).map((ph, i) => (
               <StaggerItem key={i} className={i === 0 ? "col-span-2 row-span-2" : ""}>
-                <DemoImage photo={ph} className={`demo-lift rounded-2xl ${i === 0 ? "aspect-square" : "aspect-[4/3]"}`} sizes={i === 0 ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"} />
+                {i === 0 ? (
+                  <Parallax className="demo-lift aspect-square rounded-2xl bg-white/5" amount={12}>
+                    <DemoImage photo={ph} className="absolute inset-0" sizes="(min-width: 768px) 50vw, 100vw" />
+                  </Parallax>
+                ) : (
+                  <DemoImage photo={ph} className="demo-lift aspect-[4/3] rounded-2xl" sizes="(min-width: 768px) 25vw, 50vw" />
+                )}
               </StaggerItem>
             ))}
           </Stagger>

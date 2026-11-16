@@ -129,6 +129,7 @@ THE PAGE: one polished, mobile-first homepage
   - Hero: desktop is two columns: headline, subhead, a trust line (<Stars /> rating + <SampleMark />) and tap-to-call on the left; a short glass-card <LeadForm> on the right. Mobile order: headline, then the form, then the call button, all visible on the first 375x667 screen without scrolling.
   - <LeadForm>: 3 fields max (name, phone with inputmode="tel" + autocomplete, and one industry-specific question as tap chips), a big CTA with action wording (e.g. "Get my free quote", "Check availability"), and "Takes 20 seconds · No spam" under it. Its inline success state is labeled as a demo ("Demo only, nothing was sent") and offers "Add details", which expands a multi-step <DetailsSteps> form (dates, photos, etc.).
   - Repeat capture: <CtaBand> right after services, the same short form in the final CTA section, <MobileLeadBar> (Call / Get quote) and desktop-only <ExitIntent> (once per session) with the same 3 fields.
+  - One lead flow: no long forms further down the page. Any extra CTA is a <CtaBand> (or <LeadJump>) whose button scrolls to the hero form, or opens its "Add details" steps if it was already submitted.
   - Forms stay display-only: submitLead() in lead.tsx is the single place a live site would save to Supabase. Keep the first screen fast: no layout shift, nothing slow above the fold.
 - Primary CTA: ${primaryCta}.
 - Services: ${services}.
@@ -150,6 +151,7 @@ PHOTOS (required)
 
 MOTION (required)
 - Use the shared components in @/components/demos/motion (read its header comment): MotionRoot around the page, StickyHeader for the header, HeroIntro/HeroItem for the hero text, HeroImage for the hero photo, Reveal and Stagger/StaggerItem on sections and card grids, CountUp only for true numbers, and className="demo-lift" on cards and buttons. Don't add another animation library.
+- Parallax is subtle and image-only: HeroImage moves just the hero photo (the headline and form stay in normal flow), plus <Parallax> (a fixed aspect box, e.g. className="aspect-[4/3]" with <DemoImage className="absolute inset-0" /> inside) on 1-2 photo sections such as the about photo or the gallery. Never wrap text, buttons or forms, and keep it off the reviews and FAQ. It already turns off under reduced motion and halves under 768px; keep the hero image's priority.
 
 RULES
 - Real facts come only from the business data below. Sample content (reviews, unknown facts, extra stats) is allowed only when it is labeled: <SampleTag /> on the reviews heading, <SampleMark /> on every unverified fact or stat, and <PreviewNote /> in the footer. Never present sample content as real, and never invent awards or certifications. Follow clients/_template (data.ts flags unknown facts with sample: true).

@@ -51,7 +51,12 @@ clients/
    - **Lead capture:** use `@/components/demos/lead`: a short `<LeadForm>` above the fold (desktop right
      column; on phones headline, form and call button all fit the first 375x667 screen), `<CtaBand>` after
      services, the same form in the final CTA, `<MobileLeadBar>` and desktop-only `<ExitIntent>`. Forms are
-     display-only; `submitLead()` is where a live site would save to Supabase.
+     display-only; `submitLead()` is where a live site would save to Supabase. One lead flow only: no long
+     forms further down; extra CTAs are `<CtaBand>` / `<LeadJump>` back to the hero form (they open "Add
+     details" once it's submitted).
+   - **Parallax:** image-only and subtle. `<HeroImage>` for the hero photo, plus `<Parallax>` (a fixed aspect
+     box) on 1-2 photo sections. Never on text, buttons, forms, reviews or FAQ. It's off under reduced motion
+     and halved under 768px.
    - **Motion:** use `@/components/demos/motion`: `MotionRoot`, `StickyHeader`, `HeroIntro`/`HeroItem`,
      `HeroImage`, `Reveal`, `Stagger`/`StaggerItem`, `CountUp` (true numbers only) and the `demo-lift` class.
      They respect prefers-reduced-motion and animate transform/opacity only.

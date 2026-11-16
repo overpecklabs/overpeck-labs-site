@@ -6,13 +6,15 @@
  *   <MotionRoot>            wrap the whole page: smooth in-page scrolling + reduced-motion handling
  *   <StickyHeader>          sticky header under the demo banner that shrinks and gains a shadow on scroll
  *   <HeroIntro> + <HeroItem>  hero entrance: headline, then subtext, then buttons
- *   <HeroImage>             hero photo with a slow zoom + gentle parallax
+ *   <HeroImage>             hero photo with a slow zoom + gentle parallax (background only)
+ *   <Parallax>              fixed-size photo box whose image drifts gently on scroll (never wrap text/forms)
  *   <Reveal>                fade-and-rise when scrolled into view
  *   <Stagger> + <StaggerItem>  same, staggered for grids
  *   <CountUp to={21} />     counts up when visible (use only for TRUE numbers)
  *   className="demo-lift"   hover lift for cards/buttons (CSS, see motion.css)
  *
- * All effects turn off under prefers-reduced-motion. Animations use transform/opacity only: no layout shift.
+ * All effects turn off under prefers-reduced-motion. Parallax is halved under 768px. Animations use
+ * transform/opacity only, inside fixed boxes: no layout shift.
  */
 
 import { animate, motion, useInView, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
@@ -172,15 +174,63 @@ export function HeroItem({ children, className }: { children: ReactNode; classNa
   );
 }
 
+/* ---------- parallax ---------- */
+
+/** Movement scale: 1 on desktop, 0.5 under 768px. Starts at 1 for SSR; no transform is applied before scrolling. */
+function useParallaxScale() {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const set = () => setScale(mq.matches ? 0.5 : 1);
+    set();
+    mq.addEventListener("change", set);
+    return () => mq.removeEventListener("change", set);
+  }, []);
+  return scale;
+}
+
 /**
- * Hero image layer: slow zoom on load and a gentle parallax as the hero scrolls away.
- * Put it inside a `relative overflow-hidden` hero; it fills it absolutely.
+ * Image-only parallax: a fixed-size box (give it an aspect-* class, or absolute inset-0) with the image inside
+ * drifting up to `amount`% of the box height as the box crosses the viewport. Never wrap text, buttons or forms.
  */
-export function HeroImage({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Parallax({ children, className = "", amount = 10 }: { children: ReactNode; className?: string; amount?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const scale = useParallaxScale();
+  const amp = useRef(amount * scale);
+  amp.current = amount * scale;
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  // -amp/2 .. +amp/2 of the box height; the image layer is taller by `amount`% on each side so edges never show
+  const y = useTransform(scrollYProgress, (v) => `${((v - 0.5) * amp.current) / (1 + (2 * amount) / 100)}%`);
+  const positioned = /(^|\s)(absolute|fixed|sticky)(\s|$)/.test(className);
+  if (reduce)
+    return (
+      <div ref={ref} className={`${positioned ? "" : "relative "}overflow-hidden ${className}`}>
+        <div className="absolute inset-0">{children}</div>
+      </div>
+    );
+  return (
+    <div ref={ref} className={`${positioned ? "" : "relative "}overflow-hidden ${className}`}>
+      <motion.div className="absolute inset-x-0 will-change-transform" style={{ y, top: `-${amount}%`, bottom: `-${amount}%` }}>
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
+/**
+ * Hero background layer: slow zoom on load and a gentle parallax (about 10% of the hero height, halved on
+ * phones) as the hero scrolls away. Put it inside a `relative overflow-hidden` hero; it fills it absolutely.
+ * Only the photo moves: the headline and form stay in normal flow.
+ */
+export function HeroImage({ children, className = "", amount = 10 }: { children: ReactNode; className?: string; amount?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const scale = useParallaxScale();
+  const amp = useRef(amount * scale);
+  amp.current = amount * scale;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const y = useTransform(scrollYProgress, (v) => `${(v * amp.current) / (1 + amount / 100)}%`);
   if (reduce)
     return (
       <div ref={ref} className={`absolute inset-0 ${className}`}>
@@ -189,7 +239,7 @@ export function HeroImage({ children, className = "" }: { children: ReactNode; c
     );
   return (
     <div ref={ref} className={`absolute inset-0 overflow-hidden ${className}`}>
-      <motion.div className="absolute inset-[-6%_0]" style={{ y }}>
+      <motion.div className="absolute inset-x-0 will-change-transform" style={{ y, top: `-${amount / 2}%`, bottom: `-${amount / 2}%` }}>
         <motion.div className="absolute inset-0" initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={{ duration: 8, ease: "easeOut" }}>
           {children}
         </motion.div>

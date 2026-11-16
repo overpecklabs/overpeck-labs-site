@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { data } from "./data";
-import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
 import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 
@@ -14,10 +14,12 @@ import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/
  * Finished look: no brackets or "placeholder" text on the page. Unknown facts get <SampleMark />,
  * reviews get one <SampleTag /> on the heading, and the footer has <PreviewNote />.
  * Photos: <DemoImage> (stock photos via `npm run demo-photos`, credits in assets/CREDITS.md).
- * Motion: the shared components from @/components/demos/motion.
+ * Motion: the shared components from @/components/demos/motion. Parallax is image-only and subtle: the hero
+ * photo (<HeroImage>) plus 1-2 photo sections (<Parallax>, fixed aspect box), never reviews or FAQ.
  * Lead capture (@/components/demos/lead): short <LeadForm> above the fold (desktop: right column; mobile:
  * headline, form, call button all on the first 375x667 screen), <CtaBand> after services, the same short form
- * in the final CTA, <MobileLeadBar>, and desktop-only <ExitIntent>. Demos never send anything (submitLead()).
+ * in the final CTA, <MobileLeadBar>, and desktop-only <ExitIntent>. One lead flow only: no long forms further
+ * down; any extra CTA is a <CtaBand> / <LeadJump> back to the hero form. Demos never send anything (submitLead()).
  */
 
 export default function DemoHomepage() {
@@ -121,7 +123,9 @@ export default function DemoHomepage() {
         <section className="px-4 py-16 sm:px-6">
           <div className="mx-auto grid max-w-6xl items-start gap-8 md:grid-cols-2">
             <Reveal>
-              <DemoImage photo={ph.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 768px) 50vw, 100vw" />
+              <Parallax className="aspect-[4/3] rounded-3xl bg-slate-100">
+                <DemoImage photo={ph.about} className="absolute inset-0" sizes="(min-width: 768px) 50vw, 100vw" />
+              </Parallax>
               <h2 className="mt-6 text-2xl font-extrabold">{data.about.title}</h2>
               <p className="mt-3 text-slate-600">{data.about.body}</p>
             </Reveal>
@@ -159,7 +163,9 @@ export default function DemoHomepage() {
           <Stagger className="mx-auto mt-8 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
             {ph.gallery.map((g, i) => (
               <StaggerItem key={i}>
-                <DemoImage photo={g} className="demo-lift aspect-square rounded-2xl" sizes="(min-width: 768px) 25vw, 50vw" />
+                <Parallax className="demo-lift aspect-square rounded-2xl bg-slate-100" amount={8}>
+                  <DemoImage photo={g} className="absolute inset-0" sizes="(min-width: 768px) 25vw, 50vw" />
+                </Parallax>
               </StaggerItem>
             ))}
           </Stagger>

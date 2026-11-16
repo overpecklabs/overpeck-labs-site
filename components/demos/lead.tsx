@@ -5,7 +5,9 @@
  *
  *   <LeadForm>        short form (name, phone, one industry question as tap chips) + big CTA, inline success
  *                     state labeled as a demo, and an optional "Add details" multi-step form (<DetailsSteps>)
- *   <CtaBand>         mid-page call-to-action band (after services)
+ *   <LeadJump>        link that scrolls to the hero form, or opens its "Add details" steps if it was
+ *                     already submitted (used by <CtaBand> and <MobileLeadBar>)
+ *   <CtaBand>         short call-to-action band (after services, and wherever a long form used to be)
  *   <MobileLeadBar>   sticky Call / Get quote bar on phones; appears once the hero form scrolls out of view
  *   <ExitIntent>      desktop-only "Before you go" modal with the same short form, once per session
  *
@@ -42,6 +44,28 @@ export async function submitLead(lead: Lead): Promise<LeadResult> {
 }
 
 const LEAD_EVENT = "demo-lead-submitted";
+const JUMP_EVENT = "demo-lead-jump";
+
+/**
+ * Scrolls to the hero form (targetId) and focuses it; if that form was already submitted, opens its
+ * "Add details" steps instead. Plain #anchor fallback without JS.
+ */
+export function LeadJump({ targetId = "lead", className, style, tabIndex, children }: { targetId?: string; className?: string; style?: React.CSSProperties; tabIndex?: number; children: ReactNode }) {
+  return (
+    <a
+      href={`#${targetId}`}
+      className={className}
+      style={style}
+      tabIndex={tabIndex}
+      onClick={(e) => {
+        const handled = !window.dispatchEvent(new CustomEvent(JUMP_EVENT, { detail: targetId, cancelable: true }));
+        if (handled) e.preventDefault();
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 /* ---------- helpers ---------- */
 
@@ -107,9 +131,38 @@ export function LeadForm({
   const [state, setState] = useState<"form" | "sending" | "done">("form");
   const [showDetails, setShowDetails] = useState(false);
   const doneRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const dark = theme.tone === "dark";
   const label = `mb-1 block text-xs font-semibold ${dark ? "text-white/85" : "text-slate-700"}`;
   const ring = { ["--tw-ring-color" as string]: `${theme.primary}40` };
+
+  // <LeadJump> links elsewhere on the page land here: focus the form, or open "Add details" once submitted.
+  useEffect(() => {
+    if (!anchorId) return;
+    const onJump = (e: Event) => {
+      if ((e as CustomEvent<string>).detail !== anchorId) return;
+      const el = state === "done" ? doneRef.current : formRef.current;
+      if (!el) return;
+      e.preventDefault();
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      if (state !== "done") {
+        el.scrollIntoView({ behavior, block: "start" });
+        el.querySelector<HTMLElement>("input")?.focus({ preventScroll: true });
+        return;
+      }
+      if (details) setShowDetails(true);
+      // wait for the steps to render, then bring them (not the success header) into view
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const target = el.querySelector<HTMLElement>("form") ?? el;
+          target.scrollIntoView({ behavior, block: "center" });
+          (target.querySelector<HTMLElement>("input, select, textarea") ?? el).focus({ preventScroll: true });
+        }),
+      );
+    };
+    window.addEventListener(JUMP_EVENT, onJump);
+    return () => window.removeEventListener(JUMP_EVENT, onJump);
+  }, [anchorId, state, details]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -156,7 +209,7 @@ export function LeadForm({
   }
 
   return (
-    <form id={anchorId} onSubmit={onSubmit} noValidate className="scroll-mt-28" aria-label={title ?? cta}>
+    <form id={anchorId} ref={formRef} onSubmit={onSubmit} noValidate className="scroll-mt-28" aria-label={title ?? cta}>
       {title && <p className={`mb-3 text-base font-extrabold ${dark ? "text-white" : "text-slate-900"}`}>{title}</p>}
       <div className="grid grid-cols-2 gap-2.5">
         <div>
@@ -331,18 +384,18 @@ export function DetailsSteps({ steps, tone, primary }: { steps: DetailStep[]; to
 
 /* ---------- mid-page band ---------- */
 
-export function CtaBand({ title, body, ctaLabel, href = "#lead", phone, bg, ctaBg, ctaText }: { title: string; body?: string; ctaLabel: string; href?: string; phone?: { display: string; tel: string } | null; bg: string; ctaBg: string; ctaText: string }) {
+export function CtaBand({ id, title, body, ctaLabel, targetId = "lead", phone, bg, ctaBg, ctaText, children }: { id?: string; title: string; body?: string; ctaLabel: string; targetId?: string; phone?: { display: string; tel: string } | null; bg: string; ctaBg: string; ctaText: string; children?: ReactNode }) {
   return (
-    <section className="px-4 py-10 sm:px-6">
+    <section id={id} className="scroll-mt-24 px-4 py-10 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 rounded-[2rem] px-6 py-8 text-center text-white sm:px-10 md:flex-row md:text-left" style={{ background: bg }}>
         <div>
           <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
           {body && <p className="mt-1.5 text-white/80">{body}</p>}
         </div>
         <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
-          <a href={href} className="demo-lift rounded-full px-6 py-3.5 text-center font-extrabold" style={{ background: ctaBg, color: ctaText }}>
+          <LeadJump targetId={targetId} className="demo-lift rounded-full px-6 py-3.5 text-center font-extrabold" style={{ background: ctaBg, color: ctaText }}>
             {ctaLabel}
-          </a>
+          </LeadJump>
           {phone && (
             <a href={phone.tel} className="rounded-full border-2 border-white/40 px-6 py-3.5 text-center font-bold hover:bg-white/10">
               Call {phone.display}
@@ -350,6 +403,7 @@ export function CtaBand({ title, body, ctaLabel, href = "#lead", phone, bg, ctaB
           )}
         </div>
       </div>
+      {children && <div className="mx-auto max-w-6xl">{children}</div>}
     </section>
   );
 }
@@ -374,9 +428,9 @@ export function MobileLeadBar({ phone, ctaLabel, targetId = "lead", callBg, ctaB
       <a href={phone.tel} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-bold text-white" style={{ background: callBg }}>
         Call
       </a>
-      <a href={`#${targetId}`} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-extrabold" style={{ background: ctaBg, color: ctaText }}>
+      <LeadJump targetId={targetId} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-extrabold" style={{ background: ctaBg, color: ctaText }}>
         {ctaLabel}
-      </a>
+      </LeadJump>
     </div>
   );
 }

@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { data } from "./data";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
-import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
-import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
+import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
+import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /* Paws and Tails (dog sitting) homepage mockup. Display-only: no form sends anything anywhere. */
 
-const DEMO_MSG = "Demo only, this form isn't connected yet.";
 const C = data.colors;
 const PH = data.photos;
 const LIGHT: LeadTheme = { tone: "light", primary: C.primary, accent: C.accent, ctaBg: C.primary, ctaText: "#ffffff" };
@@ -91,96 +90,6 @@ function DogArt() {
   );
 }
 
-function BookingForm() {
-  const [sent, setSent] = useState(false);
-  const field = "mt-1.5 w-full rounded-xl border border-stone-300 bg-white px-3.5 py-3 text-base text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-4";
-  const label = "block text-sm font-semibold text-stone-700";
-  return (
-    <form
-      className="grid gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-[0_20px_50px_-24px_rgba(31,42,36,0.35)] sm:grid-cols-2 sm:p-7"
-      style={{ ["--tw-ring-color" as string]: `${C.primary}33` }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
-      <div className="sm:col-span-2">
-        <label htmlFor="pt-service" className={label}>
-          What do you need?
-        </label>
-        <select id="pt-service" className={field} defaultValue="">
-          <option value="" disabled>
-            Choose a service
-          </option>
-          {data.services.map((s) => (
-            <option key={s.title}>{s.title}</option>
-          ))}
-          <option>Not sure yet</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="pt-start" className={label}>
-          Start date
-        </label>
-        <input id="pt-start" type="date" className={field} />
-      </div>
-      <div>
-        <label htmlFor="pt-end" className={label}>
-          End date <span className="font-normal text-stone-500">(optional)</span>
-        </label>
-        <input id="pt-end" type="date" className={field} />
-      </div>
-      <div>
-        <label htmlFor="pt-dog" className={label}>
-          Dog&apos;s name
-        </label>
-        <input id="pt-dog" className={field} placeholder="e.g. Biscuit" />
-      </div>
-      <div>
-        <label htmlFor="pt-size" className={label}>
-          Size
-        </label>
-        <select id="pt-size" className={field} defaultValue="">
-          <option value="" disabled>
-            Choose
-          </option>
-          {["Small (under 25 lb)", "Medium (25–50 lb)", "Large (50+ lb)", "Puppy"].map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-      </div>
-      <div className="sm:col-span-2">
-        <label htmlFor="pt-notes" className={label}>
-          Anything we should know? <span className="font-normal text-stone-500">(optional)</span>
-        </label>
-        <textarea id="pt-notes" rows={3} className={field} placeholder="Feeding, medications, walking quirks, favorite toys…" />
-      </div>
-      <div>
-        <label htmlFor="pt-name" className={label}>
-          Your name
-        </label>
-        <input id="pt-name" className={field} autoComplete="name" />
-      </div>
-      <div>
-        <label htmlFor="pt-contact" className={label}>
-          Phone or email
-        </label>
-        <input id="pt-contact" className={field} autoComplete="tel" />
-      </div>
-      <div className="sm:col-span-2">
-        <button type="submit" className="w-full rounded-full px-6 py-4 text-base font-extrabold text-white transition hover:brightness-110 active:scale-[0.99]" style={{ background: C.primary }}>
-          Request a meet &amp; greet
-        </button>
-        {sent && (
-          <p role="status" className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
-            {DEMO_MSG}
-          </p>
-        )}
-      </div>
-    </form>
-  );
-}
-
 const CHECKLIST = [
   "Spare key or door code",
   "Food, treats and feeding times",
@@ -244,9 +153,7 @@ export default function PawsAndTails() {
           <a href="#gallery" className="hover:text-stone-900">
             Gallery
           </a>
-          <a href="#book" className="hover:text-stone-900">
-            Book
-          </a>
+          <LeadJump className="hover:text-stone-900">Book</LeadJump>
           <a href="#faq" className="hover:text-stone-900">
             FAQ
           </a>
@@ -351,7 +258,9 @@ export default function PawsAndTails() {
           <Head eyebrow="Why Paws and Tails" title="Why pet parents choose us" sub="Reliable, gentle care from someone local, with your dog's routine at the center of everything." />
           <div className="mx-auto mt-10 grid max-w-6xl items-start gap-8 lg:grid-cols-[1fr_1.15fr]">
             <Reveal>
-              <DemoImage photo={PH.about} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 40vw, 100vw" />
+              <Parallax className="aspect-[4/3] rounded-3xl bg-stone-100">
+                <DemoImage photo={PH.about} className="absolute inset-0" sizes="(min-width: 1024px) 40vw, 100vw" />
+              </Parallax>
               <h3 className="mt-6 text-2xl font-extrabold" style={{ color: C.dark }}>
                 {data.about.title}
               </h3>
@@ -400,17 +309,32 @@ export default function PawsAndTails() {
           <Stagger className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
             {PH.gallery.map((ph, i) => (
               <StaggerItem key={i}>
-                <DemoImage photo={ph} className="demo-lift aspect-square rounded-2xl" sizes="(min-width: 768px) 25vw, 50vw" />
+                <Parallax className="demo-lift aspect-square rounded-2xl bg-stone-100" amount={8}>
+                  <DemoImage photo={ph} className="absolute inset-0" sizes="(min-width: 768px) 25vw, 50vw" />
+                </Parallax>
               </StaggerItem>
             ))}
           </Stagger>
         </section>
 
-        {/* booking + checklist */}
-        <section id="book" className="scroll-mt-16 bg-white px-4 py-16 sm:px-6 md:py-24">
-          <Head eyebrow="Book" title="Request a meet & greet" sub="Tell us about your dog and the dates you need. We'll get back to you to set up a time to meet." />
-          <div className="mx-auto mt-10 grid max-w-6xl items-start gap-6 lg:grid-cols-[1.25fr_1fr]">
-            <BookingForm />
+        {/* meet & greet band (replaces the old long booking form) + get-ready checklist */}
+        <section id="book" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 md:py-24">
+          <div className="mx-auto grid max-w-6xl items-start gap-6 lg:grid-cols-[1.25fr_1fr]">
+            <Reveal>
+              <div className="rounded-3xl px-6 py-8 text-white sm:px-10" style={{ background: `linear-gradient(120deg, ${C.primary}, ${C.dark})` }}>
+              <Paw className="h-9 w-9" fill={C.accent} />
+              <h2 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Request a meet &amp; greet</h2>
+              <p className="mt-2 text-white/80">Tell us your name, number and what you need. We&apos;ll get back to you to set up a time to meet your dog.</p>
+              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+                <LeadJump className="demo-lift rounded-full px-6 py-3.5 text-center font-extrabold" style={{ background: C.accent, color: "#1c1917" }}>
+                  {data.lead.cta}
+                </LeadJump>
+                <a href={phone.tel} className="rounded-full border-2 border-white/40 px-6 py-3.5 text-center font-bold hover:bg-white/10">
+                  Call {phone.display}
+                </a>
+              </div>
+              </div>
+            </Reveal>
             <Checklist />
           </div>
         </section>
