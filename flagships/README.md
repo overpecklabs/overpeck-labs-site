@@ -14,6 +14,7 @@ not in the sitemap, view tracker on), but their registry entry sets `banner: "sh
 | --- | --- | --- | --- |
 | Overpeck Plumbing (`overpeck-plumbing/`) | https://overpecklabs.com/demo/overpeck-plumbing | (201) 379-9138 | `NEXT_PUBLIC_OVERPECK_PLUMBING_PHONE`, `OVERPECK_PLUMBING_AI_MODEL`, `AI_GATEWAY_API_KEY` |
 | Overpeck Exterior Care (`overpeck-exterior-care/`) | https://overpecklabs.com/demo/overpeck-exterior-care | not set yet (card shows "Demo line coming soon") | `NEXT_PUBLIC_OVERPECK_EXTERIOR_PHONE`, `OVERPECK_EXTERIOR_AI_MODEL`, `AI_GATEWAY_API_KEY` |
+| Overpeck Electric (`overpeck-electric/`) | https://overpecklabs.com/demo/overpeck-electric | not set yet (card shows "Demo line coming soon") | `NEXT_PUBLIC_OVERPECK_ELECTRIC_PHONE`, `OVERPECK_ELECTRIC_AI_MODEL`, `AI_GATEWAY_API_KEY` |
 
 ### Env vars
 
@@ -24,6 +25,8 @@ not in the sitemap, view tracker on), but their registry entry sets `banner: "sh
 | `OVERPECK_PLUMBING_AI_MODEL` | Overpeck Plumbing chat | Optional Gateway model id. Default `google/gemini-2.5-flash-lite`. |
 | `NEXT_PUBLIC_OVERPECK_EXTERIOR_PHONE` | Overpeck Exterior Care | The AI receptionist demo line. Build-time. Unset: the receptionist card shows "Demo line coming soon" with no tel link, and the page's call buttons use the Overpeck Labs office line (201) 949-7695. |
 | `OVERPECK_EXTERIOR_AI_MODEL` | Overpeck Exterior Care chat | Optional Gateway model id. Default `google/gemini-2.5-flash-lite`. |
+| `NEXT_PUBLIC_OVERPECK_ELECTRIC_PHONE` | Overpeck Electric (page + homepage showcase) | The AI receptionist demo line. Build-time. Unset: the receptionist card shows "Demo line coming soon" with no tel link, the page's call buttons use the Overpeck Labs office line (201) 949-7695, and the homepage block shows no number. |
+| `OVERPECK_ELECTRIC_AI_MODEL` | Overpeck Electric chat | Optional Gateway model id. Default `google/gemini-2.5-flash-lite`. |
 
 `NEXT_PUBLIC_*` values are inlined at build time, so redeploy after changing them.
 

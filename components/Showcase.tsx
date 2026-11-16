@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { PLUMBING_PHONE } from "@/flagships/overpeck-plumbing/phone";
 import { RECEPTIONIST_PHONE as EXTERIOR_RECEPTIONIST } from "@/flagships/overpeck-exterior-care/phone";
+import { RECEPTIONIST_PHONE as ELECTRIC_RECEPTIONIST } from "@/flagships/overpeck-electric/phone";
 import { Parallax } from "@/components/demos/motion";
 
 /**
- * Homepage "See what we build": our two flagship sample businesses (fictional), as two showcase blocks that
+ * Homepage "See what we build": our three flagship sample businesses (fictional), as showcase blocks that
  * stack on mobile and alternate left/right on desktop. Static screenshots live in /public/showcase. Image-only
  * parallax via <Parallax> (about 10% on desktop, half on phones, none with reduced motion). Demo links have no
  * ?preview=1, so visits count as real views. A receptionist call link only shows when that demo has a number.
@@ -60,6 +61,27 @@ const FLAGSHIPS: Flagship[] = [
       desktopAlt: "Overpeck Exterior Care sample site on desktop: the headline “Make your home look new again.” over a house photo, with a short quote form.",
       phoneAlt: "The exterior cleaning sample site on a phone: headline, quote form with service chips and a call button on the first screen.",
       bg: "#06232a",
+    },
+  },
+  {
+    key: "electric",
+    name: "Overpeck Electric",
+    href: "/demo/overpeck-electric",
+    url: "overpecklabs.com/demo/overpeck-electric",
+    pitch: "An on-call Bergen County electrician site with a night-time house that lights up room by room as you scroll.",
+    features: [
+      "A single estimate form with “What do you need?” chips, including emergencies",
+      "Scroll-driven “house lights up” effect plus a sample EV-charging estimate",
+      "AI chat that puts safety first for sparks, burning smells and outages",
+      ELECTRIC_RECEPTIONIST ? "AI receptionist that answers every call 24/7" : "AI receptionist (demo line coming soon)",
+    ],
+    receptionist: ELECTRIC_RECEPTIONIST,
+    shots: {
+      desktop: "/showcase/overpeck-electric-desktop.webp",
+      phone: "/showcase/overpeck-electric-phone.webp",
+      desktopAlt: "Overpeck Electric sample site on desktop: the headline “Bergen County's on-call electricians.” over an evening living room, with a short estimate form.",
+      phoneAlt: "The electrician sample site on a phone: headline, estimate form with service chips and a call button on the first screen.",
+      bg: "#0b0f17",
     },
   },
 ];
@@ -139,7 +161,7 @@ export default function Showcase() {
           <h2 id="showcase-title" className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
             See what we build
           </h2>
-          <p className="mt-4 text-lg text-ink/85">Two sample Bergen County businesses we built: an emergency plumber and an exterior cleaning company, each with lead capture and a 24/7 AI receptionist.</p>
+          <p className="mt-4 text-lg text-ink/85">Three sample Bergen County businesses we built: an emergency plumber, an exterior cleaning company and an on-call electrician, each with lead capture and a 24/7 AI receptionist.</p>
         </div>
 
         <div className="mt-14 space-y-20 lg:space-y-24">

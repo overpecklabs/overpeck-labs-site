@@ -9,6 +9,7 @@
  */
 import partyBus360 from "@/clients/party-bus-360";
 import pawsAndTailsDogSitting from "@/clients/paws-and-tails-dog-sitting";
+import overpeckElectric from "@/flagships/overpeck-electric";
 import overpeckExteriorCare from "@/flagships/overpeck-exterior-care";
 import overpeckPlumbing from "@/flagships/overpeck-plumbing";
 import type { Demo } from "./demo-types";
@@ -20,6 +21,7 @@ export const DEMOS: Demo[] = [
   pawsAndTailsDogSitting,
   overpeckPlumbing,
   overpeckExteriorCare,
+  overpeckElectric,
 ];
 
 export const demoBySlug = (slug: string) => DEMOS.find((d) => d.slug === slug);
