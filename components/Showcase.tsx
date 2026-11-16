@@ -68,10 +68,10 @@ const FLAGSHIPS: Flagship[] = [
     name: "Overpeck Electric",
     href: "/demo/overpeck-electric",
     url: "overpecklabs.com/demo/overpeck-electric",
-    pitch: "An on-call Bergen County electrician site with a night-time house that lights up room by room as you scroll.",
+    pitch: "An on-call Bergen County electrician site where a glowing current powers each section up, from dark to light, as you scroll.",
     features: [
       "A single estimate form with “What do you need?” chips, including emergencies",
-      "Scroll-driven “house lights up” effect plus a sample EV-charging estimate",
+      "A glowing current that powers the page up as you scroll, plus a sample EV-charging estimate",
       "AI chat that puts safety first for sparks, burning smells and outages",
       ELECTRIC_RECEPTIONIST ? "AI receptionist that answers every call 24/7" : "AI receptionist (demo line coming soon)",
     ],
@@ -88,8 +88,10 @@ const FLAGSHIPS: Flagship[] = [
 
 function Preview({ f }: { f: Flagship }) {
   return (
-    <div className="relative min-w-0 pb-10 pr-8 sm:pb-14 sm:pr-10 lg:pr-12">
-      <Link href={f.href} className="group block rounded-xl" aria-label={`Open the live ${f.name} demo`}>
+    // grid: browser frame + phone column; the browser frame reaches ~45% under the phone, so the pair overlaps
+    // without either one ever overflowing or being clipped by the section
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_var(--pw)] items-center [--pw:min(200px,46%)] lg:[--pw:min(260px,44%)]">
+      <Link href={f.href} className="group relative z-0 mr-[calc(var(--pw)*-0.45)] block min-w-0 rounded-xl" aria-label={`Open the live ${f.name} demo`}>
         <div className="paper overflow-hidden rounded-xl transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transition-none">
           <div className="flex items-center gap-2 border-b border-ink/10 bg-[#f1f1ee] px-3 py-2" aria-hidden>
             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
@@ -102,11 +104,27 @@ function Preview({ f }: { f: Flagship }) {
           </Parallax>
         </div>
       </Link>
-      <div className="absolute bottom-0 right-0 w-[30%] min-w-[104px] max-w-[190px] rotate-[3deg] rounded-[1.6rem] border-[6px] border-ink bg-ink shadow-[0_24px_50px_-18px_rgba(26,26,26,0.55)] sm:rounded-[2rem] sm:border-8">
-        <span className="absolute left-1/2 top-1.5 z-10 h-1.5 w-1/3 -translate-x-1/2 rounded-full bg-ink" aria-hidden />
-        <Parallax className="aspect-[390/844] rounded-[1.1rem] sm:rounded-[1.5rem]" amount={10}>
-          <Image src={f.shots.phone} width={540} height={1169} loading="lazy" sizes="190px" alt={f.shots.phoneAlt} className="h-full w-full object-cover object-top" style={{ background: f.shots.bg }} />
-        </Parallax>
+      <PhoneFrame src={f.shots.phone} alt={f.shots.phoneAlt} bg={f.shots.bg} />
+    </div>
+  );
+}
+
+/**
+ * iPhone-style frame. Everything is sized from the frame's own width (container units), so it scales cleanly:
+ * bezel 3.5%, screen corner radius 12%, a Dynamic Island that sits on the screenshot's status bar (screenshots
+ * are captured at 390x844 with a 47pt status bar on top, so the island never covers the site's header).
+ * The screen is locked to 9:19.5 and the screenshot fills it exactly (cover, anchored to the top).
+ */
+function PhoneFrame({ src, alt, bg }: { src: string; alt: string; bg: string }) {
+  return (
+    // the wrapper is the size container; the frame and screen measure themselves in cqw of it (an element can't
+    // size its own padding/radius in its own container units)
+    <div className="@container relative z-10 w-full">
+      <div className="rounded-[15.5cqw] bg-[#111] p-[3.5cqw] shadow-[0_28px_60px_-22px_rgba(26,26,26,0.55),0_8px_18px_-8px_rgba(26,26,26,0.35)] ring-1 ring-black/40">
+        <div className="relative aspect-[9/19.5] overflow-hidden rounded-[12cqw]" style={{ background: bg }}>
+          <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 260px, 200px" loading="lazy" className="object-cover object-top" />
+          <span aria-hidden className="absolute left-1/2 top-[2.4cqw] h-[7.2cqw] w-[27cqw] -translate-x-1/2 rounded-full bg-black" />
+        </div>
       </div>
     </div>
   );
