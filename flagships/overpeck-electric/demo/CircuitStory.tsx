@@ -466,8 +466,8 @@ export default function CircuitStory() {
           </radialGradient>
         </defs>
       </svg>
-      {/* voltage indicator (fixed, fixed size: no layout shift) */}
-      <div ref={meter} aria-hidden className="pointer-events-none fixed bottom-[5.25rem] left-3 z-30 flex w-[7.5rem] items-center gap-2 rounded-full border border-[#facc15]/30 bg-[#0b0f17]/85 px-3 py-1.5 opacity-0 shadow-lg backdrop-blur transition-opacity duration-300 sm:bottom-5 sm:left-5">
+      {/* voltage indicator (fixed, fixed size: no layout shift); hidden below 640px so it never covers content on phones */}
+      <div ref={meter} aria-hidden className="pointer-events-none fixed bottom-5 left-5 z-30 hidden w-[7.5rem] items-center gap-2 rounded-full border border-[#facc15]/30 bg-[#0b0f17]/85 px-3 py-1.5 opacity-0 shadow-lg backdrop-blur transition-opacity duration-300 sm:flex">
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-[#facc15]" fill="currentColor">
           <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
         </svg>
