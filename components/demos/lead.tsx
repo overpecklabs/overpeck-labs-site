@@ -114,6 +114,7 @@ export function LeadForm({
   details,
   renderDetails,
   anchorId,
+  phonePlaceholder = "(201) 555-0123",
 }: {
   slug: string;
   source: LeadSource;
@@ -128,6 +129,8 @@ export function LeadForm({
   /** Custom "Add details" flow (e.g. a multi-step quote) instead of <DetailsSteps>; must submit via submitLead(). */
   renderDetails?: (basics: LeadBasics) => ReactNode;
   anchorId?: string;
+  /** Example text in the phone field. */
+  phonePlaceholder?: string;
 }) {
   const uid = useId();
   const [name, setName] = useState("");
@@ -252,7 +255,7 @@ export function LeadForm({
             style={ring}
             aria-invalid={errors.phone ? true : undefined}
             aria-describedby={errors.phone ? `${uid}-phone-err` : undefined}
-            placeholder="(201) 555-0123"
+            placeholder={phonePlaceholder}
           />
         </div>
       </div>

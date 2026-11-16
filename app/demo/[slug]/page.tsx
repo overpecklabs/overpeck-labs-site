@@ -16,13 +16,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const demo = demoBySlug((await params).slug);
   if (!demo) return {};
   const showcase = demo.banner === "showcase";
+  const title = showcase ? `${demo.businessName} · Sample site by Overpeck Labs` : `${demo.businessName} · Homepage mockup by Overpeck Labs`;
+  const description =
+    demo.description ?? (showcase ? `${demo.businessName} is a fictional sample site showing what Overpeck Labs can build.` : `Private homepage mockup for ${demo.businessName}.`);
   return {
-    title: { absolute: showcase ? `${demo.businessName} · Sample site by Overpeck Labs` : `${demo.businessName} · Homepage mockup by Overpeck Labs` },
-    description: showcase ? `${demo.businessName} is a fictional sample site showing what Overpeck Labs can build.` : `Private homepage mockup for ${demo.businessName}.`,
-    // Don't inherit the homepage's canonical / social tags.
+    title: { absolute: title },
+    description,
+    // Don't inherit the homepage's canonical / social tags; a demo only gets a social card if it ships its own image.
     alternates: { canonical: null },
-    openGraph: null,
-    twitter: null,
+    openGraph: demo.ogImage ? { title, description, url: `/demo/${demo.slug}`, type: "website", images: [{ url: demo.ogImage, width: 1200, height: 630, alt: title }] } : null,
+    twitter: demo.ogImage ? { card: "summary_large_image", title, description, images: [demo.ogImage] } : null,
     robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
     ...(demo.icon ? { icons: { icon: demo.icon } } : {}),
   };

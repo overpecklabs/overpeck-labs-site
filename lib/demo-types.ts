@@ -20,6 +20,10 @@ export type Demo = {
   banner?: "mockup" | "showcase";
   /** Optional browser-tab icon, e.g. "/demos/{slug}/icon.svg". */
   icon?: string;
+  /** Optional meta description (otherwise a generic one). */
+  description?: string;
+  /** Optional 1200x630 Open Graph image, e.g. "/demos/{slug}/og.jpg" (otherwise no social card). */
+  ogImage?: string;
   /** Lazy so each demo's code only loads on its own page. */
   load: () => Promise<{ default: ComponentType }>;
 };
