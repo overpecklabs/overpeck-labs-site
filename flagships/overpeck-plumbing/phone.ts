@@ -1,8 +1,10 @@
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
+
 /**
- * Overpeck Plumbing's phone number = the live AI receptionist demo line. Single source for the demo page, its chat
- * and the homepage showcase. NEXT_PUBLIC_OVERPECK_PLUMBING_PHONE (inlined at build time) overrides the fallback.
+ * Overpeck Plumbing's phone number: the Overpeck Labs office line (the AI demo line moved to Overpeck Electric).
+ * Single source for the demo page and its chat. NEXT_PUBLIC_OVERPECK_PLUMBING_PHONE (inlined at build time) overrides it.
  */
-const FALLBACK = { display: "(201) 379-9138", tel: "tel:+12013799138" };
+const FALLBACK = { display: PHONE_DISPLAY, tel: `tel:${PHONE_TEL}` };
 
 function fromEnv(raw: string | undefined): { display: string; tel: string } {
   const display = raw?.trim();

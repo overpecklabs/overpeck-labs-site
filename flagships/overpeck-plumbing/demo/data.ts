@@ -7,7 +7,7 @@ import { PLUMBING_PHONE } from "../phone";
  * Overpeck Plumbing: a FICTIONAL sample brand, Overpeck Labs' flagship showcase demo.
  * There are no real facts here: no licenses, awards, years or stats are claimed. Anything that sounds like a
  * business fact is flagged `sample: true` (shown with <SampleMark />), and the reviews are sample reviews.
- * The phone number is the live AI receptionist demo line (see ../phone.ts).
+ * The phone number is the Overpeck Labs office line (see ../phone.ts).
  */
 export const data = {
   slug: "overpeck-plumbing",

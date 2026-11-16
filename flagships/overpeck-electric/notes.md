@@ -9,7 +9,7 @@
 ## Notes
 - Fictional sample brand by Overpeck Labs (third flagship). Not a client. "Licensed & insured" and other facts carry <SampleMark />.
 - Server-rendered page; client islands: HeroLeadForm (+ DetailsWizard), CircuitStory (one continuous scroll story), EvEstimate, ChatAssistant/ChatPanel, AppearObserver.
-- Phone (phone.ts): NEXT_PUBLIC_OVERPECK_ELECTRIC_PHONE = AI receptionist demo line. Unset: the receptionist card shows
-  "Demo line coming soon" with no tel link, and the call buttons use the Overpeck Labs office line (201) 949-7695.
+- Phone (phone.ts): the AI receptionist demo line (201) 379-9138 (moved here from Overpeck Plumbing), used by every
+  call button, the #receptionist section and the homepage/pricing demo links. NEXT_PUBLIC_OVERPECK_ELECTRIC_PHONE overrides it.
 - AI chat: app/api/demo/overpeck-electric/chat/route.ts (AI SDK via Vercel AI Gateway, default google/gemini-2.5-flash-lite,
   override OVERPECK_ELECTRIC_AI_MODEL, needs AI_GATEWAY_API_KEY). Safety-first prompt. Scripted fallback.

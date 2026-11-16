@@ -4,14 +4,10 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { RECEPTIONIST_PHONE as ELECTRIC_LINE, OFFICE_PHONE } from "@/flagships/overpeck-electric/phone";
-import { RECEPTIONIST_PHONE as EXTERIOR_LINE } from "@/flagships/overpeck-exterior-care/phone";
+import { RECEPTIONIST_PHONE as DEMO_LINE } from "@/flagships/overpeck-electric/phone";
 import ElementBadge from "./ElementBadge";
 
 type Price = { setup: string; monthly: string };
-
-/** "Hear it" demo line for the Pro card: a flagship AI receptionist line once its env var is set, otherwise the office. */
-const DEMO_LINE = ELECTRIC_LINE ?? EXTERIOR_LINE ?? OFFICE_PHONE;
 
 type Plan = {
   name: string;

@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { PLUMBING_PHONE } from "@/flagships/overpeck-plumbing/phone";
 import { RECEPTIONIST_PHONE as EXTERIOR_RECEPTIONIST } from "@/flagships/overpeck-exterior-care/phone";
 import { RECEPTIONIST_PHONE as ELECTRIC_RECEPTIONIST } from "@/flagships/overpeck-electric/phone";
 import { Parallax } from "@/components/demos/motion";
 
 /**
- * Homepage "See what we build": our three flagship sample businesses (fictional), as showcase blocks that
+ * Homepage "See what we build": our two flagship sample businesses (fictional), as showcase blocks that
  * stack on mobile and alternate left/right on desktop. Static screenshots live in /public/showcase. Image-only
  * parallax via <Parallax> (about 10% on desktop, half on phones, none with reduced motion). Demo links have no
  * ?preview=1, so visits count as real views. A receptionist call link only shows when that demo has a number.
@@ -22,24 +21,31 @@ type Flagship = {
   pitch: string;
   features: string[];
   receptionist: { display: string; tel: string } | null;
+  /** One-line callout above the buttons, followed by the receptionist number. */
+  callout?: string;
   shots: { desktop: string; phone: string; desktopAlt: string; phoneAlt: string; bg: string };
 };
 
 const FLAGSHIPS: Flagship[] = [
   {
-    key: "plumbing",
-    name: "Overpeck Plumbing",
-    href: "/demo/overpeck-plumbing",
-    url: "overpecklabs.com/demo/overpeck-plumbing",
-    pitch: "A full lead-generation site for a Bergen County plumber, with a 24/7 AI receptionist you can call right now.",
-    features: ["Lead capture above the fold: quote form plus tap-to-call", "AI receptionist answers every call 24/7", "Handles emergencies and books the job", "Fast, mobile-first, built to rank locally"],
-    receptionist: PLUMBING_PHONE,
+    key: "electric",
+    name: "Overpeck Electric",
+    href: "/demo/overpeck-electric",
+    url: "overpecklabs.com/demo/overpeck-electric",
+    pitch: "An on-call Bergen County electrician site where a glowing current powers each section up, from dark to light, as you scroll.",
+    features: [
+      "A single estimate form with “What do you need?” chips, including emergencies",
+      "A glowing current that powers the page up as you scroll, plus a sample EV-charging estimate",
+      "AI chat that puts safety first for sparks, burning smells and outages",
+    ],
+    receptionist: ELECTRIC_RECEPTIONIST,
+    callout: "Includes a 24/7 AI receptionist, call it:",
     shots: {
-      desktop: "/showcase/overpeck-plumbing-desktop.webp",
-      phone: "/showcase/overpeck-plumbing-phone.webp",
-      desktopAlt: "Overpeck Plumbing sample site on desktop: an emergency call bar, the headline “Burst pipe? Flooding? We're on the way.”, a call button and a short quote form.",
-      phoneAlt: "The plumbing sample site on a phone: headline, quote form and call button all on the first screen.",
-      bg: "#050d1f",
+      desktop: "/showcase/overpeck-electric-desktop.webp",
+      phone: "/showcase/overpeck-electric-phone.webp",
+      desktopAlt: "Overpeck Electric sample site on desktop: the headline “Bergen County's on-call electricians.” over an evening living room, with a short estimate form.",
+      phoneAlt: "The electrician sample site on a phone: headline, estimate form with service chips and a call button on the first screen.",
+      bg: "#0b0f17",
     },
   },
   {
@@ -52,7 +58,7 @@ const FLAGSHIPS: Flagship[] = [
       "A single quote form with “What needs cleaning?” chips",
       "Scroll-driven window-cleaning effect plus a before/after slider",
       "AI chat that answers soft-wash vs. power-wash questions",
-      EXTERIOR_RECEPTIONIST ? "AI receptionist that answers every call 24/7" : "AI receptionist (demo line coming soon)",
+      ...(EXTERIOR_RECEPTIONIST ? ["AI receptionist that answers every call 24/7"] : []),
     ],
     receptionist: EXTERIOR_RECEPTIONIST,
     shots: {
@@ -61,27 +67,6 @@ const FLAGSHIPS: Flagship[] = [
       desktopAlt: "Overpeck Exterior Care sample site on desktop: the headline “Make your home look new again.” over a house photo, with a short quote form.",
       phoneAlt: "The exterior cleaning sample site on a phone: headline, quote form with service chips and a call button on the first screen.",
       bg: "#06232a",
-    },
-  },
-  {
-    key: "electric",
-    name: "Overpeck Electric",
-    href: "/demo/overpeck-electric",
-    url: "overpecklabs.com/demo/overpeck-electric",
-    pitch: "An on-call Bergen County electrician site where a glowing current powers each section up, from dark to light, as you scroll.",
-    features: [
-      "A single estimate form with “What do you need?” chips, including emergencies",
-      "A glowing current that powers the page up as you scroll, plus a sample EV-charging estimate",
-      "AI chat that puts safety first for sparks, burning smells and outages",
-      ELECTRIC_RECEPTIONIST ? "AI receptionist that answers every call 24/7" : "AI receptionist (demo line coming soon)",
-    ],
-    receptionist: ELECTRIC_RECEPTIONIST,
-    shots: {
-      desktop: "/showcase/overpeck-electric-desktop.webp",
-      phone: "/showcase/overpeck-electric-phone.webp",
-      desktopAlt: "Overpeck Electric sample site on desktop: the headline “Bergen County's on-call electricians.” over an evening living room, with a short estimate form.",
-      phoneAlt: "The electrician sample site on a phone: headline, estimate form with service chips and a call button on the first screen.",
-      bg: "#0b0f17",
     },
   },
 ];
@@ -150,6 +135,16 @@ function Copy({ f }: { f: Flagship }) {
           </li>
         ))}
       </ul>
+      {f.callout && f.receptionist && (
+        <p className="mt-6 flex items-start gap-2 rounded-2xl border-2 border-ink bg-[#fff3a3] px-4 py-2 text-sm font-semibold text-ink sm:inline-flex">
+          <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+          </svg>
+          <a href={f.receptionist.tel} className="underline underline-offset-4 hover:no-underline">
+            {f.callout} <span className="whitespace-nowrap">{f.receptionist.display}</span>
+          </a>
+        </p>
+      )}
       <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-start">
         <Link href={f.href} className="btn-primary text-center" aria-label={`View the live demo: ${f.name}`}>
           View the live demo
@@ -179,7 +174,7 @@ export default function Showcase() {
           <h2 id="showcase-title" className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
             See what we build
           </h2>
-          <p className="mt-4 text-lg text-ink/85">Three sample Bergen County businesses we built: an emergency plumber, an exterior cleaning company and an on-call electrician, each with lead capture and a 24/7 AI receptionist.</p>
+          <p className="mt-4 text-lg text-ink/85">Two sample Bergen County businesses we built: an on-call electrician and an exterior cleaning company, each with lead capture, an AI chat and a mobile-first design.</p>
         </div>
 
         <div className="mt-14 space-y-20 lg:space-y-24">

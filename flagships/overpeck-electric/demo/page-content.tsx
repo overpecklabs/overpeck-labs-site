@@ -167,7 +167,7 @@ export default function OverpeckElectric() {
                 <Icon d={PHONE_D} className="h-5 w-5 text-[#facc15]" />
                 Call {PHONE.display}
               </a>
-              {RECEPTIONIST_PHONE && <p className="mt-2 text-center text-xs font-semibold text-slate-300 md:text-left">Call our AI receptionist, it&apos;s live 24/7 (demo line).</p>}
+              <p className="mt-2 text-center text-xs font-semibold text-slate-300 md:text-left">Call our AI receptionist, it&apos;s live 24/7 (demo line).</p>
             </div>
 
             <div className="md:col-start-1 md:row-start-2">
@@ -197,7 +197,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* services */}
-        <section {...zone(0.12)} id="services" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.11)} id="services" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="What we do" title="Electrical work, done right the first time" sub="From a dead outlet to a 200-amp service upgrade, one call gets it handled safely and to code." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {data.services.map((s) => (
@@ -244,10 +244,45 @@ export default function OverpeckElectric() {
           </Stagger>
         </section>
 
+        {/* AI receptionist (live demo line) */}
+        <section {...zone(0.22)} id="receptionist" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+          <Reveal className={`mx-auto grid max-w-6xl items-center gap-8 p-6 sm:p-10 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-12 ${card}`}>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI receptionist</p>
+              <h2 className="el-h2 mt-3 text-[color:var(--fg)]">Busy on a job? After hours? We still pick up.</h2>
+              <p className="mt-4 text-lg leading-relaxed text-[color:var(--fg2)]">
+                An AI receptionist answers every call, 24/7. It handles emergencies safety-first, books the job and sends the lead straight to the electrician, so no call goes to voicemail.
+              </p>
+              <ul className="mt-6 grid gap-2 sm:grid-cols-2">
+                {["Answers every call 24/7", "Emergencies handled safety-first", "Books the job", "Sends the lead straight to the electrician"].map((t) => (
+                  <li key={t} className="flex items-center gap-2.5 font-semibold text-[color:var(--fg)]">
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#facc15]/15 text-[color:var(--accent-text)]" aria-hidden>
+                      <Icon d={CHECK_D} className="h-3.5 w-3.5" />
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="text-center md:text-left">
+              <a href={RECEPTIONIST_PHONE.tel} className="demo-lift flex w-full items-center gap-4 rounded-3xl py-4 pl-4 pr-6 text-left text-[#0b0f17] shadow-[0_18px_40px_-18px_rgba(245,158,11,0.7)]" style={{ background: AMBER }}>
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#0b0f17] text-[#facc15]">
+                  <Icon d={PHONE_D} className="h-6 w-6" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-sm font-bold uppercase tracking-wider">Call the demo line:</span>
+                  <span className="block text-2xl font-extrabold tracking-tight sm:text-3xl">{RECEPTIONIST_PHONE.display}</span>
+                </span>
+              </a>
+              <p className="mt-3 text-sm text-[color:var(--fg3)]">This is a live AI demo by Overpeck Labs.</p>
+            </div>
+          </Reveal>
+        </section>
+
         <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={PHONE} bg="linear-gradient(120deg, #1a2234, #121826 55%, #3a2a06)" ctaBg="#facc15" ctaText={INK} />
 
         {/* EV estimate (sample) */}
-        <section {...zone(0.25)} id="ev" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.33)} id="ev" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="EV charging" title="What would home charging cost you?" sub="Play with the numbers. It's a sample estimate to get you started, not a quote." />
           <div data-circuit="ev" className="el-card relative mx-auto mt-6 flex w-fit items-center gap-3 rounded-full px-4 py-2" aria-label="Car battery, charged by the current">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--fg3)]">Car battery</span>
@@ -269,7 +304,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* how it works */}
-        <section {...zone(0.37)} id="how" className="px-4 py-16 sm:px-6 md:py-20">
+        <section {...zone(0.44)} id="how" className="px-4 py-16 sm:px-6 md:py-20">
           <Head eyebrow="How it works" title="Three simple steps" />
           <Stagger as="ol" className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
             {data.process.map((st, i) => (
@@ -288,7 +323,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* AI assistant + AI receptionist */}
-        <section {...zone(0.5)} id="ai" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
+        <section {...zone(0.55)} id="ai" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
           <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
             <Reveal className={`relative overflow-hidden p-6 sm:p-8 ${card}`}>
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#facc15]/10 blur-3xl" aria-hidden />
@@ -308,8 +343,7 @@ export default function OverpeckElectric() {
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI phone receptionist</p>
               <h2 className="el-h3 mt-2 text-[color:var(--fg)]">{data.receptionist.title}</h2>
               <p className="mt-3 text-[color:var(--fg2)]">{data.receptionist.body}</p>
-              {RECEPTIONIST_PHONE ? (
-                <a href={RECEPTIONIST_PHONE.tel} className="demo-lift mt-5 inline-flex items-center gap-4 rounded-3xl bg-white py-3 pl-3 pr-6 text-[#0b0f17]">
+              <a href={RECEPTIONIST_PHONE.tel} className="demo-lift mt-5 inline-flex items-center gap-4 rounded-3xl bg-white py-3 pl-3 pr-6 text-[#0b0f17]">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-[#0b0f17]" style={{ background: AMBER }}>
                     <Icon d={PHONE_D} className="h-5 w-5" />
                   </span>
@@ -318,12 +352,6 @@ export default function OverpeckElectric() {
                     <span className="mt-0.5 block text-sm font-bold text-[#b45309]">Call to test it live</span>
                   </span>
                 </a>
-              ) : (
-                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--tint)] px-5 py-2.5 text-sm font-bold text-[color:var(--fg)]">
-                  <Icon d={PHONE_D} className="h-4 w-4" />
-                  Demo line coming soon
-                </p>
-              )}
               <ol className="mt-6 space-y-3">
                 {data.receptionist.steps.map((st, i) => (
                   <li key={st.title} className="flex gap-3">
@@ -342,7 +370,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* reviews (sample) */}
-        <section {...zone(0.62)} id="reviews" data-circuit-stars className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.66)} id="reviews" data-circuit-stars className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head
             eyebrow="Reviews"
             title={
@@ -359,7 +387,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* service area */}
-        <section {...zone(0.75)} id="area" className="px-4 pb-16 sm:px-6 md:pb-24">
+        <section {...zone(0.77)} id="area" className="px-4 pb-16 sm:px-6 md:pb-24">
           <Reveal className={`mx-auto grid max-w-6xl items-center gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_1.4fr] ${card}`}>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">Service area</p>
@@ -377,7 +405,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* FAQ (native details: no JS) */}
-        <section {...zone(0.87)} id="faq" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.88)} id="faq" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Electrical questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
             {data.faqs.map((f, i) => (
