@@ -23,7 +23,38 @@
   50% { opacity: 1; transform: scale(1.15); }
 }
 
+/* ---------- circuit story (CircuitStory.tsx) ----------
+   Lit by default (no JS, reduced motion). Once the circuit runs (main.el-circuit-ready), things stay dim until
+   the current reaches them (.el-on). Opacity/transform only. */
+[data-circuit-section] { position: relative; isolation: isolate; }
+.el-glow, .el-dim, .el-town, .el-knob, .el-onlabel, .el-final-glow, .el-btn-glow, [data-circuit-stars] svg { transition: opacity 0.35s ease, transform 0.35s ease; }
+.el-circuit-ready .el-circ:not(.el-on) .el-glow { opacity: 0; }
+.el-circuit-ready .el-circ:not(.el-on) .el-dim { opacity: 0.35; }
+.el-circuit-ready [data-circuit-town]:not(.el-on) { opacity: 0.3; }
+.el-circuit-ready [data-circuit-stars]:not(.el-on) figure svg,
+.el-circuit-ready [data-circuit-stars]:not(.el-on) [data-circuit="stars"] svg { opacity: 0.18; }
+[data-circuit-stars].el-on figure svg, [data-circuit-stars].el-on [data-circuit="stars"] svg { animation: el-flicker 0.7s linear 1; }
+@keyframes el-flicker { 0% { opacity: 0.2; } 15% { opacity: 1; } 25% { opacity: 0.35; } 40% { opacity: 1; } 55% { opacity: 0.6; } 70%, 100% { opacity: 1; } }
+.el-knob { transform: translateX(24px); }
+.el-circuit-ready [data-circuit-final]:not(.el-on) .el-knob { transform: none; opacity: 0.4; }
+.el-circuit-ready [data-circuit-final]:not(.el-on) .el-onlabel,
+.el-circuit-ready [data-circuit-final]:not(.el-on) .el-final-glow,
+.el-circuit-ready [data-circuit-final]:not(.el-on) .el-btn-glow { opacity: 0; }
+/* subtle electrical "hum" on the section the current is in */
+.el-live::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(60% 40% at 50% 30%, rgba(250, 204, 21, 0.07), transparent 70%);
+  animation: el-hum 2.4s ease-in-out infinite;
+}
+@keyframes el-hum { 0%, 100% { opacity: 0.4; } 45% { opacity: 1; } 50% { opacity: 0.55; } 55% { opacity: 0.95; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .el-live::after { animation: none; }
+  [data-circuit-stars] svg { animation: none !important; }
   .el-appear { opacity: 1 !important; transform: none !important; transition: none !important; }
   .el-current { display: none; }
   .el-pulse { animation: none; }

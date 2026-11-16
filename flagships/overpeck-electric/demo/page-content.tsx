@@ -5,7 +5,7 @@ import { RECEPTIONIST_PHONE } from "../phone";
 import ChatAssistant, { OPEN_CHAT } from "./ChatAssistant";
 import EvEstimate from "./EvEstimate";
 import HeroLeadForm from "./HeroLeadForm";
-import HouseLights from "./HouseLights";
+import CircuitStory from "./CircuitStory";
 import { Reveal, Stagger, StaggerItem } from "./Appear";
 import AppearObserver from "./AppearObserver";
 import EventButton from "@/components/demos/EventButton";
@@ -17,7 +17,8 @@ import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, StickyH
 
 /*
  * Overpeck Electric: Overpeck Labs' third flagship (a fictional brand). Server component: only the interactive
- * islands ship JS. Single lead flow: the hero form is the only form; every other CTA is a <LeadJump> back to it
+ * islands ship JS. One continuous scroll story (CircuitStory) powers each section as the current reaches it.
+ * Single lead flow: the hero form is the only form; every other CTA is a <LeadJump> back to it
  * (or its "Add details" steps after submit). Display-only.
  */
 
@@ -107,7 +108,9 @@ export default function OverpeckElectric() {
         </div>
       </StickyHeader>
 
-      <main id="top">
+      <main id="top" data-circuit-root className="relative isolate">
+        <CircuitStory />
+
         {/* hero: copy + call left, glass form right (phones: headline, form, call) */}
         <section className="relative overflow-hidden">
           <HeroImage>
@@ -117,6 +120,13 @@ export default function OverpeckElectric() {
           <div className="pointer-events-none absolute inset-0 bg-[#0b0f17]/80 md:bg-transparent md:bg-[linear-gradient(90deg,rgba(11,15,23,0.96)_0%,rgba(11,15,23,0.86)_42%,rgba(11,15,23,0.45)_78%,rgba(11,15,23,0.3)_100%)]" aria-hidden />
           <div className="pointer-events-none absolute -left-24 top-1/3 h-80 w-80 rounded-full bg-[#facc15]/10 blur-3xl" aria-hidden />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#0b0f17]" aria-hidden />
+          {/* the meter where the current starts */}
+          <div data-circuit="start" aria-hidden className="pointer-events-none absolute bottom-2.5 left-2 z-[1] flex items-center gap-1.5 rounded-lg border border-[#facc15]/35 bg-[#0b0f17]/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#facc15] md:bottom-6 md:left-6">
+            <svg viewBox="0 0 24 24" className="el-pulse h-3 w-3" fill="currentColor">
+              <path d={BOLT_D} />
+            </svg>
+            Meter
+          </div>
 
           <div className="relative mx-auto grid max-w-6xl gap-4 px-4 pb-10 pt-5 sm:px-6 md:grid-cols-[1fr_minmax(0,26rem)] md:items-center md:gap-x-12 md:gap-y-5 md:pb-24 md:pt-16">
             <HeroIntro className="md:col-start-1 md:row-start-1">
@@ -164,8 +174,6 @@ export default function OverpeckElectric() {
           </div>
         </section>
 
-        {/* signature: the house lights up room by room */}
-        <HouseLights cta={data.lead.cta} />
 
         {/* stats (all true for this page) */}
         <section aria-label="Highlights" className="px-4 sm:px-6">
@@ -180,7 +188,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* services */}
-        <section id="services" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="services" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="What we do" title="Electrical work, done right the first time" sub="From a dead outlet to a 200-amp service upgrade, one call gets it handled safely and to code." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {data.services.map((s) => (
@@ -191,8 +199,9 @@ export default function OverpeckElectric() {
                 <DemoImage photo={PH.services[s.key] ?? null} className="aspect-[16/10]" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
                 <div className="p-6">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#facc15]/10 text-[#facc15] ring-1 ring-[#facc15]/25">
-                      <Icon d={ICONS[s.key]} className="h-5 w-5" />
+                    <span data-circuit-card className="el-circ relative grid h-10 w-10 place-items-center rounded-xl bg-[#facc15]/10 text-[#facc15] ring-1 ring-[#facc15]/25">
+                      <span aria-hidden className="el-glow pointer-events-none absolute -inset-3 rounded-2xl bg-[radial-gradient(circle,rgba(250,204,21,0.5),transparent_68%)]" />
+                      <Icon d={ICONS[s.key]} className="el-dim relative h-5 w-5" />
                     </span>
                     <h3 className="text-lg font-extrabold text-white">{s.title}</h3>
                   </div>
@@ -229,21 +238,38 @@ export default function OverpeckElectric() {
         <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={PHONE} bg="linear-gradient(120deg, #1a2234, #121826 55%, #3a2a06)" ctaBg="#facc15" ctaText={INK} />
 
         {/* EV estimate (sample) */}
-        <section id="ev" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="ev" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="EV charging" title="What would home charging cost you?" sub="Play with the numbers. It's a sample estimate to get you started, not a quote." />
-          <Reveal className="mx-auto mt-10 max-w-5xl">
-            <EvEstimate rate={data.ev.rate} milesPerKwh={data.ev.milesPerKwh} installFrom={data.ev.installFrom} cta={data.lead.cta} />
+          <div data-circuit="ev" className="relative mx-auto mt-6 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-[#121826] px-4 py-2" aria-label="Car battery, charged by the current">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Car battery</span>
+            <span className="flex items-center">
+              <span className="relative h-4 w-28 overflow-hidden rounded-[5px] border border-white/25 p-[2px]">
+                <span data-circuit-battery-fill className="block h-full w-full origin-left rounded-[3px] bg-gradient-to-r from-[#22c55e] to-[#a3e635]" />
+              </span>
+              <span className="ml-[2px] h-2 w-[3px] rounded-r bg-white/40" aria-hidden />
+            </span>
+            <span data-circuit-battery-text className="w-10 text-right text-sm font-extrabold tabular-nums text-white">
+              100%
+            </span>
+          </div>
+          <Reveal className="mx-auto mt-8 max-w-5xl">
+            <div data-circuit="ev-end">
+              <EvEstimate rate={data.ev.rate} milesPerKwh={data.ev.milesPerKwh} installFrom={data.ev.installFrom} cta={data.lead.cta} />
+            </div>
           </Reveal>
         </section>
 
         {/* how it works */}
-        <section id="how" className="px-4 py-16 sm:px-6 md:py-20">
+        <section id="how" data-circuit-section className="px-4 py-16 sm:px-6 md:py-20">
           <Head eyebrow="How it works" title="Three simple steps" />
           <Stagger as="ol" className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
             {data.process.map((st, i) => (
               <StaggerItem key={st.title} as="li" className={`demo-lift p-6 ${card}`}>
-                <span className="grid h-10 w-10 place-items-center rounded-full text-sm font-extrabold text-[#0b0f17]" style={{ background: AMBER }}>
-                  {i + 1}
+                <span data-circuit-step className="el-circ relative inline-grid h-10 w-10">
+                  <span aria-hidden className="el-glow pointer-events-none absolute -inset-3 rounded-full bg-[radial-gradient(circle,rgba(250,204,21,0.55),transparent_68%)]" />
+                  <span className="el-dim relative grid h-10 w-10 place-items-center rounded-full text-sm font-extrabold text-[#0b0f17]" style={{ background: AMBER }}>
+                    {i + 1}
+                  </span>
                 </span>
                 <p className="mt-4 text-lg font-extrabold text-white">{st.title}</p>
                 <p className="mt-1.5 text-[15px] text-slate-300">{st.body}</p>
@@ -253,7 +279,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* AI assistant + AI receptionist */}
-        <section id="ai" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
+        <section id="ai" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
           <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
             <Reveal className={`relative overflow-hidden p-6 sm:p-8 ${card}`}>
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#facc15]/10 blur-3xl" aria-hidden />
@@ -307,7 +333,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* reviews (sample) */}
-        <section id="reviews" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="reviews" data-circuit-section data-circuit-stars className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head
             eyebrow="Reviews"
             title={
@@ -316,22 +342,24 @@ export default function OverpeckElectric() {
               </>
             }
           >
-            <RatingSummary reviews={data.reviews} color="#facc15" className="mt-4 text-white" />
+            <div data-circuit="stars" className="mt-4 inline-block">
+              <RatingSummary reviews={data.reviews} color="#facc15" className="text-white" />
+            </div>
           </Head>
           <ReviewGrid reviews={data.reviews} color="#facc15" cardClassName="bg-[#121826] border-white/10 text-slate-200" />
         </section>
 
         {/* service area */}
-        <section id="area" className="px-4 pb-16 sm:px-6 md:pb-24">
+        <section id="area" data-circuit-section className="px-4 pb-16 sm:px-6 md:pb-24">
           <Reveal className={`mx-auto grid max-w-6xl items-center gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_1.4fr] ${card}`}>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#facc15]">Service area</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white">Electricians across Bergen County</h2>
               <p className="mt-3 text-slate-300">Nearby town not listed? Call and ask. We probably cover it.</p>
             </div>
-            <ul className="flex flex-wrap gap-2">
+            <ul data-circuit="area" className="flex flex-wrap gap-2">
               {data.areaTowns.map((t) => (
-                <li key={t} className="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-sm font-semibold text-slate-200">
+                <li key={t} data-circuit-town className="el-town relative rounded-full border border-[#facc15]/30 bg-[#facc15]/10 px-3.5 py-1.5 text-sm font-semibold text-white">
                   {t}
                 </li>
               ))}
@@ -340,7 +368,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* FAQ (native details: no JS) */}
-        <section id="faq" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section id="faq" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Electrical questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
             {data.faqs.map((f, i) => (
@@ -360,16 +388,26 @@ export default function OverpeckElectric() {
           </div>
         </section>
 
-        {/* final CTA (no second form: the button goes to the hero form) */}
-        <section className="px-4 pb-16 sm:px-6 md:pb-24">
+        {/* final CTA (no second form: the button goes to the hero form). The current ends in this switch. */}
+        <section data-circuit-section data-circuit-final className="px-4 pb-16 sm:px-6 md:pb-24">
           <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-[#facc15]/20 bg-gradient-to-br from-[#121826] via-[#161d2e] to-[#2a2006] px-6 py-12 text-center sm:px-12">
             <div className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#facc15]/15 blur-3xl" aria-hidden />
+            <div className="el-final-glow pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.28),transparent_62%)]" aria-hidden />
+            <div className="relative mx-auto mb-6 flex w-fit items-center gap-3">
+              <span data-circuit="switch" className="relative inline-flex h-8 w-14 items-center rounded-full border border-white/20 bg-[#0b0f17] p-1" aria-hidden>
+                <span className="el-knob block h-6 w-6 rounded-full bg-[#facc15] shadow-[0_0_16px_rgba(250,204,21,0.9)]" />
+              </span>
+              <span className="el-onlabel text-xs font-extrabold uppercase tracking-[0.22em] text-[#facc15]">Power on</span>
+            </div>
             <h2 className="relative text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{data.lead.finalTitle}</h2>
             <p className="relative mx-auto mt-3 max-w-xl text-slate-300">{data.lead.finalBody}</p>
             <div className="relative mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <LeadJump className="demo-lift rounded-full px-7 py-3.5 font-extrabold text-[#0b0f17]" style={{ background: AMBER }}>
-                {data.lead.cta}
-              </LeadJump>
+              <span className="relative inline-flex">
+                <span aria-hidden className="el-btn-glow pointer-events-none absolute -inset-3 rounded-full bg-[#facc15]/45 blur-xl" />
+                <LeadJump className="demo-lift relative rounded-full px-7 py-3.5 font-extrabold text-[#0b0f17]" style={{ background: AMBER }}>
+                  {data.lead.cta}
+                </LeadJump>
+              </span>
               <a href={PHONE.tel} className="inline-flex items-center gap-2 rounded-full border-2 border-white/25 px-6 py-3 font-bold text-white hover:bg-white/10">
                 <Icon d={PHONE_D} className="h-4 w-4" />
                 Call {PHONE.display}
