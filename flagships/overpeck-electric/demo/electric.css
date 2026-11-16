@@ -1,10 +1,12 @@
 /* Overpeck Electric: "dark to light" power-up story below the hero.
-   Animates only transform, opacity and CSS variables. Everything is fully lit by default (no JS, reduced motion);
-   sections dim only once CircuitStory is running (main.el-circuit-ready) and the current hasn't reached them. */
+   Animates only transform, opacity and CSS variables. Fully lit without JS or with reduced motion; otherwise
+   sections start unpowered from the first paint (@media scripting) and CircuitStory powers them as it arrives,
+   so there's no page-wide restyle when the circuit starts. */
 
 /* ---------- registered variables (so they can transition) ---------- */
-@property --power { syntax: "<number>"; inherits: true; initial-value: 1; }
-@property --hum { syntax: "<number>"; inherits: true; initial-value: 0; }
+/* not inherited: animating them only restyles the section itself (descendants read precomputed colors) */
+@property --power { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --hum { syntax: "<number>"; inherits: false; initial-value: 0; }
 
 /* ---------- reveals: fade + 12px rise, staggered ---------- */
 .el-appear { opacity: 0; transform: translate3d(0, 12px, 0); transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -30,6 +32,8 @@
   --card: color-mix(in oklab, var(--bg), #ffffff calc(4% + var(--power) * var(--card-lift, 3%)));
   --tint: color-mix(in oklab, transparent, var(--fg) 7%);
   --grid: color-mix(in oklab, rgb(148 163 184 / 0.05), var(--grid-on) calc(var(--power) * 100%));
+  --glow1: rgb(250 204 21 / calc(var(--power) * 0.12));
+  --glow2: rgb(250 204 21 / calc(var(--power) * 0.45));
   /* glow blooms from where the current enters (--ex, set by CircuitStory) */
   background:
     radial-gradient(620px 340px at var(--ex, 50%) 0, rgb(250 204 21 / calc(var(--power) * 0.16)), transparent 70%),
@@ -44,9 +48,9 @@
 }
 [data-circuit-section] > *, [data-circuit-footer] > * { position: relative; z-index: 1; }
 
-/* faint grain, shared */
+/* faint grain, shared: a tiny pre-rendered noise tile (decoded off the main thread, unlike an SVG filter) */
 [data-circuit-section], [data-circuit-footer] {
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain: url("/demos/overpeck-electric/grain.webp");
 }
 
 /* dark zones: charcoal -> slate -> warm dark grey as --lift goes 0 -> 0.5 */
@@ -72,21 +76,20 @@
   --grid-on: rgb(120 82 30 / 0.08);
 }
 
-/* unpowered until the current arrives (only when the circuit is running) */
-.el-circuit-ready [data-circuit-section]:not(.el-powered),
-.el-circuit-ready ~ [data-circuit-footer]:not(.el-powered) { --power: 0; }
-/* no fade on the very first frame (sections already on screen shouldn't flash dark) */
-.el-instant [data-circuit-section], .el-instant ~ [data-circuit-footer] { transition: none !important; }
+/* unpowered until the current arrives (JS on, motion allowed); scrolling back up powers sections down */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-circuit-section]:not(.el-powered), [data-circuit-footer]:not(.el-powered) { --power: 0; }
+}
 
 /* hum on the section the current is in */
-.el-live { animation: el-hum 2.4s ease-in-out infinite; }
+.el-live { animation: el-hum 1.2s ease-in-out 2; }
 @keyframes el-hum { 0%, 100% { --hum: 0.35; } 45% { --hum: 1; } 50% { --hum: 0.5; } 55% { --hum: 0.95; } }
 
 /* ---------- glass cards with an amber hairline that glows when powered ---------- */
 .el-card {
   background: color-mix(in oklab, var(--card) 92%, transparent);
   border: 1px solid var(--line);
-  box-shadow: 0 0 0 1px rgb(250 204 21 / calc(var(--power) * 0.12)), 0 22px 60px -34px rgb(250 204 21 / calc(var(--power) * 0.45)), 0 24px 60px -34px rgb(0 0 0 / 0.6);
+  box-shadow: 0 0 0 1px var(--glow1), 0 22px 60px -34px var(--glow2), 0 24px 60px -34px rgb(0 0 0 / 0.6);
 }
 /* keep small review captions AA in both states */
 .el-review figcaption [class*="opacity-"] { opacity: 0.85 !important; }
@@ -94,30 +97,44 @@
 /* ---------- fixtures ---------- */
 /* service icons + step badges: grey outline until the current plugs in, then flicker on like a bulb */
 .el-glow, .el-dim { transition: opacity 0.35s ease, color 0.35s ease; }
-.el-circuit-ready .el-circ:not(.el-on) .el-glow { opacity: 0; }
-.el-circuit-ready .el-circ:not(.el-on) .el-dim { opacity: 0.55; color: var(--fg3); }
-.el-circuit-ready [data-circuit-card]:not(.el-on) { background: transparent; --tw-ring-color: var(--line); }
-.el-circuit-ready .el-circ.el-on .el-dim { animation: el-bulb 0.7s linear 1; }
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .el-circ:not(.el-on) .el-glow { opacity: 0; }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .el-circ:not(.el-on) .el-dim { opacity: 0.55; color: var(--fg3); }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-circuit-card]:not(.el-on) { background: transparent; --tw-ring-color: var(--line); }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .el-circ.el-on .el-dim { animation: el-bulb 0.7s linear 1; }
+}
 @keyframes el-bulb { 0% { opacity: 0.3; } 12% { opacity: 1; } 22% { opacity: 0.4; } 34% { opacity: 1; } 48% { opacity: 0.7; } 60%, 100% { opacity: 1; } }
 
 /* review stars ignite */
 [data-circuit-stars] svg { transition: opacity 0.35s ease; }
-.el-circuit-ready [data-circuit-stars]:not(.el-on) figure svg,
-.el-circuit-ready [data-circuit-stars]:not(.el-on) [data-circuit="stars"] svg { opacity: 0.18; }
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-circuit-stars]:not(.el-on) figure svg,
+  [data-circuit-stars]:not(.el-on) [data-circuit="stars"] svg { opacity: 0.18; }
+}
 [data-circuit-stars].el-on figure svg, [data-circuit-stars].el-on [data-circuit="stars"] svg { animation: el-flicker 0.7s linear 1; }
 @keyframes el-flicker { 0% { opacity: 0.2; } 15% { opacity: 1; } 25% { opacity: 0.35; } 40% { opacity: 1; } 55% { opacity: 0.6; } 70%, 100% { opacity: 1; } }
 
 /* towns light up like a map */
 .el-town { transition: opacity 0.35s ease, transform 0.35s ease; }
-.el-circuit-ready [data-circuit-town]:not(.el-on) { opacity: 0.35; transform: scale(0.97); }
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-circuit-town]:not(.el-on) { opacity: 0.35; transform: scale(0.97); }
+}
 
 /* final switch flips ON, the section brightens, the button glows */
 .el-knob, .el-onlabel, .el-final-glow, .el-btn-glow { transition: opacity 0.35s ease, transform 0.35s ease; }
 .el-knob { transform: translateX(24px); }
-.el-circuit-ready [data-circuit-final]:not(.el-on) .el-knob { transform: none; opacity: 0.4; }
-.el-circuit-ready [data-circuit-final]:not(.el-on) .el-onlabel,
-.el-circuit-ready [data-circuit-final]:not(.el-on) .el-final-glow,
-.el-circuit-ready [data-circuit-final]:not(.el-on) .el-btn-glow { opacity: 0; }
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-circuit-final]:not(.el-on) .el-knob { transform: none; opacity: 0.4; }
+  [data-circuit-final]:not(.el-on) .el-onlabel,
+  [data-circuit-final]:not(.el-on) .el-final-glow,
+  [data-circuit-final]:not(.el-on) .el-btn-glow { opacity: 0; }
+}
 
 /* fine circuit traces (drawn by CircuitStory in the circuit layer) */
 .el-traces { opacity: 0.16; transition: opacity 0.6s ease; }

@@ -471,10 +471,9 @@ export default function CircuitStory() {
         head.current!.style.opacity = "0";
         if (meter.current) meter.current.style.display = "none";
       } else {
-        // switch to the running state without a fade, so sections already on screen don't flash dark
-        main.classList.add("el-instant", "el-circuit-ready");
+        // sections are already unpowered from the first paint (CSS), so starting causes no page-wide restyle
+        main.classList.add("el-circuit-ready");
         frame();
-        requestAnimationFrame(() => requestAnimationFrame(() => main.classList.remove("el-instant")));
         window.addEventListener("scroll", onScroll, { passive: true });
       }
       window.addEventListener("resize", rebuild);
@@ -487,15 +486,28 @@ export default function CircuitStory() {
         rebuild();
       }
     });
+    // Start lazily. With motion: on the first scroll / interaction (until then the current sits at the hero meter
+    // and nothing below the hero is powered, so there's nothing to draw). Reduced motion: once idle after load,
+    // just to draw the finished circuit.
     const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
     const cic = window.cancelIdleCallback ?? window.clearTimeout;
-    const kick = () => (idle = ric(startUp, { timeout: 2500 } as IdleRequestOptions) as unknown as number);
     let idle = 0;
+    const triggers = ["scroll", "wheel", "touchstart", "keydown", "pointerdown"] as const;
+    const onFirst = () => {
+      triggers.forEach((t) => window.removeEventListener(t, onFirst));
+      startUp();
+    };
+    const kick = () => {
+      if (reduce) idle = ric(startUp, { timeout: 4000 } as IdleRequestOptions) as unknown as number;
+      else if (window.scrollY > 0) startUp(); // e.g. restored scroll position or a #hash link
+      else triggers.forEach((t) => window.addEventListener(t, onFirst, { passive: true }));
+    };
     if (document.readyState === "complete") kick();
     else window.addEventListener("load", kick, { once: true });
 
     return () => {
       cic(idle);
+      triggers.forEach((t) => window.removeEventListener(t, onFirst));
       window.removeEventListener("load", kick);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", rebuild);
