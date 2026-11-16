@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import MockupOffer from "@/components/MockupOffer";
 import Services from "@/components/Services";
+import Showcase from "@/components/Showcase";
 import Websites from "@/components/chapters/Websites";
 import Workflows from "@/components/chapters/Workflows";
 import Tracking from "@/components/chapters/Tracking";
@@ -34,6 +35,8 @@ export default function Page() {
         <AIChapter />
         <Divider />
         <Services />
+        <Divider />
+        <Showcase />
         <Divider />
         <Industries workflowTags={Object.fromEntries(INDUSTRY_PAGES.map((i) => [i.mockup, i.workflow.title]))} />
         <Divider />

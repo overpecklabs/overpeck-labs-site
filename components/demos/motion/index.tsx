@@ -201,7 +201,15 @@ function useParallaxScale() {
  */
 export function Parallax({ children, className = "", amount = 10 }: { children: ReactNode; className?: string; amount?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  // Same markup on server and client (hydration-safe); reduced motion is read after mount and pins the layer at 0.
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const set = () => setReduce(mq.matches);
+    set();
+    mq.addEventListener("change", set);
+    return () => mq.removeEventListener("change", set);
+  }, []);
   const scale = useParallaxScale();
   const amp = useRef(amount * scale);
   amp.current = amount * scale;
@@ -209,15 +217,9 @@ export function Parallax({ children, className = "", amount = 10 }: { children: 
   // -amp/2 .. +amp/2 of the box height; the image layer is taller by `amount`% on each side so edges never show
   const y = useTransform(scrollYProgress, (v) => `${((v - 0.5) * amp.current) / (1 + (2 * amount) / 100)}%`);
   const positioned = /(^|\s)(absolute|fixed|sticky)(\s|$)/.test(className);
-  if (reduce)
-    return (
-      <div ref={ref} className={`${positioned ? "" : "relative "}overflow-hidden ${className}`}>
-        <div className="absolute inset-0">{children}</div>
-      </div>
-    );
   return (
     <div ref={ref} className={`${positioned ? "" : "relative "}overflow-hidden ${className}`}>
-      <motion.div className="absolute inset-x-0 will-change-transform" style={{ y, top: `-${amount}%`, bottom: `-${amount}%` }}>
+      <motion.div className="absolute inset-x-0 will-change-transform" style={{ y: reduce ? 0 : y, top: `-${amount}%`, bottom: `-${amount}%` }}>
         {children}
       </motion.div>
     </div>
