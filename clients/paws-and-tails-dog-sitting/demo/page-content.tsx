@@ -1,8 +1,7 @@
-"use client";
-
-import { useState } from "react";
 import { data } from "./data";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
+import Checklist from "./Checklist";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
+import { averageRating } from "@/components/demos/rating";
 import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
@@ -90,46 +89,7 @@ function DogArt() {
   );
 }
 
-const CHECKLIST = [
-  "Spare key or door code",
-  "Food, treats and feeding times",
-  "Leash, harness and waste bags",
-  "Any medications, with instructions",
-  "Your vet's name and phone number",
-  "An emergency contact",
-];
-
-function Checklist() {
-  const [done, setDone] = useState<string[]>([]);
-  return (
-    <div className="rounded-3xl p-6 text-white sm:p-8" style={{ background: C.dark }}>
-      <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: C.accent }}>
-        Before your first booking
-      </p>
-      <h3 className="mt-2 text-2xl font-extrabold">Get-ready checklist</h3>
-      <p className="mt-2 text-sm text-white/70">Tick things off as you go. Nothing is saved or sent.</p>
-      <ul className="mt-5 space-y-2">
-        {CHECKLIST.map((item) => {
-          const on = done.includes(item);
-          return (
-            <li key={item}>
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl bg-white/[0.06] px-3.5 py-3 text-[15px] hover:bg-white/10">
-                <input type="checkbox" checked={on} onChange={() => setDone((d) => (on ? d.filter((x) => x !== item) : [...d, item]))} className="h-5 w-5 shrink-0" style={{ accentColor: C.accent }} />
-                <span className={on ? "text-white/50 line-through" : ""}>{item}</span>
-              </label>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="mt-4 text-sm font-semibold" style={{ color: C.accent }} aria-live="polite">
-        {done.length === CHECKLIST.length ? "All set! Your pup is ready." : `${done.length} of ${CHECKLIST.length} ready`}
-      </p>
-    </div>
-  );
-}
-
 export default function PawsAndTails() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const phone = data.phone;
   return (
     <MotionRoot className="bg-[#fffaf3] font-sans text-stone-900 antialiased">
@@ -393,27 +353,20 @@ export default function PawsAndTails() {
         <section id="faq" className="scroll-mt-16 bg-white px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Questions pet parents ask" />
           <div className="mx-auto mt-10 max-w-3xl divide-y divide-stone-200 rounded-3xl border border-stone-200 bg-[#fffaf3]">
-            {data.faqs.map((f, i) => {
-              const open = openFaq === i;
-              return (
-                <div key={f.q}>
-                  <h3>
-                    <button type="button" aria-expanded={open} aria-controls={`pt-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[16px] font-bold sm:px-6">
-                      {f.q}
-                      <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-stone-300 text-lg leading-none transition ${open ? "rotate-45" : ""}`} aria-hidden>
-                        +
-                      </span>
-                    </button>
-                  </h3>
-                  {open && (
-                    <p id={`pt-faq-${i}`} className="px-5 pb-5 text-[15px] leading-relaxed text-stone-600 sm:px-6">
-                      {f.a}
-                      {f.sample && <SampleMark className="text-stone-500" />}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+            {data.faqs.map((f, i) => (
+              <details key={f.q} open={i === 0} className="group ">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left text-[16px] font-bold sm:px-6 [&::-webkit-details-marker]:hidden">
+                  <h3>{f.q}</h3>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-stone-300 text-lg leading-none transition group-open:rotate-45 motion-reduce:transition-none" aria-hidden>
+                    +
+                  </span>
+                </summary>
+                <p className="px-5 pb-5 text-[15px] leading-relaxed text-stone-600 sm:px-6">
+                  {f.a}
+                  {f.sample && <SampleMark className="text-stone-500" />}
+                </p>
+              </details>
+            ))}
           </div>
         </section>
 

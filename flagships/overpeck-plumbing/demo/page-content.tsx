@@ -1,12 +1,11 @@
-"use client";
-
-import { useState } from "react";
 import { data } from "./data";
 import BeforeAfter from "./BeforeAfter";
 import ChatAssistant, { OPEN_CHAT } from "./ChatAssistant";
-import QuoteWizard from "./QuoteWizard";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
-import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadBasics, type LeadTheme } from "@/components/demos/lead";
+import HeroLeadForm from "./HeroLeadForm";
+import EventButton from "@/components/demos/EventButton";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
+import { averageRating } from "@/components/demos/rating";
+import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
 
 /*
@@ -23,7 +22,6 @@ const RECEPTIONIST = data.phone; // the business line IS the live AI receptionis
 
 const GLASS: LeadTheme = { tone: "dark", primary: C.primary, accent: C.accent, ctaBg: `linear-gradient(90deg, ${C.accent}, #60a5fa)`, ctaText: "#04101f" };
 const LIGHT: LeadTheme = { tone: "light", primary: C.primary, accent: C.accent, ctaBg: C.primary, ctaText: "#ffffff" };
-const renderQuote = (basics: LeadBasics) => <QuoteWizard basics={basics} accent={C.accent} />;
 
 const ICONS: Record<string, string> = {
   drop: "M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z",
@@ -71,7 +69,6 @@ function Head({ eyebrow, title, sub, children }: { eyebrow: string; title: React
 const glass = "rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.09] to-white/[0.03] shadow-[0_20px_60px_-30px_rgba(0,0,0,0.8)]";
 
 export default function OverpeckPlumbing() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   return (
     <MotionRoot className="bg-[#050d1f] font-sans text-slate-100 antialiased [color-scheme:dark]">
       {/* sticky: slim emergency strip + glass header that shrinks on scroll */}
@@ -149,7 +146,7 @@ export default function OverpeckPlumbing() {
                   <p className="text-lg font-extrabold text-white">{data.lead.title}</p>
                   <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] font-bold text-emerald-300">Available 24/7</span>
                 </div>
-                <LeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} renderDetails={renderQuote} />
+                <HeroLeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} />
               </div>
             </div>
 
@@ -208,9 +205,9 @@ export default function OverpeckPlumbing() {
                 <h3 className="text-lg font-extrabold text-white">Not sure what you need?</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-slate-200">Describe the problem to our AI assistant and it&apos;ll point you the right way.</p>
               </div>
-              <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_CHAT))} className="mt-5 rounded-full bg-white px-4 py-2.5 text-sm font-extrabold text-[#050d1f]">
+              <EventButton event={OPEN_CHAT} className="mt-5 rounded-full bg-white px-4 py-2.5 text-sm font-extrabold text-[#050d1f]">
                 Ask the assistant
-              </button>
+              </EventButton>
             </StaggerItem>
           </Stagger>
           <Stagger className="relative mx-auto mt-10 grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -251,9 +248,9 @@ export default function OverpeckPlumbing() {
                   </li>
                 ))}
               </ul>
-              <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_CHAT))} className="demo-lift mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-extrabold text-[#04101f]" style={{ background: `linear-gradient(90deg, ${C.accent}, #60a5fa)` }}>
+              <EventButton event={OPEN_CHAT} className="demo-lift mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-extrabold text-[#04101f]" style={{ background: `linear-gradient(90deg, ${C.accent}, #60a5fa)` }}>
                 Try the assistant
-              </button>
+              </EventButton>
             </Reveal>
             <Reveal delay={0.1}>
               <figure className={`p-5 ${glass} backdrop-blur-xl`} aria-label="Example conversation with the AI assistant">
@@ -370,25 +367,20 @@ export default function OverpeckPlumbing() {
         <section id="faq" className="scroll-mt-28 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Plumbing questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
-            {data.faqs.map((f, i) => {
-              const open = openFaq === i;
-              return (
-                <div key={f.q} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
-                  <h3>
-                    <button type="button" aria-expanded={open} aria-controls={`op-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-white hover:bg-white/[0.04]">
-                      {f.q}
-                      <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-lg leading-none transition-transform motion-reduce:transition-none ${open ? "rotate-45" : ""}`} aria-hidden>
-                        +
-                      </span>
-                    </button>
-                  </h3>
-                  <div id={`op-faq-${i}`} hidden={!open} className="px-5 pb-5 text-[15px] leading-relaxed text-slate-300">
-                    {f.a}
-                    {"sample" in f && f.sample && <SampleMark className="text-slate-500" />}
-                  </div>
+            {data.faqs.map((f, i) => (
+              <details key={f.q} open={i === 0} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left font-bold text-white hover:bg-white/[0.04] [&::-webkit-details-marker]:hidden">
+                  <h3>{f.q}</h3>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-lg leading-none transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden>
+                    +
+                  </span>
+                </summary>
+                <div className="px-5 pb-5 text-[15px] leading-relaxed text-slate-300">
+                  {f.a}
+                  {"sample" in f && f.sample && <SampleMark className="text-slate-500" />}
                 </div>
-              );
-            })}
+              </details>
+            ))}
           </div>
         </section>
 
@@ -405,7 +397,7 @@ export default function OverpeckPlumbing() {
               </a>
             </Reveal>
             <div className="relative rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl sm:p-6">
-              <LeadForm slug={data.slug} source="final" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} renderDetails={renderQuote} />
+              <HeroLeadForm slug={data.slug} source="final" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} />
             </div>
           </div>
         </section>

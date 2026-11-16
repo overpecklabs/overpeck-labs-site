@@ -1,9 +1,7 @@
-"use client";
-
-import { useState } from "react";
 import { data } from "./data";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, Reveal, Stagger, StaggerItem, StickyHeader } from "@/components/demos/motion";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
+import { averageRating } from "@/components/demos/rating";
 import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 
 /*
@@ -14,6 +12,8 @@ import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/
  * Finished look: no brackets or "placeholder" text on the page. Unknown facts get <SampleMark />,
  * reviews get one <SampleTag /> on the heading, and the footer has <PreviewNote />.
  * Photos: <DemoImage> (stock photos via `npm run demo-photos`, credits in assets/CREDITS.md).
+ * Server component: keep this file free of hooks and event handlers; put anything interactive in a small
+ * "use client" file next to it (forms come from @/components/demos/lead). FAQs use native <details>.
  * Motion: the shared components from @/components/demos/motion. Parallax is image-only and subtle: the hero
  * photo (<HeroImage>) plus 1-2 photo sections (<Parallax>, fixed aspect box), never reviews or FAQ.
  * Lead capture (@/components/demos/lead): short <LeadForm> above the fold (desktop: right column; mobile:
@@ -23,7 +23,6 @@ import { CtaBand, ExitIntent, LeadForm, MobileLeadBar, type LeadTheme } from "@/
  */
 
 export default function DemoHomepage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const c = data.colors;
   const ph = data.photos;
   const glass: LeadTheme = { tone: "dark", primary: c.primary, accent: c.accent, ctaBg: c.accent, ctaText: "#0f172a" };
@@ -186,25 +185,20 @@ export default function DemoHomepage() {
             Frequently asked questions
           </Reveal>
           <div className="mx-auto mt-8 max-w-3xl divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
-            {data.faqs.map((f, i) => {
-              const open = openFaq === i;
-              return (
-                <div key={f.q}>
-                  <h3>
-                    <button type="button" aria-expanded={open} aria-controls={`tpl-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold">
-                      {f.q}
-                      <span aria-hidden>{open ? "−" : "+"}</span>
-                    </button>
-                  </h3>
-                  {open && (
-                    <p id={`tpl-faq-${i}`} className="px-5 pb-5 text-slate-600">
-                      {f.a}
-                      {f.sample && <SampleMark className="text-slate-500" />}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+            {data.faqs.map((f, i) => (
+              <details key={f.q} open={i === 0} className="group ">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left font-bold [&::-webkit-details-marker]:hidden">
+                  <h3>{f.q}</h3>
+                  <span className="transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden>
+                    +
+                  </span>
+                </summary>
+                <p className="px-5 pb-5 text-slate-600">
+                  {f.a}
+                  {f.sample && <SampleMark className="text-slate-500" />}
+                </p>
+              </details>
+            ))}
           </div>
           <p className="mx-auto mt-8 max-w-3xl text-center text-slate-600">{data.areaBlurb}</p>
         </section>

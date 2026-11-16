@@ -192,10 +192,13 @@ export function LeadForm({
     } else setState("form");
   }
 
+  // The anchor id sits on a stable wrapper, so observers (e.g. <MobileLeadBar>) keep working after the form
+  // is swapped for the success state.
+  let body: ReactNode;
   if (state === "done") {
     const first = name.trim().split(/\s+/)[0];
-    return (
-      <div id={anchorId} ref={doneRef} tabIndex={-1} role="status" aria-live="polite" className="scroll-mt-28 outline-none">
+    body = (
+      <div ref={doneRef} tabIndex={-1} role="status" aria-live="polite" className="scroll-mt-28 outline-none">
         <div className="flex items-start gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-lg font-bold text-white" style={{ background: theme.primary }} aria-hidden>
             ✓
@@ -216,10 +219,9 @@ export function LeadForm({
         {showDetails && !renderDetails && details && <DetailsSteps steps={details} tone={theme.tone} primary={theme.primary} />}
       </div>
     );
-  }
-
-  return (
-    <form id={anchorId} ref={formRef} onSubmit={onSubmit} noValidate className="scroll-mt-28" aria-label={title ?? cta}>
+  } else {
+    body = (
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="scroll-mt-28" aria-label={title ?? cta}>
       {title && <p className={`mb-3 text-base font-extrabold ${dark ? "text-white" : "text-slate-900"}`}>{title}</p>}
       <div className="grid grid-cols-2 gap-2.5">
         <div>
@@ -294,6 +296,12 @@ export function LeadForm({
       </button>
       <p className={`mt-2 text-center text-xs ${dark ? "text-white/70" : "text-slate-500"}`}>{reassurance}</p>
     </form>
+    );
+  }
+  return (
+    <div id={anchorId} className="scroll-mt-28">
+      {body}
+    </div>
   );
 }
 

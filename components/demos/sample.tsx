@@ -15,6 +15,7 @@
 
 import { useId } from "react";
 import { Stagger, StaggerItem } from "./motion";
+import { averageRating } from "./rating";
 
 export const SAMPLE_TOOLTIP = "Sample text, to be replaced with your details";
 
@@ -56,7 +57,7 @@ export function Stars({ rating, color = "#f59e0b", size = 16 }: { rating: number
   );
 }
 
-export const averageRating = (reviews: Review[]) => Math.round((reviews.reduce((a, r) => a + r.rating, 0) / Math.max(1, reviews.length)) * 10) / 10;
+export { averageRating };
 
 export function RatingSummary({ reviews, color, className = "" }: { reviews: Review[]; color?: string; className?: string }) {
   const avg = averageRating(reviews);

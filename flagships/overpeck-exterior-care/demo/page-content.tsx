@@ -1,18 +1,19 @@
-"use client";
-
-import { useState } from "react";
 import { preload } from "react-dom";
 import "./exterior.css";
 import { data } from "./data";
 import BeforeAfter from "./BeforeAfter";
 import ChatAssistant, { OPEN_CHAT } from "./ChatAssistant";
-import DetailsWizard from "./DetailsWizard";
+import HeroLeadForm from "./HeroLeadForm";
+import EventButton from "@/components/demos/EventButton";
+import CloseDialogOnClick from "@/components/demos/CloseDialogOnClick";
 import WindowWipe from "./WindowWipe";
 import { RECEPTIONIST_PHONE } from "../phone";
-import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars, averageRating } from "@/components/demos/sample";
-import { CtaBand, ExitIntent, LeadForm, LeadJump, MobileLeadBar, type LeadBasics, type LeadTheme } from "@/components/demos/lead";
+import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
+import { averageRating } from "@/components/demos/rating";
+import { CtaBand, ExitIntent, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, StickyHeader } from "@/components/demos/motion";
-import { AppearObserver, Reveal, Stagger, StaggerItem } from "./Appear";
+import { Reveal, Stagger, StaggerItem } from "./Appear";
+import AppearObserver from "./AppearObserver";
 
 /*
  * Overpeck Exterior Care: Overpeck Labs' second flagship (a fictional brand). Single lead flow: the hero form is
@@ -29,7 +30,6 @@ const CTA_BG = `linear-gradient(90deg, ${C.accent}, #5eead4)`;
 const HERO_SRCSET = "/demos/overpeck-exterior-care/hero-828.webp 828w, /demos/overpeck-exterior-care/hero-1200.webp 1200w, /demos/overpeck-exterior-care/hero.webp 1600w";
 
 const GLASS: LeadTheme = { tone: "dark", primary: C.primary, accent: C.accent, ctaBg: CTA_BG, ctaText: INK };
-const renderDetails = (basics: LeadBasics) => <DetailsWizard basics={basics} accent={C.accent} />;
 
 const ICONS: Record<string, string> = {
   windows: "M4 4h16v16H4zM12 4v16M4 12h16",
@@ -114,7 +114,6 @@ function Head({ eyebrow, title, sub, children }: { eyebrow: string; title: React
 const glass = "rounded-3xl border border-white/90 bg-white/75 shadow-[0_20px_50px_-30px_rgba(6,35,42,0.35)]";
 
 export default function OverpeckExteriorCare() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   // high-priority preload of the right-sized hero image (emitted into <head> during SSR)
   preload("/demos/overpeck-exterior-care/hero-828.webp", { as: "image", imageSrcSet: HERO_SRCSET, imageSizes: "100vw", fetchPriority: "high" });
   return (
@@ -183,7 +182,7 @@ export default function OverpeckExteriorCare() {
                   <p className="text-lg font-extrabold text-white">{data.lead.title}</p>
                   <span className="rounded-full bg-emerald-400/25 px-2.5 py-1 text-[11px] font-bold text-emerald-100">No obligation</span>
                 </div>
-                <LeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} renderDetails={renderDetails} phonePlaceholder="Mobile number" />
+                <HeroLeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} phonePlaceholder="Mobile number" />
               </div>
             </div>
 
@@ -373,9 +372,9 @@ export default function OverpeckExteriorCare() {
                 <p className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#0e7490] to-[#0ea5a4] px-3.5 py-2.5">Is soft washing safe for vinyl siding?</p>
                 <p className="max-w-[88%] rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5">Yes. It uses low pressure, about like a garden hose, and a solution that kills mildew at the root. Want a free estimate?</p>
               </div>
-              <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_CHAT))} className="demo-lift relative mt-6 rounded-full px-6 py-3 font-extrabold text-[#06232a]" style={{ background: CTA_BG }}>
+              <EventButton event={OPEN_CHAT} className="demo-lift relative mt-6 rounded-full px-6 py-3 font-extrabold text-[#06232a]" style={{ background: CTA_BG }}>
                 Try the assistant
-              </button>
+              </EventButton>
             </Reveal>
 
             <Reveal delay={0.08} className={`p-6 sm:p-8 ${glass}`}>
@@ -450,25 +449,20 @@ export default function OverpeckExteriorCare() {
         <section id="faq" className="oe-shimmer scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
-            {data.faqs.map((f, i) => {
-              const open = openFaq === i;
-              return (
-                <div key={f.q} className="overflow-hidden rounded-2xl border border-white bg-white/80 shadow-sm">
-                  <h3>
-                    <button type="button" aria-expanded={open} aria-controls={`oe-faq-${i}`} onClick={() => setOpenFaq(open ? null : i)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-[#06232a] hover:bg-white">
-                      {f.q}
-                      <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#0e7490]/10 text-lg leading-none text-[#0e7490] transition-transform motion-reduce:transition-none ${open ? "rotate-45" : ""}`} aria-hidden>
-                        +
-                      </span>
-                    </button>
-                  </h3>
-                  <div id={`oe-faq-${i}`} hidden={!open} className="px-5 pb-5 text-[15px] leading-relaxed text-slate-600">
-                    {f.a}
-                    {"sample" in f && f.sample && <SampleMark className="text-slate-500" />}
-                  </div>
+            {data.faqs.map((f, i) => (
+              <details key={f.q} open={i === 0} className="group overflow-hidden rounded-2xl border border-white bg-white/80 shadow-sm">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left font-bold text-[#06232a] hover:bg-white [&::-webkit-details-marker]:hidden">
+                  <h3>{f.q}</h3>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#0e7490]/10 text-lg leading-none text-[#0e7490] transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden>
+                    +
+                  </span>
+                </summary>
+                <div className="px-5 pb-5 text-[15px] leading-relaxed text-slate-600">
+                  {f.a}
+                  {"sample" in f && f.sample && <SampleMark className="text-slate-500" />}
                 </div>
-              );
-            })}
+              </details>
+            ))}
           </div>
         </section>
 
@@ -527,11 +521,11 @@ export default function OverpeckExteriorCare() {
 
       {/* desktop exit intent: no second form, the button goes to the hero form (dialog closes first so focus can land) */}
       <ExitIntent slug={data.slug} title="Before you go, get your free quote" sub="Takes 20 seconds. No pressure, no obligation.">
-        <div onClickCapture={(e) => (e.currentTarget.closest("dialog") as HTMLDialogElement | null)?.close()}>
+        <CloseDialogOnClick>
           <LeadJump className="flex w-full items-center justify-center rounded-full px-6 py-3.5 font-extrabold text-[#06232a]" style={{ background: CTA_BG }}>
             {data.lead.cta}
           </LeadJump>
-        </div>
+        </CloseDialogOnClick>
       </ExitIntent>
     </MotionRoot>
   );

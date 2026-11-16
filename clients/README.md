@@ -30,7 +30,10 @@ the same shared components and the same `/demo/{slug}` route.
    specific copy: the demo must look done. Real facts as-is; unknown facts (rates, license, insurance, years,
    stats) get natural typical wording plus `sample: true` (shows a tiny "sample" marker). Write 6-8 sample
    reviews (one `<SampleTag />` on the heading) and 8-10 FAQs. See `components/demos/sample.tsx`.
-3. Build the homepage in `demo/page-content.tsx`. Keep forms display-only (no network requests).
+3. Build the homepage in `demo/page-content.tsx`. Keep forms display-only (no network requests). The page is a
+   server component: no hooks or event handlers in it. Put anything interactive in a small `"use client"` file
+   next to it (see `party-bus-360/demo/Widgets.tsx`), use native `<details>` for FAQs, and `EventButton` /
+   `LeadJump` for buttons. The view tracker loads itself after the page is idle.
 4. Put the logo and images in `assets/`. `npm run dev` and `npm run build` copy them to
    `public/demos/{slug}/` (`npm run demo-assets` does it on demand). Reference them as
    `/demos/{slug}/<file>`, and commit both copies.
