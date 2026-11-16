@@ -1,12 +1,13 @@
 import type { DemoPhoto } from "@/components/demos/motion/DemoImage";
 import type { Faq, Review } from "@/components/demos/sample";
 import type { DemoData } from "@/lib/demo-types";
+import { PLUMBING_PHONE } from "../phone";
 
 /**
  * Overpeck Plumbing: a FICTIONAL sample brand, Overpeck Labs' flagship showcase demo.
  * There are no real facts here: no licenses, awards, years or stats are claimed. Anything that sounds like a
  * business fact is flagged `sample: true` (shown with <SampleMark />), and the reviews are sample reviews.
- * The phone number is a 555-01xx number, reserved for fiction.
+ * The phone number is the live AI receptionist demo line (see ../phone.ts).
  */
 export const data = {
   slug: "overpeck-plumbing",
@@ -14,7 +15,7 @@ export const data = {
   industry: "Plumbing",
   town: "Bergen County",
   serviceArea: "Bergen County, NJ",
-  phone: { display: "(201) 555-0147", tel: "tel:+12015550147" } as NonNullable<DemoData["phone"]>,
+  phone: PLUMBING_PHONE as NonNullable<DemoData["phone"]>,
   colors: { primary: "#2563eb", accent: "#22d3ee", dark: "#050d1f" },
   emergency: { from: "#dc2626", to: "#f97316" },
   services: ([
@@ -37,7 +38,7 @@ export const data = {
     bandBody: "Send a request in 20 seconds, or call and talk to a plumber.",
   },
   headline: "Burst pipe? Flooding? We're on the way.",
-  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Day or night, a real plumber picks up.",
+  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Day or night, our AI receptionist picks up and gets a plumber moving.",
   stats: ([
     { value: 7, label: "plumbing services" },
     { text: "24/7", label: "emergency line" },

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { PLUMBING_PHONE } from "@/clients/overpeck-plumbing/phone";
 import { Parallax } from "@/components/demos/motion";
 
 /**
@@ -11,7 +12,7 @@ import { Parallax } from "@/components/demos/motion";
  */
 
 const DEMO_HREF = "/demo/overpeck-plumbing";
-const RECEPTIONIST = { display: "(201) 379-9138", tel: "tel:+12013799138" };
+const RECEPTIONIST = PLUMBING_PHONE;
 
 const FEATURES = [
   "Lead capture above the fold: quote form plus tap-to-call",
