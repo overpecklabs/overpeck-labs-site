@@ -31,7 +31,8 @@ type Geo = {
   step: number;
   anchors: { key: string; L: number; el?: Element }[];
   corners: { L: number; x: number; y: number; parts: SVGCircleElement[] }[];
-  sections: { el: Element; top: number; bottom: number }[];
+  sections: { el: Element; top: number; bottom: number; traces: SVGGElement | null }[];
+  footer: Element | null;
   /** Sync points: scroll line y -> effort, strictly increasing in y. */
   syncY: number[];
   syncE: number[];
@@ -101,6 +102,9 @@ export default function CircuitStory() {
   const svg = useRef<SVGSVGElement>(null);
   const dim = useRef<SVGPathElement>(null);
   const lit = useRef<SVGPathElement>(null);
+  const core = useRef<SVGPathElement>(null);
+  const traces = useRef<SVGGElement>(null);
+  const flash = useRef<HTMLDivElement>(null);
   const glow = useRef<SVGPathElement>(null);
   const trail = useRef<SVGPathElement>(null);
   const head = useRef<SVGGElement>(null);
@@ -240,11 +244,11 @@ export default function CircuitStory() {
       svg.current!.setAttribute("width", String(W));
       svg.current!.setAttribute("height", String(H));
       svg.current!.setAttribute("viewBox", `0 0 ${W} ${H}`);
-      for (const p of [dim, lit, glow, trail]) {
+      for (const p of [dim, core, lit, glow, trail]) {
         p.current!.setAttribute("d", f.d);
         p.current!.setAttribute("pathLength", String(f.total));
       }
-      lit.current!.style.strokeDasharray = glow.current!.style.strokeDasharray = `${f.total} ${f.total}`;
+      lit.current!.style.strokeDasharray = glow.current!.style.strokeDasharray = core.current!.style.strokeDasharray = `${f.total} ${f.total}`;
 
       const nearest = (x: number, y: number) => {
         let best = 0, bd = Infinity;
@@ -274,6 +278,45 @@ export default function CircuitStory() {
         }
         corners.push({ L: nearest(p.x, p.y), x: p.x, y: p.y, parts: circles });
       });
+      // zones: where the current enters each section (for the glow bloom) + fine traces in the side margins
+      traces.current!.replaceChildren();
+      const margin = container ? rel(container).l : 0;
+      const zones = qa("[data-circuit-section]").map((el, zi) => {
+        const z = rel(el);
+        let k = 0;
+        while (k < f.ys.length - 1 && f.ys[k] < z.t) k++;
+        (el as HTMLElement).style.setProperty("--ex", `${Math.round(f.xs[k] - z.l)}px`);
+        let g: SVGGElement | null = null;
+        if (!phone && margin > 90 && z.b - z.t > 220) {
+          g = document.createElementNS(SVGNS, "g") as SVGGElement;
+          g.setAttribute("class", "el-traces");
+          const draw = (pts2: [number, number][]) => {
+            const pl = document.createElementNS(SVGNS, "polyline");
+            pl.setAttribute("points", pts2.map((q) => q.join(",")).join(" "));
+            pl.setAttribute("fill", "none");
+            pl.setAttribute("stroke", "#f59e0b");
+            pl.setAttribute("stroke-width", "1");
+            g!.appendChild(pl);
+            const [ex, ey] = pts2[pts2.length - 1];
+            const pad = document.createElementNS(SVGNS, "circle");
+            pad.setAttribute("cx", String(ex));
+            pad.setAttribute("cy", String(ey));
+            pad.setAttribute("r", "2.5");
+            pad.setAttribute("fill", "none");
+            pad.setAttribute("stroke", "#f59e0b");
+            g!.appendChild(pad);
+          };
+          const h = z.b - z.t, inner = Math.min(margin - 30, 110);
+          const y1 = z.t + h * (0.22 + (zi % 3) * 0.08), y2 = z.t + h * (0.62 - (zi % 2) * 0.1);
+          // right margin: two short right-angle traces coming in from the edge
+          draw([[W, y1], [W - inner * 0.5, y1], [W - inner * 0.5, y1 + 36], [W - inner, y1 + 36]]);
+          draw([[W, y2], [W - inner * 0.35, y2], [W - inner * 0.35, y2 - 28], [W - inner * 0.8, y2 - 28]]);
+          // left margin: one trace that taps off the main lane
+          if (lane > 40) draw([[lane, y2 + 40], [lane - 18, y2 + 40], [lane - 18, y2 + 76], [Math.max(8, lane - 46), y2 + 76]]);
+          traces.current!.appendChild(g);
+        }
+        return { el, top: z.t, bottom: z.b, traces: g };
+      });
       const anchorList = anchors.map((a) => ({ key: a.key, el: a.el, L: nearest(pts[a.idx].x, pts[a.idx].y), y: pts[a.idx].y }));
       const syncY: number[] = [f.ys[0]];
       const syncE: number[] = [0];
@@ -299,7 +342,8 @@ export default function CircuitStory() {
         step: STEP,
         anchors: anchorList,
         corners,
-        sections: qa("[data-circuit-section]").map((el) => ({ el, top: rel(el).t, bottom: rel(el).b })),
+        sections: zones,
+        footer: document.querySelector("[data-circuit-footer]"),
         towns: qa("[data-circuit-town]"),
         y0: f.ys[0],
         y1: f.ys[f.ys.length - 1],
@@ -314,7 +358,7 @@ export default function CircuitStory() {
     const apply = (L: number) => {
       const g = geo!;
       const off = Math.max(0, g.total - L);
-      lit.current!.style.strokeDashoffset = glow.current!.style.strokeDashoffset = String(off);
+      lit.current!.style.strokeDashoffset = glow.current!.style.strokeDashoffset = core.current!.style.strokeDashoffset = String(off);
       const tl = Math.min(L, 140);
       trail.current!.style.strokeDasharray = `${tl} ${g.total + tl}`;
       trail.current!.style.strokeDashoffset = String(-(L - tl));
@@ -349,8 +393,22 @@ export default function CircuitStory() {
                 { duration: 520 + k * 120, easing: "cubic-bezier(.2,.7,.3,1)" },
               );
             });
-      // "hum" on the active section
+      // power each zone once the spark head has entered it (and power it down again when scrolling back up)
       const hy = g.ys[i];
+      const headOn = L > 2;
+      for (const z of g.sections) {
+        const on = headOn && hy >= z.top + 2;
+        if (z.el.classList.contains("el-powered") !== on) z.el.classList.toggle("el-powered", on);
+        if (z.traces) setOn(z.traces, on);
+      }
+      // the final switch also lights the footer, with a warm flash the first time it flips ON
+      const finalOn = g.anchors.some((a) => a.key === "final" && L >= a.L);
+      if (g.footer && g.footer.classList.contains("el-powered") !== finalOn) {
+        g.footer.classList.toggle("el-powered", finalOn);
+        if (finalOn && !reduce && lastL >= 0 && flash.current)
+          flash.current.animate([{ opacity: 0 }, { opacity: 0.55, offset: 0.25 }, { opacity: 0 }], { duration: 900, easing: "ease-out" });
+      }
+      // "hum" on the active section
       const sec = g.sections.find((s) => hy >= s.top && hy <= s.bottom)?.el ?? null;
       if (sec !== activeSection) {
         activeSection?.classList.remove("el-live");
@@ -413,8 +471,10 @@ export default function CircuitStory() {
         head.current!.style.opacity = "0";
         if (meter.current) meter.current.style.display = "none";
       } else {
-        main.classList.add("el-circuit-ready");
+        // switch to the running state without a fade, so sections already on screen don't flash dark
+        main.classList.add("el-instant", "el-circuit-ready");
         frame();
+        requestAnimationFrame(() => requestAnimationFrame(() => main.classList.remove("el-instant")));
         window.addEventListener("scroll", onScroll, { passive: true });
       }
       window.addEventListener("resize", rebuild);
@@ -448,9 +508,13 @@ export default function CircuitStory() {
 
   return (
     <>
-      <svg ref={svg} aria-hidden className="pointer-events-none absolute left-0 top-0 -z-10" width="0" height="0">
-        <path ref={dim} fill="none" stroke="rgba(148,163,184,0.13)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* circuit layer: above the zone backgrounds, below the content (sections' children sit at z-index 1) */}
+      <svg ref={svg} aria-hidden className="pointer-events-none absolute left-0 top-0 z-0" width="0" height="0">
+        <g ref={traces} />
+        <path ref={dim} fill="none" stroke="rgba(100,116,139,0.32)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         <path ref={glow} fill="none" stroke="rgba(250,204,21,0.22)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+        {/* dark core under the amber line so the circuit still reads on the cream zones */}
+        <path ref={core} fill="none" stroke="rgba(17,24,39,0.7)" strokeWidth="4.4" strokeLinecap="round" strokeLinejoin="round" />
         <path ref={lit} fill="none" stroke="#facc15" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         <path ref={trail} fill="none" stroke="#fffbeb" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
         <g ref={parts} />
@@ -466,6 +530,8 @@ export default function CircuitStory() {
           </radialGradient>
         </defs>
       </svg>
+      {/* warm flash when the final switch flips ON (opacity only) */}
+      <div ref={flash} aria-hidden className="pointer-events-none fixed inset-0 z-[60] bg-[radial-gradient(ellipse_at_50%_60%,rgba(255,236,170,0.9),rgba(250,204,21,0.35)_45%,transparent_75%)] opacity-0" />
       {/* voltage indicator (fixed, fixed size: no layout shift); hidden below 640px so it never covers content on phones */}
       <div ref={meter} aria-hidden className="pointer-events-none fixed bottom-5 left-5 z-30 hidden w-[7.5rem] items-center gap-2 rounded-full border border-[#facc15]/30 bg-[#0b0f17]/85 px-3 py-1.5 opacity-0 shadow-lg backdrop-blur transition-opacity duration-300 sm:flex">
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-[#facc15]" fill="currentColor">

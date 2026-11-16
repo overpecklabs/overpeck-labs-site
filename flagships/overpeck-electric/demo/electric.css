@@ -1,61 +1,140 @@
-/* Overpeck Electric: lightweight reveals + subtle current effects. Transform/opacity only; off under reduced motion. */
+/* Overpeck Electric: "dark to light" power-up story below the hero.
+   Animates only transform, opacity and CSS variables. Everything is fully lit by default (no JS, reduced motion);
+   sections dim only once CircuitStory is running (main.el-circuit-ready) and the current hasn't reached them. */
 
-.el-appear { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+/* ---------- registered variables (so they can transition) ---------- */
+@property --power { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --hum { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+/* ---------- reveals: fade + 12px rise, staggered ---------- */
+.el-appear { opacity: 0; transform: translate3d(0, 12px, 0); transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .el-appear.is-in { opacity: 1; transform: none; }
-.el-stagger > .el-appear:nth-child(2) { transition-delay: 90ms; }
-.el-stagger > .el-appear:nth-child(3) { transition-delay: 180ms; }
-.el-stagger > .el-appear:nth-child(4) { transition-delay: 270ms; }
-.el-stagger > .el-appear:nth-child(5) { transition-delay: 360ms; }
-.el-stagger > .el-appear:nth-child(6) { transition-delay: 450ms; }
-.el-stagger > .el-appear:nth-child(n + 7) { transition-delay: 540ms; }
+.el-stagger > .el-appear:nth-child(2) { transition-delay: 80ms; }
+.el-stagger > .el-appear:nth-child(3) { transition-delay: 160ms; }
+.el-stagger > .el-appear:nth-child(4) { transition-delay: 240ms; }
+.el-stagger > .el-appear:nth-child(5) { transition-delay: 320ms; }
+.el-stagger > .el-appear:nth-child(6) { transition-delay: 400ms; }
+.el-stagger > .el-appear:nth-child(n + 7) { transition-delay: 480ms; }
 
-/* a thin current that runs along the top edge of service cards once they reveal */
-.el-current {
-  background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.95), transparent);
-  transform: translate3d(-110%, 0, 0);
+/* ---------- editorial headings ---------- */
+.el-h2 { font-size: clamp(2.25rem, 1.4rem + 3.4vw, 3.75rem); line-height: 1.02; letter-spacing: -0.035em; font-weight: 800; }
+.el-h3 { font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; }
+
+/* ---------- zones: one base per section, lifted down the page, brightened by --power ---------- */
+[data-circuit-section],
+[data-circuit-footer] {
+  --power: 1;
+  --hum: 0;
+  --bg-off: #080b11;
+  --bg: color-mix(in oklab, var(--bg-off), var(--bg-on) calc(var(--power) * 100%));
+  --card: color-mix(in oklab, var(--bg), #ffffff calc(4% + var(--power) * var(--card-lift, 3%)));
+  --tint: color-mix(in oklab, transparent, var(--fg) 7%);
+  --grid: color-mix(in oklab, rgb(148 163 184 / 0.05), var(--grid-on) calc(var(--power) * 100%));
+  /* glow blooms from where the current enters (--ex, set by CircuitStory) */
+  background:
+    radial-gradient(620px 340px at var(--ex, 50%) 0, rgb(250 204 21 / calc(var(--power) * 0.16)), transparent 70%),
+    radial-gradient(70% 45% at 50% 35%, rgb(250 204 21 / calc(var(--hum) * 0.07)), transparent 72%),
+    var(--grain),
+    linear-gradient(to right, var(--grid) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px) 0 0 / 44px 44px,
+    var(--bg);
+  /* the circuit layer sits between this background and the content */
+  position: static;
+  transition: --power 0.6s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
-.el-appear.is-in .el-current { transform: translate3d(110%, 0, 0); transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s; }
+[data-circuit-section] > *, [data-circuit-footer] > * { position: relative; z-index: 1; }
 
-/* soft pulse on the "live" dot */
-.el-pulse { animation: el-pulse 1.8s ease-in-out infinite; }
-@keyframes el-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.15); }
+/* faint grain, shared */
+[data-circuit-section], [data-circuit-footer] {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- circuit story (CircuitStory.tsx) ----------
-   Lit by default (no JS, reduced motion). Once the circuit runs (main.el-circuit-ready), things stay dim until
-   the current reaches them (.el-on). Opacity/transform only. */
-[data-circuit-section] { position: relative; isolation: isolate; }
-.el-glow, .el-dim, .el-town, .el-knob, .el-onlabel, .el-final-glow, .el-btn-glow, [data-circuit-stars] svg { transition: opacity 0.35s ease, transform 0.35s ease; }
+/* dark zones: charcoal -> slate -> warm dark grey as --lift goes 0 -> 0.5 */
+[data-tone="dark"] {
+  --bg-on: color-mix(in oklab, #0d121c, #3a342b calc(var(--lift, 0) * 200%));
+  --fg: color-mix(in oklab, #a7adb7, #f8fafc calc(var(--power) * 100%));
+  --fg2: color-mix(in oklab, #99a0aa, #d8dce2 calc(var(--power) * 100%));
+  --fg3: color-mix(in oklab, #8d939d, #b7bdc6 calc(var(--power) * 100%));
+  --accent-text: color-mix(in oklab, #a7adb7, #facc15 calc(var(--power) * 100%));
+  --line: color-mix(in oklab, rgb(255 255 255 / 0.08), rgb(250 204 21 / 0.3) calc(var(--power) * 100%));
+  --grid-on: rgb(250 204 21 / 0.07);
+  color-scheme: dark;
+}
+/* light zones: warm grey -> off-white/cream as --lift goes 0.5 -> 1 (unpowered they are still deep charcoal) */
+[data-tone="light"] {
+  --bg-on: color-mix(in oklab, #d6cebf, #f8f3ea calc((var(--lift, 1) - 0.5) * 200%));
+  --card-lift: 55%;
+  --fg: color-mix(in oklab, #a7adb7, #1c1917 calc(var(--power) * 100%));
+  --fg2: color-mix(in oklab, #99a0aa, #3f3a33 calc(var(--power) * 100%));
+  --fg3: color-mix(in oklab, #8d939d, #574f45 calc(var(--power) * 100%));
+  --accent-text: color-mix(in oklab, #a7adb7, #92400e calc(var(--power) * 100%));
+  --line: color-mix(in oklab, rgb(255 255 255 / 0.08), rgb(146 64 14 / 0.3) calc(var(--power) * 100%));
+  --grid-on: rgb(120 82 30 / 0.08);
+}
+
+/* unpowered until the current arrives (only when the circuit is running) */
+.el-circuit-ready [data-circuit-section]:not(.el-powered),
+.el-circuit-ready ~ [data-circuit-footer]:not(.el-powered) { --power: 0; }
+/* no fade on the very first frame (sections already on screen shouldn't flash dark) */
+.el-instant [data-circuit-section], .el-instant ~ [data-circuit-footer] { transition: none !important; }
+
+/* hum on the section the current is in */
+.el-live { animation: el-hum 2.4s ease-in-out infinite; }
+@keyframes el-hum { 0%, 100% { --hum: 0.35; } 45% { --hum: 1; } 50% { --hum: 0.5; } 55% { --hum: 0.95; } }
+
+/* ---------- glass cards with an amber hairline that glows when powered ---------- */
+.el-card {
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  border: 1px solid var(--line);
+  box-shadow: 0 0 0 1px rgb(250 204 21 / calc(var(--power) * 0.12)), 0 22px 60px -34px rgb(250 204 21 / calc(var(--power) * 0.45)), 0 24px 60px -34px rgb(0 0 0 / 0.6);
+}
+/* keep small review captions AA in both states */
+.el-review figcaption [class*="opacity-"] { opacity: 0.85 !important; }
+
+/* ---------- fixtures ---------- */
+/* service icons + step badges: grey outline until the current plugs in, then flicker on like a bulb */
+.el-glow, .el-dim { transition: opacity 0.35s ease, color 0.35s ease; }
 .el-circuit-ready .el-circ:not(.el-on) .el-glow { opacity: 0; }
-.el-circuit-ready .el-circ:not(.el-on) .el-dim { opacity: 0.35; }
-.el-circuit-ready [data-circuit-town]:not(.el-on) { opacity: 0.3; }
+.el-circuit-ready .el-circ:not(.el-on) .el-dim { opacity: 0.55; color: var(--fg3); }
+.el-circuit-ready [data-circuit-card]:not(.el-on) { background: transparent; --tw-ring-color: var(--line); }
+.el-circuit-ready .el-circ.el-on .el-dim { animation: el-bulb 0.7s linear 1; }
+@keyframes el-bulb { 0% { opacity: 0.3; } 12% { opacity: 1; } 22% { opacity: 0.4; } 34% { opacity: 1; } 48% { opacity: 0.7; } 60%, 100% { opacity: 1; } }
+
+/* review stars ignite */
+[data-circuit-stars] svg { transition: opacity 0.35s ease; }
 .el-circuit-ready [data-circuit-stars]:not(.el-on) figure svg,
 .el-circuit-ready [data-circuit-stars]:not(.el-on) [data-circuit="stars"] svg { opacity: 0.18; }
 [data-circuit-stars].el-on figure svg, [data-circuit-stars].el-on [data-circuit="stars"] svg { animation: el-flicker 0.7s linear 1; }
 @keyframes el-flicker { 0% { opacity: 0.2; } 15% { opacity: 1; } 25% { opacity: 0.35; } 40% { opacity: 1; } 55% { opacity: 0.6; } 70%, 100% { opacity: 1; } }
+
+/* towns light up like a map */
+.el-town { transition: opacity 0.35s ease, transform 0.35s ease; }
+.el-circuit-ready [data-circuit-town]:not(.el-on) { opacity: 0.35; transform: scale(0.97); }
+
+/* final switch flips ON, the section brightens, the button glows */
+.el-knob, .el-onlabel, .el-final-glow, .el-btn-glow { transition: opacity 0.35s ease, transform 0.35s ease; }
 .el-knob { transform: translateX(24px); }
 .el-circuit-ready [data-circuit-final]:not(.el-on) .el-knob { transform: none; opacity: 0.4; }
 .el-circuit-ready [data-circuit-final]:not(.el-on) .el-onlabel,
 .el-circuit-ready [data-circuit-final]:not(.el-on) .el-final-glow,
 .el-circuit-ready [data-circuit-final]:not(.el-on) .el-btn-glow { opacity: 0; }
-/* subtle electrical "hum" on the section the current is in */
-.el-live::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(60% 40% at 50% 30%, rgba(250, 204, 21, 0.07), transparent 70%);
-  animation: el-hum 2.4s ease-in-out infinite;
-}
-@keyframes el-hum { 0%, 100% { opacity: 0.4; } 45% { opacity: 1; } 50% { opacity: 0.55; } 55% { opacity: 0.95; } }
+
+/* fine circuit traces (drawn by CircuitStory in the circuit layer) */
+.el-traces { opacity: 0.16; transition: opacity 0.6s ease; }
+.el-traces.el-on { opacity: 0.75; }
+
+/* a thin current along the top edge of service cards once they reveal */
+.el-current { background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.95), transparent); transform: translate3d(-110%, 0, 0); }
+.el-appear.is-in .el-current { transform: translate3d(110%, 0, 0); transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s; }
+
+/* soft pulse on the "live" dot */
+.el-pulse { animation: el-pulse 1.8s ease-in-out infinite; }
+@keyframes el-pulse { 0%, 100% { opacity: 0.35; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.15); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .el-live::after { animation: none; }
-  [data-circuit-stars] svg { animation: none !important; }
   .el-appear { opacity: 1 !important; transform: none !important; transition: none !important; }
+  [data-circuit-section], [data-circuit-footer] { transition: none; }
+  .el-live, .el-pulse { animation: none; }
+  .el-circ .el-dim, [data-circuit-stars] svg { animation: none !important; }
   .el-current { display: none; }
-  .el-pulse { animation: none; }
 }

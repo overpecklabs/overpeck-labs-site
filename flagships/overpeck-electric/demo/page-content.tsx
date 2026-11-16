@@ -50,7 +50,7 @@ function Icon({ d, className = "h-6 w-6" }: { d: string; className?: string }) {
   );
 }
 
-function Logo() {
+function Logo({ nameClass = "text-white" }: { nameClass?: string }) {
   return (
     <a href="#top" className="flex items-center gap-2.5" aria-label={data.businessName}>
       <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#121826] text-[#facc15] ring-1 ring-[#facc15]/40 shadow-[0_0_20px_-6px_rgba(250,204,21,0.7)]">
@@ -58,8 +58,8 @@ function Logo() {
           <path d={BOLT_D} />
         </svg>
       </span>
-      <span className="text-[17px] font-extrabold leading-tight tracking-tight text-white">
-        Overpeck <span className="text-[#facc15]">Electric</span>
+      <span className={`text-[17px] font-extrabold leading-tight tracking-tight ${nameClass}`}>
+        Overpeck <span className="text-[color:var(--accent-text,#facc15)]">Electric</span>
       </span>
     </a>
   );
@@ -67,16 +67,25 @@ function Logo() {
 
 function Head({ eyebrow, title, sub, children }: { eyebrow: string; title: React.ReactNode; sub?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <Reveal className="mx-auto max-w-2xl text-center">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#facc15]">{eyebrow}</p>
-      <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{title}</h2>
-      {sub && <p className="mt-3 text-[17px] leading-relaxed text-slate-300">{sub}</p>}
+    <Reveal className="mx-auto max-w-3xl text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent-text)]">{eyebrow}</p>
+      <h2 className="el-h2 mt-3 text-[color:var(--fg)]">{title}</h2>
+      {sub && <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-relaxed text-[color:var(--fg2)]">{sub}</p>}
       {children}
     </Reveal>
   );
 }
 
-const card = "rounded-3xl border border-white/10 bg-[#121826] shadow-[0_24px_60px_-34px_rgba(0,0,0,0.9)]";
+/** Glass card with a thin hairline border that turns amber and glows when its section is powered (electric.css). */
+const card = "el-card rounded-3xl";
+
+/**
+ * Below the hero, every section is themed by two CSS variables (electric.css):
+ *  --lift: how far down the page it sits (0 = charcoal ... 1 = cream), set here from its order;
+ *  --power: 0 (unpowered) -> 1 (powered), animated when CircuitStory's current reaches the section.
+ * data-tone picks light or dark text for the powered state so both states keep AA contrast.
+ */
+const zone = (lift: number) => ({ "data-circuit-section": "", "data-tone": lift >= 0.55 ? "light" : "dark", style: { "--lift": lift } as React.CSSProperties });
 
 export default function OverpeckElectric() {
   preload("/demos/overpeck-electric/hero-828.webp", { as: "image", imageSrcSet: HERO_SRCSET, imageSizes: "100vw", fetchPriority: "high" });
@@ -176,19 +185,19 @@ export default function OverpeckElectric() {
 
 
         {/* stats (all true for this page) */}
-        <section aria-label="Highlights" className="px-4 sm:px-6">
+        <section aria-label="Highlights" {...zone(0.0)} className="px-4 py-10 sm:px-6">
           <Stagger className={`mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4 ${card}`}>
             {data.stats.map((s) => (
               <StaggerItem key={s.label} className="px-4 py-5 text-center">
-                <p className="text-2xl font-extrabold text-white sm:text-3xl">{"value" in s ? <CountUp to={s.value} /> : s.text}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">{s.label}</p>
+                <p className="text-2xl font-extrabold text-[color:var(--fg)] sm:text-3xl">{"value" in s ? <CountUp to={s.value} /> : s.text}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-[color:var(--fg3)]">{s.label}</p>
               </StaggerItem>
             ))}
           </Stagger>
         </section>
 
         {/* services */}
-        <section id="services" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.12)} id="services" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="What we do" title="Electrical work, done right the first time" sub="From a dead outlet to a 200-amp service upgrade, one call gets it handled safely and to code." />
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {data.services.map((s) => (
@@ -203,12 +212,12 @@ export default function OverpeckElectric() {
                       <span aria-hidden className="el-glow pointer-events-none absolute -inset-3 rounded-2xl bg-[radial-gradient(circle,rgba(250,204,21,0.5),transparent_68%)]" />
                       <Icon d={ICONS[s.key]} className="el-dim relative h-5 w-5" />
                     </span>
-                    <h3 className="text-lg font-extrabold text-white">{s.title}</h3>
+                    <h3 className="text-lg font-extrabold text-[color:var(--fg)]">{s.title}</h3>
                   </div>
-                  <p className="mt-3 text-[15px] leading-relaxed text-slate-300">{s.body}</p>
+                  <p className="mt-3 text-[15px] leading-relaxed text-[color:var(--fg2)]">{s.body}</p>
                   <ul className="mt-4 flex flex-wrap gap-1.5">
                     {s.points.map((p) => (
-                      <li key={p} className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-semibold text-slate-200 ring-1 ring-white/10">
+                      <li key={p} className="rounded-full bg-[color:var(--tint)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] ring-1 ring-[color:var(--line)]">
                         {p}
                       </li>
                     ))}
@@ -219,16 +228,16 @@ export default function OverpeckElectric() {
           </Stagger>
           <Stagger className="mx-auto mt-10 grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {data.whyUs.map((w) => (
-              <StaggerItem key={w.title} className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <StaggerItem key={w.title} className="el-card flex gap-3 rounded-2xl p-4">
                 <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#facc15]/15 text-[#facc15]" aria-hidden>
                   <Icon d={CHECK_D} className="h-3.5 w-3.5" />
                 </span>
                 <span>
-                  <span className="block font-bold text-white">
+                  <span className="block font-bold text-[color:var(--fg)]">
                     {w.title}
-                    {"sample" in w && w.sample && <SampleMark className="text-slate-400" />}
+                    {"sample" in w && w.sample && <SampleMark className="text-[color:var(--fg3)]" />}
                   </span>
-                  <span className="mt-0.5 block text-sm text-slate-400">{w.body}</span>
+                  <span className="mt-0.5 block text-sm text-[color:var(--fg3)]">{w.body}</span>
                 </span>
               </StaggerItem>
             ))}
@@ -238,17 +247,17 @@ export default function OverpeckElectric() {
         <CtaBand title={data.lead.bandTitle} body={data.lead.bandBody} ctaLabel={data.lead.cta} phone={PHONE} bg="linear-gradient(120deg, #1a2234, #121826 55%, #3a2a06)" ctaBg="#facc15" ctaText={INK} />
 
         {/* EV estimate (sample) */}
-        <section id="ev" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.25)} id="ev" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="EV charging" title="What would home charging cost you?" sub="Play with the numbers. It's a sample estimate to get you started, not a quote." />
-          <div data-circuit="ev" className="relative mx-auto mt-6 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-[#121826] px-4 py-2" aria-label="Car battery, charged by the current">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Car battery</span>
+          <div data-circuit="ev" className="el-card relative mx-auto mt-6 flex w-fit items-center gap-3 rounded-full px-4 py-2" aria-label="Car battery, charged by the current">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--fg3)]">Car battery</span>
             <span className="flex items-center">
-              <span className="relative h-4 w-28 overflow-hidden rounded-[5px] border border-white/25 p-[2px]">
+              <span className="relative h-4 w-28 overflow-hidden rounded-[5px] border border-[color:var(--line)] p-[2px]">
                 <span data-circuit-battery-fill className="block h-full w-full origin-left rounded-[3px] bg-gradient-to-r from-[#22c55e] to-[#a3e635]" />
               </span>
               <span className="ml-[2px] h-2 w-[3px] rounded-r bg-white/40" aria-hidden />
             </span>
-            <span data-circuit-battery-text className="w-10 text-right text-sm font-extrabold tabular-nums text-white">
+            <span data-circuit-battery-text className="w-10 text-right text-sm font-extrabold tabular-nums text-[color:var(--fg)]">
               100%
             </span>
           </div>
@@ -260,7 +269,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* how it works */}
-        <section id="how" data-circuit-section className="px-4 py-16 sm:px-6 md:py-20">
+        <section {...zone(0.37)} id="how" className="px-4 py-16 sm:px-6 md:py-20">
           <Head eyebrow="How it works" title="Three simple steps" />
           <Stagger as="ol" className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3">
             {data.process.map((st, i) => (
@@ -271,24 +280,24 @@ export default function OverpeckElectric() {
                     {i + 1}
                   </span>
                 </span>
-                <p className="mt-4 text-lg font-extrabold text-white">{st.title}</p>
-                <p className="mt-1.5 text-[15px] text-slate-300">{st.body}</p>
+                <p className="mt-4 text-lg font-extrabold text-[color:var(--fg)]">{st.title}</p>
+                <p className="mt-1.5 text-[15px] text-[color:var(--fg2)]">{st.body}</p>
               </StaggerItem>
             ))}
           </Stagger>
         </section>
 
         {/* AI assistant + AI receptionist */}
-        <section id="ai" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
+        <section {...zone(0.5)} id="ai" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-20">
           <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
             <Reveal className={`relative overflow-hidden p-6 sm:p-8 ${card}`}>
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#facc15]/10 blur-3xl" aria-hidden />
-              <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[#facc15]">AI assistant (demo)</p>
-              <h2 className="relative mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">Safety first, any hour</h2>
-              <p className="relative mt-3 text-slate-300">Our AI assistant spots emergencies and tells you what to do, answers questions about panels, EV chargers and lighting, and gets your estimate started.</p>
+              <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI assistant (demo)</p>
+              <h2 className="el-h3 relative mt-2 text-[color:var(--fg)]">Safety first, any hour</h2>
+              <p className="relative mt-3 text-[color:var(--fg2)]">Our AI assistant spots emergencies and tells you what to do, answers questions about panels, EV chargers and lighting, and gets your estimate started.</p>
               <div className="relative mt-5 space-y-2 text-sm">
                 <p className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#b45309] to-[#d97706] px-3.5 py-2.5 text-white">An outlet in the kitchen smells like burning plastic.</p>
-                <p className="max-w-[88%] rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5 text-slate-100">Turn off that breaker if you can do it safely, unplug anything nearby and don&apos;t use the outlet. Then call us right away. If there&apos;s smoke, get out and call 911.</p>
+                <p className="max-w-[88%] rounded-2xl rounded-bl-md bg-[color:var(--tint)] px-3.5 py-2.5 text-[color:var(--fg)]">Turn off that breaker if you can do it safely, unplug anything nearby and don&apos;t use the outlet. Then call us right away. If there&apos;s smoke, get out and call 911.</p>
               </div>
               <EventButton event={OPEN_CHAT} className="demo-lift relative mt-6 rounded-full px-6 py-3 font-extrabold text-[#0b0f17]" style={{ background: AMBER }}>
                 Try the assistant
@@ -296,9 +305,9 @@ export default function OverpeckElectric() {
             </Reveal>
 
             <Reveal delay={0.08} className={`p-6 sm:p-8 ${card}`}>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#facc15]">AI phone receptionist</p>
-              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">{data.receptionist.title}</h2>
-              <p className="mt-3 text-slate-300">{data.receptionist.body}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI phone receptionist</p>
+              <h2 className="el-h3 mt-2 text-[color:var(--fg)]">{data.receptionist.title}</h2>
+              <p className="mt-3 text-[color:var(--fg2)]">{data.receptionist.body}</p>
               {RECEPTIONIST_PHONE ? (
                 <a href={RECEPTIONIST_PHONE.tel} className="demo-lift mt-5 inline-flex items-center gap-4 rounded-3xl bg-white py-3 pl-3 pr-6 text-[#0b0f17]">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-[#0b0f17]" style={{ background: AMBER }}>
@@ -310,7 +319,7 @@ export default function OverpeckElectric() {
                   </span>
                 </a>
               ) : (
-                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-bold text-slate-200">
+                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--tint)] px-5 py-2.5 text-sm font-bold text-[color:var(--fg)]">
                   <Icon d={PHONE_D} className="h-4 w-4" />
                   Demo line coming soon
                 </p>
@@ -322,8 +331,8 @@ export default function OverpeckElectric() {
                       {i + 1}
                     </span>
                     <span>
-                      <span className="block font-bold text-white">{st.title}</span>
-                      <span className="block text-sm text-slate-400">{st.body}</span>
+                      <span className="block font-bold text-[color:var(--fg)]">{st.title}</span>
+                      <span className="block text-sm text-[color:var(--fg3)]">{st.body}</span>
                     </span>
                   </li>
                 ))}
@@ -333,7 +342,7 @@ export default function OverpeckElectric() {
         </section>
 
         {/* reviews (sample) */}
-        <section id="reviews" data-circuit-section data-circuit-stars className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.62)} id="reviews" data-circuit-stars className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head
             eyebrow="Reviews"
             title={
@@ -343,23 +352,23 @@ export default function OverpeckElectric() {
             }
           >
             <div data-circuit="stars" className="mt-4 inline-block">
-              <RatingSummary reviews={data.reviews} color="#facc15" className="text-white" />
+              <RatingSummary reviews={data.reviews} color="#facc15" className="text-[color:var(--fg)]" />
             </div>
           </Head>
-          <ReviewGrid reviews={data.reviews} color="#facc15" cardClassName="bg-[#121826] border-white/10 text-slate-200" />
+          <ReviewGrid reviews={data.reviews} color="#facc15" cardClassName="el-card el-review text-[color:var(--fg)]" />
         </section>
 
         {/* service area */}
-        <section id="area" data-circuit-section className="px-4 pb-16 sm:px-6 md:pb-24">
+        <section {...zone(0.75)} id="area" className="px-4 pb-16 sm:px-6 md:pb-24">
           <Reveal className={`mx-auto grid max-w-6xl items-center gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_1.4fr] ${card}`}>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#facc15]">Service area</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white">Electricians across Bergen County</h2>
-              <p className="mt-3 text-slate-300">Nearby town not listed? Call and ask. We probably cover it.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">Service area</p>
+              <h2 className="el-h3 mt-2 text-[color:var(--fg)]">Electricians across Bergen County</h2>
+              <p className="mt-3 text-[color:var(--fg2)]">Nearby town not listed? Call and ask. We probably cover it.</p>
             </div>
             <ul data-circuit="area" className="flex flex-wrap gap-2">
               {data.areaTowns.map((t) => (
-                <li key={t} data-circuit-town className="el-town relative rounded-full border border-[#facc15]/30 bg-[#facc15]/10 px-3.5 py-1.5 text-sm font-semibold text-white">
+                <li key={t} data-circuit-town className="el-town relative rounded-full border border-[#facc15]/30 bg-[#facc15]/10 px-3.5 py-1.5 text-sm font-semibold text-[color:var(--fg)]">
                   {t}
                 </li>
               ))}
@@ -368,20 +377,20 @@ export default function OverpeckElectric() {
         </section>
 
         {/* FAQ (native details: no JS) */}
-        <section id="faq" data-circuit-section className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
+        <section {...zone(0.87)} id="faq" className="scroll-mt-24 px-4 py-16 sm:px-6 md:py-24">
           <Head eyebrow="FAQ" title="Electrical questions, answered" />
           <div className="mx-auto mt-10 max-w-3xl space-y-3">
             {data.faqs.map((f, i) => (
-              <details key={f.q} open={i === 0} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#121826]">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left font-bold text-white hover:bg-white/[0.03] [&::-webkit-details-marker]:hidden">
+              <details key={f.q} open={i === 0} className="el-card group overflow-hidden rounded-2xl">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left font-bold text-[color:var(--fg)] hover:bg-[color:var(--tint)] [&::-webkit-details-marker]:hidden">
                   <h3>{f.q}</h3>
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#facc15]/15 text-lg leading-none text-[#facc15] transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden>
                     +
                   </span>
                 </summary>
-                <div className="px-5 pb-5 text-[15px] leading-relaxed text-slate-300">
+                <div className="px-5 pb-5 text-[15px] leading-relaxed text-[color:var(--fg2)]">
                   {f.a}
-                  {"sample" in f && f.sample && <SampleMark className="text-slate-500" />}
+                  {"sample" in f && f.sample && <SampleMark className="text-[color:var(--fg3)]" />}
                 </div>
               </details>
             ))}
@@ -389,18 +398,18 @@ export default function OverpeckElectric() {
         </section>
 
         {/* final CTA (no second form: the button goes to the hero form). The current ends in this switch. */}
-        <section data-circuit-section data-circuit-final className="px-4 pb-16 sm:px-6 md:pb-24">
-          <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-[#facc15]/20 bg-gradient-to-br from-[#121826] via-[#161d2e] to-[#2a2006] px-6 py-12 text-center sm:px-12">
+        <section {...zone(1.0)} data-circuit-final className="px-4 pb-16 sm:px-6 md:pb-24">
+          <Reveal className="el-card relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] px-6 py-14 text-center sm:px-12 sm:py-16">
             <div className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#facc15]/15 blur-3xl" aria-hidden />
             <div className="el-final-glow pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(250,204,21,0.28),transparent_62%)]" aria-hidden />
             <div className="relative mx-auto mb-6 flex w-fit items-center gap-3">
-              <span data-circuit="switch" className="relative inline-flex h-8 w-14 items-center rounded-full border border-white/20 bg-[#0b0f17] p-1" aria-hidden>
+              <span data-circuit="switch" className="relative inline-flex h-8 w-14 items-center rounded-full border border-[color:var(--line)] bg-[#0b0f17] p-1" aria-hidden>
                 <span className="el-knob block h-6 w-6 rounded-full bg-[#facc15] shadow-[0_0_16px_rgba(250,204,21,0.9)]" />
               </span>
-              <span className="el-onlabel text-xs font-extrabold uppercase tracking-[0.22em] text-[#facc15]">Power on</span>
+              <span className="el-onlabel text-xs font-extrabold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">Power on</span>
             </div>
-            <h2 className="relative text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{data.lead.finalTitle}</h2>
-            <p className="relative mx-auto mt-3 max-w-xl text-slate-300">{data.lead.finalBody}</p>
+            <h2 className="el-h2 relative text-[color:var(--fg)]">{data.lead.finalTitle}</h2>
+            <p className="relative mx-auto mt-3 max-w-xl text-[color:var(--fg2)]">{data.lead.finalBody}</p>
             <div className="relative mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <span className="relative inline-flex">
                 <span aria-hidden className="el-btn-glow pointer-events-none absolute -inset-3 rounded-full bg-[#facc15]/45 blur-xl" />
@@ -408,7 +417,7 @@ export default function OverpeckElectric() {
                   {data.lead.cta}
                 </LeadJump>
               </span>
-              <a href={PHONE.tel} className="inline-flex items-center gap-2 rounded-full border-2 border-white/25 px-6 py-3 font-bold text-white hover:bg-white/10">
+              <a href={PHONE.tel} className="inline-flex items-center gap-2 rounded-full border-2 border-[color:var(--line)] px-6 py-3 font-bold text-[color:var(--fg)] hover:bg-[color:var(--tint)]">
                 <Icon d={PHONE_D} className="h-4 w-4" />
                 Call {PHONE.display}
               </a>
@@ -417,29 +426,29 @@ export default function OverpeckElectric() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 px-4 pb-28 pt-12 text-slate-400 sm:px-6 sm:pb-12">
+      <footer data-circuit-footer data-tone="light" style={{ "--lift": 1 } as React.CSSProperties} className="border-t border-[color:var(--line)] px-4 pb-28 pt-12 text-[color:var(--fg3)] sm:px-6 sm:pb-12">
         <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-3">
           <div>
-            <Logo />
+            <Logo nameClass="text-[color:var(--fg)]" />
             <p className="mt-3 text-sm">{data.footerBlurb}</p>
           </div>
           <div className="text-sm">
-            <p className="font-bold text-white">Contact</p>
-            <a href={PHONE.tel} className="mt-2 block hover:text-white">
+            <p className="font-bold text-[color:var(--fg)]">Contact</p>
+            <a href={PHONE.tel} className="mt-2 block hover:text-[color:var(--fg)]">
               Call {PHONE.display}
             </a>
-            <LeadJump className="mt-1 block hover:text-white">Get a free estimate online</LeadJump>
+            <LeadJump className="mt-1 block hover:text-[color:var(--fg)]">Get a free estimate online</LeadJump>
           </div>
           <div className="text-sm">
-            <p className="font-bold text-white">Service area</p>
+            <p className="font-bold text-[color:var(--fg)]">Service area</p>
             <p className="mt-2">Bergen County, NJ</p>
             <p className="mt-2">
               Licensed &amp; insured
-              <SampleMark className="text-slate-500" />
+              <SampleMark className="text-[color:var(--fg3)]" />
             </p>
           </div>
         </div>
-        <div className="mx-auto mt-10 flex max-w-6xl flex-wrap justify-between gap-2 border-t border-white/10 pt-6 text-xs text-slate-500">
+        <div className="mx-auto mt-10 flex max-w-6xl flex-wrap justify-between gap-2 border-t border-[color:var(--line)] pt-6 text-xs text-[color:var(--fg3)]">
           <p>Overpeck Electric is a fictional sample brand by Overpeck Labs.</p>
           <PreviewNote />
         </div>
