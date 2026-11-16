@@ -52,11 +52,11 @@ export const data = {
   ],
   receptionist: {
     title: "Call our AI receptionist 24/7",
-    body: "No voicemail, no hold music. An AI receptionist answers every call, day or night, and gets help moving.",
+    body: "No voicemail, no hold music. An AI receptionist picks up every call, day or night, and keeps the job moving.",
     steps: [
-      { title: "It answers", body: "Picks up on the first ring, 24/7, and asks what's going on." },
-      { title: "It books", body: "Triages emergencies and books the next open slot on the calendar." },
-      { title: "It texts you a summary", body: "You get a text with the details and your appointment time." },
+      { title: "Answers every call 24/7", body: "Picks up on the first ring, day or night, and asks what's going on." },
+      { title: "Handles emergencies and books the job", body: "Spots urgent problems, gets help moving and books the visit on the calendar." },
+      { title: "Logs every call so nothing slips through", body: "Every call is logged with the caller's details and what they need." },
     ],
   },
   areaTowns: [
