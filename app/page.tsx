@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import SmoothScroll from "@/components/SmoothScroll";
 import SceneLoader from "@/components/SceneLoader";
 import Nav from "@/components/Nav";
@@ -15,8 +16,21 @@ import Process from "@/components/Process";
 import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import HydrateWhenNear from "@/components/HydrateWhenNear";
 
 /** Thin aluminum whiteboard-frame divider between sections. */
+/**
+ * Each section is its own Suspense boundary: the server HTML is identical, but React hydrates the sections as
+ * separate, interruptible units instead of one long main-thread task (much lower Total Blocking Time).
+ */
+const S = ({ children }: { children: React.ReactNode }) => <Suspense fallback={null}>{children}</Suspense>;
+/** Below the fold: server HTML as usual, hydrated only when it nears the viewport (see HydrateWhenNear). */
+const L = ({ children }: { children: React.ReactNode }) => (
+  <S>
+    <HydrateWhenNear>{children}</HydrateWhenNear>
+  </S>
+);
+
 const Divider = () => <div className="board-bg relative z-10 px-5 py-1"><div className="board-divider" aria-hidden /></div>;
 
 export default function Page() {
@@ -28,27 +42,27 @@ export default function Page() {
       <main className="relative z-10">
         {/* Pinned 3D chapters (data-chapter) are transparent so the fixed canvas shows through; other sections are opaque board. */}
         {/* The journey: problem -> four building blocks -> the complete formula -> proof -> offer */}
-        <Hero />
-        <Websites />
-        <Workflows />
-        <Tracking />
-        <AIChapter />
+        <S><Hero /></S>
+        <S><Websites /></S>
+        <L><Workflows /></L>
+        <L><Tracking /></L>
+        <L><AIChapter /></L>
         <Divider />
-        <Services />
+        <L><Services /></L>
         <Divider />
-        <Showcase />
+        <L><Showcase /></L>
         <Divider />
-        <Industries workflowTags={Object.fromEntries(INDUSTRY_PAGES.map((i) => [i.mockup, i.workflow.title]))} />
+        <L><Industries workflowTags={Object.fromEntries(INDUSTRY_PAGES.map((i) => [i.mockup, i.workflow.title]))} /></L>
         <Divider />
-        <Process />
+        <L><Process /></L>
         <Divider />
-        <Pricing />
+        <L><Pricing /></L>
         <Divider />
-        <MockupOffer />
+        <L><MockupOffer /></L>
         <Divider />
-        <Contact />
+        <L><Contact /></L>
       </main>
-      <Footer />
+      <L><Footer /></L>
     </>
   );
 }

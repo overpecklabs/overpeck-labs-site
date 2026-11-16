@@ -21,28 +21,35 @@ export default function SceneLoader() {
   const [active, setActive] = useState(true);
 
   useEffect(() => {
-    if (!hasWebGL()) return;
     const EVENTS = ["scroll", "wheel", "touchstart", "pointerdown", "pointermove", "keydown"] as const;
     const go = () => {
       EVENTS.forEach((e) => window.removeEventListener(e, go));
-      setReady(true);
+      if (hasWebGL()) setReady(true); // probing WebGL creates a context, so it waits for the interaction too
     };
     if (window.scrollY > 0) return go(); // landed mid-page (hash link / restored scroll)
     EVENTS.forEach((e) => window.addEventListener(e, go, { passive: true }));
     return () => EVENTS.forEach((e) => window.removeEventListener(e, go));
   }, []);
 
-  // Only render while one of the pinned 3D chapters is on screen.
+  // Only render while one of the pinned 3D chapters is on screen. Chapters can hydrate later (their DOM is then
+  // replaced), so each one announces itself with "chapter-mounted" and we re-observe the current elements.
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll("[data-chapter]"));
-    if (!els.length) return;
     const visible = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
       setActive(visible.size > 0);
     });
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const observe = () => {
+      io.disconnect();
+      visible.clear();
+      document.querySelectorAll("[data-chapter]").forEach((el) => io.observe(el));
+    };
+    observe();
+    window.addEventListener("chapter-mounted", observe);
+    return () => {
+      window.removeEventListener("chapter-mounted", observe);
+      io.disconnect();
+    };
   }, []);
 
   return (
