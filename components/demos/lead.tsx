@@ -20,6 +20,9 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 export type LeadSource = "hero" | "final" | "exit";
 
+/** What the short form collected; handed to a custom "Add details" flow so it can submit everything together. */
+export type LeadBasics = { slug: string; source: LeadSource; name: string; phone: string; need: string | null };
+
 /** Shape a real site would insert into a `leads` table. */
 export type Lead = {
   slug: string;
@@ -109,6 +112,7 @@ export function LeadForm({
   title,
   reassurance = "Takes 20 seconds · No spam",
   details,
+  renderDetails,
   anchorId,
 }: {
   slug: string;
@@ -121,6 +125,8 @@ export function LeadForm({
   reassurance?: string;
   /** Longer multi-step form offered after the short form succeeds. */
   details?: DetailStep[];
+  /** Custom "Add details" flow (e.g. a multi-step quote) instead of <DetailsSteps>; must submit via submitLead(). */
+  renderDetails?: (basics: LeadBasics) => ReactNode;
   anchorId?: string;
 }) {
   const uid = useId();
@@ -150,7 +156,7 @@ export function LeadForm({
         el.querySelector<HTMLElement>("input")?.focus({ preventScroll: true });
         return;
       }
-      if (details) setShowDetails(true);
+      if (details || renderDetails) setShowDetails(true);
       // wait for the steps to render, then bring them (not the success header) into view
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
@@ -162,7 +168,7 @@ export function LeadForm({
     };
     window.addEventListener(JUMP_EVENT, onJump);
     return () => window.removeEventListener(JUMP_EVENT, onJump);
-  }, [anchorId, state, details]);
+  }, [anchorId, state, details, renderDetails]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -198,12 +204,13 @@ export function LeadForm({
           </div>
         </div>
         <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">Demo only, nothing was sent.</p>
-        {details && !showDetails && (
+        {(details || renderDetails) && !showDetails && (
           <button type="button" onClick={() => setShowDetails(true)} className={`mt-3 w-full rounded-full border-2 px-4 py-3 text-sm font-bold ${dark ? "border-white/30 text-white hover:bg-white/10" : "border-slate-300 text-slate-800 hover:bg-slate-50"}`}>
             Add details (optional)
           </button>
         )}
-        {details && showDetails && <DetailsSteps steps={details} tone={theme.tone} primary={theme.primary} />}
+        {showDetails && renderDetails && renderDetails({ slug, source, name: name.trim(), phone: phone.trim(), need })}
+        {showDetails && !renderDetails && details && <DetailsSteps steps={details} tone={theme.tone} primary={theme.primary} />}
       </div>
     );
   }
@@ -411,7 +418,7 @@ export function CtaBand({ id, title, body, ctaLabel, targetId = "lead", phone, b
 /* ---------- sticky mobile bar ---------- */
 
 /** Call / Get quote bar on phones. Hidden while the hero form (targetId) is on screen, so it never covers it. */
-export function MobileLeadBar({ phone, ctaLabel, targetId = "lead", callBg, ctaBg, ctaText, surface = "bg-white/95 border-slate-200" }: { phone: { display: string; tel: string }; ctaLabel: string; targetId?: string; callBg: string; ctaBg: string; ctaText: string; surface?: string }) {
+export function MobileLeadBar({ phone, ctaLabel, targetId = "lead", callBg, ctaBg, ctaText, surface = "bg-white/95 border-slate-200", emergency }: { phone: { display: string; tel: string }; ctaLabel: string; targetId?: string; callBg: string; ctaBg: string; ctaText: string; surface?: string; /** Optional third button, e.g. { label: "Emergency", tel, bg: "#dc2626" }. */ emergency?: { label: string; tel: string; bg: string } }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
     const el = document.getElementById(targetId);
@@ -422,12 +429,17 @@ export function MobileLeadBar({ phone, ctaLabel, targetId = "lead", callBg, ctaB
   }, [targetId]);
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 motion-reduce:transition-none sm:hidden ${surface} ${show ? "translate-y-0" : "translate-y-full"}`}
+      className={`fixed inset-x-0 bottom-0 z-30 grid ${emergency ? "grid-cols-3" : "grid-cols-2"} gap-2 border-t p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 motion-reduce:transition-none sm:hidden ${surface} ${show ? "translate-y-0" : "translate-y-full"}`}
       aria-hidden={!show}
     >
       <a href={phone.tel} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-bold text-white" style={{ background: callBg }}>
         Call
       </a>
+      {emergency && (
+        <a href={emergency.tel} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-extrabold text-white" style={{ background: emergency.bg }}>
+          {emergency.label}
+        </a>
+      )}
       <LeadJump targetId={targetId} tabIndex={show ? 0 : -1} className="flex items-center justify-center rounded-full py-3 text-sm font-extrabold" style={{ background: ctaBg, color: ctaText }}>
         {ctaLabel}
       </LeadJump>

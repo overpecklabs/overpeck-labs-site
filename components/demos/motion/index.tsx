@@ -53,12 +53,17 @@ export function StickyHeader({
   shrunk = 58,
   className = "",
   barClassName = "bg-white/90",
+  topBar,
+  topBarHeight = 0,
 }: {
   children: ReactNode;
   height?: number;
   shrunk?: number;
   className?: string;
   barClassName?: string;
+  /** Optional slim strip above the header bar (fixed height `topBarHeight`), e.g. "24/7 Emergency? Tap to call". */
+  topBar?: ReactNode;
+  topBarHeight?: number;
 }) {
   const [top, setTop] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -69,7 +74,7 @@ export function StickyHeader({
     const update = () => {
       const h = banner?.offsetHeight ?? 0;
       setTop(h);
-      document.documentElement.style.setProperty("--demo-offset", `${h + height + 12}px`);
+      document.documentElement.style.setProperty("--demo-offset", `${h + topBarHeight + height + 12}px`);
     };
     update();
     const ro = banner ? new ResizeObserver(update) : null;
@@ -79,7 +84,7 @@ export function StickyHeader({
       ro?.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, [height]);
+  }, [height, topBarHeight]);
 
   useEffect(() => {
     let raf = 0;
@@ -97,7 +102,8 @@ export function StickyHeader({
 
   const h = scrolled ? shrunk : height;
   return (
-    <div className={`sticky z-40 ${className}`} style={{ top, height }}>
+    <div className={`sticky z-40 ${className}`} style={{ top, height: topBarHeight + height }}>
+      {topBar && <div style={{ height: topBarHeight }}>{topBar}</div>}
       <header
         className={`backdrop-blur-md ${barClassName} ${reduce ? "" : "transition-[height,box-shadow] duration-300 ease-out"} ${scrolled ? "shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)]" : ""}`}
         style={{ height: h }}

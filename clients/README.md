@@ -18,6 +18,11 @@ clients/
     notes.md              industry, town, date created, preview URL
 ```
 
+`clients/overpeck-plumbing/` is Overpeck Labs' own flagship showcase (a fictional brand, not a client). Its
+registry entry sets `banner: "showcase"` ("Sample site by Overpeck Labs" + "Get yours") and an `icon`; it also
+shows the AI chat assistant (`app/api/demo/overpeck-plumbing/chat`, AI SDK via Vercel AI Gateway, falls back
+to a scripted demo without `AI_GATEWAY_API_KEY`) and a custom multi-step quote via `<LeadForm renderDetails>`.
+
 ## Add a new client
 
 1. Copy `clients/_template` to `clients/{slug}`. The slug is the business name, lowercase and

@@ -16,6 +16,10 @@ export type DemoData = {
 export type Demo = {
   slug: string;
   businessName: string;
+  /** "mockup" (default): "Free homepage mockup for {name}". "showcase": Overpeck Labs' own sample brand. */
+  banner?: "mockup" | "showcase";
+  /** Optional browser-tab icon, e.g. "/demos/{slug}/icon.svg". */
+  icon?: string;
   /** Lazy so each demo's code only loads on its own page. */
   load: () => Promise<{ default: ComponentType }>;
 };

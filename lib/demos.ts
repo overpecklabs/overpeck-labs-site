@@ -6,6 +6,7 @@
  * To add a client: copy clients/_template to clients/{slug}, fill it in, then import its
  * index.ts here and add it to DEMOS. Old URLs go in LEGACY_DEMO_REDIRECTS in next.config.mjs.
  */
+import overpeckPlumbing from "@/clients/overpeck-plumbing";
 import partyBus360 from "@/clients/party-bus-360";
 import pawsAndTailsDogSitting from "@/clients/paws-and-tails-dog-sitting";
 import type { Demo } from "./demo-types";
@@ -15,6 +16,7 @@ export type { Demo, DemoData } from "./demo-types";
 export const DEMOS: Demo[] = [
   partyBus360,
   pawsAndTailsDogSitting,
+  overpeckPlumbing,
 ];
 
 export const demoBySlug = (slug: string) => DEMOS.find((d) => d.slug === slug);

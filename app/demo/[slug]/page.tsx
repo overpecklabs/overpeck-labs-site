@@ -15,14 +15,16 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const demo = demoBySlug((await params).slug);
   if (!demo) return {};
+  const showcase = demo.banner === "showcase";
   return {
-    title: { absolute: `${demo.businessName} · Homepage mockup by Overpeck Labs` },
-    description: `Private homepage mockup for ${demo.businessName}.`,
+    title: { absolute: showcase ? `${demo.businessName} · Sample site by Overpeck Labs` : `${demo.businessName} · Homepage mockup by Overpeck Labs` },
+    description: showcase ? `${demo.businessName} is a fictional sample site showing what Overpeck Labs can build.` : `Private homepage mockup for ${demo.businessName}.`,
     // Don't inherit the homepage's canonical / social tags.
     alternates: { canonical: null },
     openGraph: null,
     twitter: null,
     robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
+    ...(demo.icon ? { icons: { icon: demo.icon } } : {}),
   };
 }
 
@@ -33,7 +35,7 @@ export default async function DemoPage({ params }: Props) {
   return (
     <>
       <DemoViewTracker slug={demo.slug} />
-      <DemoBanner businessName={demo.businessName} />
+      <DemoBanner businessName={demo.businessName} variant={demo.banner} />
       <Site />
     </>
   );
