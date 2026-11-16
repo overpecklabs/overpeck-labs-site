@@ -18,10 +18,9 @@ clients/
     notes.md              industry, town, date created, preview URL
 ```
 
-`clients/overpeck-plumbing/` is Overpeck Labs' own flagship showcase (a fictional brand, not a client). Its
-registry entry sets `banner: "showcase"` ("Sample site by Overpeck Labs" + "Get yours") and an `icon`; it also
-shows the AI chat assistant (`app/api/demo/overpeck-plumbing/chat`, AI SDK via Vercel AI Gateway, falls back
-to a scripted demo without `AI_GATEWAY_API_KEY`) and a custom multi-step quote via `<LeadForm renderDetails>`.
+Real client demos live here. Overpeck Labs' own flagship sample companies (fictional brands that show off
+everything we build) live in `flagships/` instead; see `flagships/README.md`. Both use `clients/_template`,
+the same shared components and the same `/demo/{slug}` route.
 
 ## Add a new client
 

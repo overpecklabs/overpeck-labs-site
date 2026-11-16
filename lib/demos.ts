@@ -1,14 +1,15 @@
 /**
  * Registry of private homepage mockups, served at /demo/[slug] by app/demo/[slug]/page.tsx.
- * Each client lives in its own folder: clients/{slug}/ (see clients/README.md).
+ * Real client demos live in clients/{slug}/ (see clients/README.md); our own flagship sample companies live
+ * in flagships/{slug}/ (see flagships/README.md). Both are served the same way.
  * Not linked anywhere, noindex, and kept out of the sitemap: share the URL directly.
  *
- * To add a client: copy clients/_template to clients/{slug}, fill it in, then import its
+ * To add a demo: copy clients/_template to clients/{slug} (or flagships/{slug}), fill it in, then import its
  * index.ts here and add it to DEMOS. Old URLs go in LEGACY_DEMO_REDIRECTS in next.config.mjs.
  */
-import overpeckPlumbing from "@/clients/overpeck-plumbing";
 import partyBus360 from "@/clients/party-bus-360";
 import pawsAndTailsDogSitting from "@/clients/paws-and-tails-dog-sitting";
+import overpeckPlumbing from "@/flagships/overpeck-plumbing";
 import type { Demo } from "./demo-types";
 
 export type { Demo, DemoData } from "./demo-types";

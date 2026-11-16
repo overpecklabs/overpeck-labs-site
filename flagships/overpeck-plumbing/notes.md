@@ -7,7 +7,7 @@
 - **Preview URL:** https://overpecklabs.com/demo/overpeck-plumbing?preview=1
 
 ## Notes
-- Fictional sample brand by Overpeck Labs that shows off everything we can build. Not a client. Its phone number is the live AI receptionist demo line, (201) 379-9138 (clients/overpeck-plumbing/phone.ts).
+- Fictional sample brand by Overpeck Labs that shows off everything we can build. Not a client. Its phone number is the live AI receptionist demo line, (201) 379-9138 (flagships/overpeck-plumbing/phone.ts).
 - Banner variant "showcase": "Sample site by Overpeck Labs ..." + "Get yours" -> /free-mockup.
 - AI chat: app/api/demo/overpeck-plumbing/chat/route.ts (AI SDK + Vercel AI Gateway, default google/gemini-2.5-flash-lite). Needs AI_GATEWAY_API_KEY
   (optional OVERPECK_PLUMBING_AI_MODEL); without it the widget runs a scripted demo. Rate-limited per IP, 8 messages per session.

@@ -115,13 +115,14 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
 
 SETUP
 - Create a new branch ${branch} from main (main has the /demo and clients/ structure). Use exactly this branch name: it keeps the Vercel preview hostname under 63 characters. Do NOT merge into main or push to main.
+- This is a real client's demo, so it goes in clients/ (flagships/ holds only Overpeck Labs' own fictional showcase companies; never put this demo there or edit anything in flagships/).
 - Read clients/README.md first. Copy the clients/_template folder to clients/${slug}/ and build the whole demo inside that folder:
   - clients/${slug}/demo/data.ts: set slug "${slug}", businessName "${businessName.replace(/"/g, '\\"')}", and fill in colors, services, phone and the other fields from the business data below. Replace every [PLACEHOLDER].
   - clients/${slug}/demo/page-content.tsx: the homepage (all its sections), reading from data.ts.
   - clients/${slug}/assets/: the logo and any images. Also copy them to public/demos/${slug}/ (npm run demo-assets does this) and reference them as /demos/${slug}/<file>. Commit both copies.
   - clients/${slug}/notes.md: industry, town, today's date as the demo creation date, and the preview URL.
 - Register it in lib/demos.ts: import ${camel} from "@/clients/${slug}"; and add ${camel} to the DEMOS array.
-- The page is served at /demo/${slug} by app/demo/[slug]/page.tsx, which already adds noindex/nofollow, the view tracker, keeps it out of the sitemap and shows the "Free homepage mockup for ${businessName}" banner. Don't change those shared files, clients/_template, other clients' folders, or any other page.
+- The page is served at /demo/${slug} by app/demo/[slug]/page.tsx, which already adds noindex/nofollow, the view tracker, keeps it out of the sitemap and shows the "Free homepage mockup for ${businessName}" banner. Don't change those shared files, clients/_template, other clients' folders, anything in flagships/, or any other page.
 
 THE PAGE: one polished, mobile-first homepage
 - The page must look FINISHED: polished, specific, local-sounding copy everywhere (hero subhead, 2-3 sentence service descriptions, why-us points, about section, 3 process steps, service area blurb, CTA text, footer). No brackets, "TBD", "placeholder" or "suggested" labels anywhere on the page.

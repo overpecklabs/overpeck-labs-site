@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { PLUMBING_PHONE } from "@/clients/overpeck-plumbing/phone";
+import { PLUMBING_PHONE } from "@/flagships/overpeck-plumbing/phone";
 import { Parallax } from "@/components/demos/motion";
 
 /**

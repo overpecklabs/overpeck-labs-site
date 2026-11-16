@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Shared motion for every client demo (clients/{slug}/demo/page-content.tsx).
+ * Shared motion for every demo (clients/{slug}/ and flagships/{slug}/ demo/page-content.tsx).
  *
  *   <MotionRoot>            wrap the whole page: smooth in-page scrolling + reduced-motion handling
  *   <StickyHeader>          sticky header under the demo banner that shrinks and gains a shadow on scroll

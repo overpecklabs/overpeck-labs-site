@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Stock photos for client demos: search Pexels/Unsplash, download, convert to WebP (max 1600px wide),
-// save to clients/{slug}/assets/ (+ public/demos/{slug}/), and record credits in assets/CREDITS.md.
+// save to clients/{slug}/assets/ or flagships/{slug}/assets/ (+ public/demos/{slug}/), and record credits in assets/CREDITS.md.
 //
 // Keys live ONLY in .env.local (gitignored), never in site code:
 //   PEXELS_API_KEY=...        (preferred: Pexels allows downloading and self-hosting)
@@ -10,7 +10,7 @@
 //   node scripts/demo-photos.mjs search "dog walking park" [--n 12] [--source pexels|unsplash] [--orientation landscape|portrait|square]
 //       Prints candidates and writes a contact sheet (HTML) you can open or screenshot to check them.
 //   node scripts/demo-photos.mjs get <slug> <source>:<id> <name> --alt "What the photo shows"
-//       Downloads one photo as clients/<slug>/assets/<name>.webp and adds it to CREDITS.md.
+//       Downloads one photo as clients/<slug>/assets/<name>.webp (flagships/<slug>/ if that folder exists) and adds it to CREDITS.md.
 //
 // Rules: no identifiable people presented as the business's staff, no other companies' logos or branded vehicles.
 // Check every candidate visually before using it.
@@ -154,7 +154,8 @@ async function get(slug, ref, name, { alt = "" }) {
   const r = await fetch(d.url);
   if (!r.ok) throw new Error(`Download failed: ${r.status}`);
   const buf = Buffer.from(await r.arrayBuffer());
-  const assets = join(root, "clients", slug, "assets");
+  const base = existsSync(join(root, "flagships", slug)) ? "flagships" : "clients";
+  const assets = join(root, base, slug, "assets");
   const pub = join(root, "public", "demos", slug);
   mkdirSync(assets, { recursive: true });
   mkdirSync(pub, { recursive: true });
@@ -162,7 +163,7 @@ async function get(slug, ref, name, { alt = "" }) {
   const info = await sharp(buf).rotate().resize({ width: MAX_W, withoutEnlargement: true }).webp({ quality: 74 }).toFile(join(assets, file));
   copyFileSync(join(assets, file), join(pub, file));
   upsertCredit(join(assets, "CREDITS.md"), { file, alt, ...d });
-  console.log(`Saved clients/${slug}/assets/${file} (${info.width}x${info.height}, ${Math.round(info.size / 1024)} KB) -> /demos/${slug}/${file}`);
+  console.log(`Saved ${base}/${slug}/assets/${file} (${info.width}x${info.height}, ${Math.round(info.size / 1024)} KB) -> /demos/${slug}/${file}`);
 }
 
 /* ---------- main ---------- */

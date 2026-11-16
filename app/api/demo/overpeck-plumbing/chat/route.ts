@@ -1,4 +1,4 @@
-import { data } from "@/clients/overpeck-plumbing/demo/data";
+import { data } from "@/flagships/overpeck-plumbing/demo/data";
 import { convertToModelMessages, createUIMessageStreamResponse, streamText, toUIMessageStream, type UIMessage } from "ai";
 
 /**
