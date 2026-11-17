@@ -38,7 +38,7 @@ export default function ChatAssistant() {
   }, []);
 
   return (
-    <div className={`oe-chat-wrap fixed bottom-24 right-4 z-40 flex-col items-end gap-3 sm:bottom-6 sm:flex ${scrolled || open ? "flex" : "hidden"} ${open ? "oe-chat-open" : ""}`}>
+    <div className={`oe-chat-wrap fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 z-40 flex-col items-end gap-3 sm:bottom-6 sm:right-4 sm:flex ${scrolled || open ? "flex" : "hidden"} ${open ? "oe-chat-open" : ""}`}>
       {loaded && <ChatPanel open={open} onClose={() => setOpen(false)} />}
       <button
         type="button"
@@ -48,7 +48,7 @@ export default function ChatAssistant() {
         }}
         aria-expanded={open}
         aria-controls="oe-chat"
-        className="demo-lift flex items-center gap-2 rounded-full border border-white/20 bg-[#06232a]/75 px-4 py-3 text-sm font-bold text-white shadow-[0_12px_40px_-10px_rgba(52,211,153,0.55)] backdrop-blur-xl"
+        className="demo-lift flex items-center gap-2 rounded-full border border-white/20 bg-[#06232a]/75 p-2.5 text-sm sm:px-4 sm:py-3 font-bold text-white shadow-[0_12px_40px_-10px_rgba(52,211,153,0.55)] backdrop-blur-xl"
       >
         <span className="relative grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-[#0e7490] to-[#34d399]" aria-hidden>
           <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -56,7 +56,8 @@ export default function ChatAssistant() {
           </svg>
           {!open && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#06232a]" />}
         </span>
-        {open ? "Close chat" : "Ask our AI assistant"}
+        {/* phones: icon only (the label stays for screen readers), so it covers as little as possible */}
+        <span className="sr-only sm:not-sr-only">{open ? "Close chat" : "Ask our AI assistant"}</span>
       </button>
     </div>
   );

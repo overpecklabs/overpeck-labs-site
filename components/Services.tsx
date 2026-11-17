@@ -36,7 +36,7 @@ export default function Services() {
           </Annotation>
         </div>
 
-        <p className="mt-4 max-w-2xl text-ink/85">We engineer growth: each element builds on the last, so leads get found, followed up, measured and never missed.</p>
+        <p className="mt-4 max-w-2xl text-ink/85">We engineer growth: each element builds on the last, so leads get found, followed up and measured.</p>
 
         <div data-depth="1" className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICES.map((s) => {

@@ -106,6 +106,7 @@ export type MockupRequest = {
   industry: string | null;
   town: string | null;
   goals: string[] | null;
+  features: string[] | null;
   extras: string[] | null;
   timeline: string | null;
   style: string | null;

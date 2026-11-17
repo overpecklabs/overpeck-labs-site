@@ -33,7 +33,7 @@ export const data = {
     {
       key: "softwash",
       title: "Soft Washing",
-      body: "Low-pressure cleaning that kills mold, mildew and the black streaks on roofs at the root, so they stay away longer.",
+      body: "Gentle, low-pressure cleaning that's safe for roofs and siding, including the black streaks on shingles.",
       points: ["House siding", "Roofs (black streaks)", "Safe for vinyl, stucco & shingles"],
     },
     {
@@ -75,10 +75,10 @@ export const data = {
   ] as ({ value: number; label: string } | { text: string; label: string })[],
   softWash: {
     title: "Why soft wash?",
-    body: "High pressure can strip paint, force water behind siding and blast the granules off roof shingles. Soft washing uses low pressure and a cleaning solution that kills mold, mildew and algae at the root, then rinses gently.",
+    body: "High pressure can strip paint, force water behind siding and blast the granules off roof shingles. Soft washing uses low pressure and a cleaning solution to lift grime and streaks, then rinses gently.",
     compare: [
       { title: "Pressure washing", tone: "for hard surfaces", points: ["High-pressure water stream", "Best for concrete, pavers and stone", "Too harsh for siding and roofs"] },
-      { title: "Soft washing", tone: "for your home", points: ["Low pressure, like a garden hose", "Kills mold, mildew and roof streaks", "Safe for vinyl, stucco and shingles"] },
+      { title: "Soft washing", tone: "for your home", points: ["Low pressure, like a garden hose", "Low-pressure soft washing for roofs and siding", "Safe for vinyl, stucco and shingles"] },
     ],
     plants: "Plant-safe rinse: we wet down your landscaping before and after, and rinse thoroughly so beds, lawns and pets are protected.",
   },
@@ -101,6 +101,8 @@ export const data = {
       { title: "We show up and make it shine", body: "Careful crews, spotless results, and we clean up after ourselves." },
     ],
   },
+  /** Sample review total shown in the rating row and structured data (the page shows 8 of them). */
+  reviewCount: 80,
   areaTowns: ["Ridgefield Park", "Teaneck", "Hackensack", "Paramus", "Fort Lee", "Englewood", "Ridgewood", "Fair Lawn", "River Edge", "Oradell"],
   reviews: [
     { name: "Megan T.", town: "Ridgewood", rating: 5, service: "Soft wash", text: "Our north side was green with mildew. After the soft wash the siding looks brand new, and my hydrangeas didn't even notice they were there." },
@@ -120,7 +122,7 @@ export const data = {
     { q: "Do I need to be home?", a: "No. For exterior work we just need access to the yard and an outdoor water spigot. For inside windows, someone needs to let us in.", sample: true },
     { q: "What happens if it rains?", a: "Light rain doesn't affect power washing or soft washing. For heavy storms, high wind or window cleaning in the rain, we'll reschedule at no charge.", sample: true },
     { q: "Are you insured?", a: "Yes. We carry full liability insurance, and a certificate is available on request.", sample: true },
-    { q: "Can you remove the black streaks on my roof?", a: "Yes. Those streaks are algae. A soft wash kills it at the root, so the roof comes clean without pressure that would loosen the shingle granules." },
+    { q: "Can you remove the black streaks on my roof?", a: "Yes. Those streaks are usually algae. A gentle, low-pressure soft wash cleans them off without pressure that would loosen the shingle granules." },
     { q: "Will power washing get the oil stains out of my driveway?", a: "Most oil and rust spots lighten a lot with pre-treatment and hot-water cleaning. Very old stains can leave a shadow, and we'll tell you honestly before we start." },
     { q: "How do I get a quote?", a: "Use the short form at the top of the page or call. Add photos and your address in the extra steps and we can usually quote without a visit.", sample: true },
   ] satisfies Faq[],

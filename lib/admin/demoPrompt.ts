@@ -19,7 +19,8 @@ const LABELS: [string, string][] = [
   ["avg_job_value", "Average job value"],
   ["differentiator", "What makes them different"],
   ["goals", "Goals for the site"],
-  ["extras", "Requested features"],
+  ["features", "Requested features"],
+  ["extras", "Other extras"],
   ["timeline", "Timeline"],
   ["biggest_headache", "Biggest headache"],
   ["style", "Style"],
@@ -59,6 +60,7 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
   const phone = clean(client.phone) || r("phone");
   const goals = Array.isArray(request?.goals) ? request.goals : [];
   const extras = Array.isArray(request?.extras) ? request.extras : [];
+  const picked = Array.isArray(request?.features) ? request.features : [];
 
   // ---- the business data block (answers only, empty fields skipped) ----
   const lines: string[] = [bullet("Business name", businessName)];
@@ -99,7 +101,8 @@ export function buildDemoPrompt({ client, request, calls, logo }: { client: Clie
   const services = r("top_services") || `the core services a ${industry || "local service"} business typically offers (write them as finished service cards)`;
   const differentiator = r("differentiator") || "nothing provided; write 3-4 believable why-us points, and flag any unverified fact with <SampleMark />";
   const area = town ? `${town}, NJ and nearby Bergen County towns (name only places that appear in the business data below)` : "Bergen County, NJ";
-  const features = extras.length ? extras.join(", ") : "none requested";
+  const wanted = [...picked, ...extras];
+  const features = wanted.length ? wanted.join(", ") : "none requested";
   const style = r("style") || "clean, modern and trustworthy";
   const colors = r("brand_colors") || "none given; pick a tasteful palette that suits the industry";
   const inspiration = r("inspiration_sites") || "none given";

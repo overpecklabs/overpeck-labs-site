@@ -11,7 +11,7 @@ export default function Workflows() {
           annotation="lab-tested systems"
           title={<>The busywork runs itself.</>}
           points={[
-            "Instant follow-ups for every call and form",
+            "Instant follow-ups for new calls and forms",
             "Booking confirmations and invoice reminders",
             "Review requests sent automatically after each job",
           ]}

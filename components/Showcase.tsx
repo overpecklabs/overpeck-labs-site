@@ -36,7 +36,7 @@ const FLAGSHIPS: Flagship[] = [
       "AI chat that puts safety first for sparks, burning smells and outages",
     ],
     receptionist: ELECTRIC_RECEPTIONIST,
-    callout: "Includes a 24/7 AI receptionist, call it:",
+    callout: "Includes an AI receptionist, call it:",
     shots: {
       desktop: "/showcase/overpeck-electric-desktop.webp",
       phone: "/showcase/overpeck-electric-phone.webp",
@@ -153,7 +153,7 @@ function Copy({ f }: { f: Flagship }) {
               </svg>
               Call the AI receptionist <span className="whitespace-nowrap font-normal">{f.receptionist.display}</span>
             </a>
-            <p className="mt-1.5 text-center text-xs text-ink/70 sm:pl-2 sm:text-left">Demo line, try it anytime.</p>
+            <p className="mt-1.5 text-center text-xs text-ink/70 sm:pl-2 sm:text-left">Demo line, give it a try.</p>
           </div>
         )}
       </div>

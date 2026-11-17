@@ -23,7 +23,7 @@ const ART: Record<string, { color: string; paths: string[]; label: string }> = {
   },
   ai: {
     color: "#a15c00",
-    label: "never misses a call",
+    label: "picks up when you can't",
     paths: ["M40 50 H220 V130 H110 L80 156 V130 H40 Z", "M60 80 H200 M60 102 H160", "M200 160 H290 V230 H230 L214 246 V230 H200 Z", "M218 186 H272 M218 206 H252", "M260 40 C270 30 286 30 296 40 M266 52 C272 46 282 46 288 52"],
   },
 };

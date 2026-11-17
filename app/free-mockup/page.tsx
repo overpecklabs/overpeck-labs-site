@@ -3,7 +3,6 @@ import { pageMeta } from "@/lib/site";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import MockupWizard from "@/components/MockupWizard";
-import "./mockup.css";
 
 export const metadata: Metadata = pageMeta({
   title: "Free Website Mockup for Bergen County Businesses | Overpeck Labs",

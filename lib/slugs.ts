@@ -5,7 +5,7 @@ export const SERVICE_SLUGS = [
   { slug: "websites", name: "Websites", full: "Websites That Win Business", sym: "Ws", color: "#c8f5ec", ink: "#0f766e" },
   { slug: "workflows-automation", name: "Workflows & Automation", full: "Workflows & Automation", sym: "Au", color: "#dbe8ff", ink: "#1f6feb" },
   { slug: "track-optimize", name: "Track & Optimize", full: "Track, Monitor & Optimize", sym: "Op", color: "#dcf3df", ink: "#237a34" },
-  { slug: "ai", name: "AI Implementation", full: "AI That Never Misses", sym: "Ai", color: "#fdebc8", ink: "#a15c00" },
+  { slug: "ai", name: "AI Implementation", full: "AI That Catches What You Miss", sym: "Ai", color: "#fdebc8", ink: "#a15c00" },
 ] as const;
 
 /** Industry page slug -> display name, and the label used by the /free-mockup questionnaire. */

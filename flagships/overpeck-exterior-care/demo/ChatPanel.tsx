@@ -25,9 +25,9 @@ function scriptedReply(text: string): string {
   if (/price|cost|how much|quote|estimate/.test(t))
     return `Every home is different, so we don't quote prices in chat. The fastest way to a free estimate: tap "Get my free quote" at the top, then add your address, stories and a few photos. Or call ${call}.`;
   if (/soft ?wash|siding|mildew|mold|green|vinyl|stucco/.test(t))
-    return "Soft washing is the safe way to clean siding: low pressure, about like a garden hose, plus a solution that kills mold and mildew at the root. It's safe for vinyl, stucco and painted wood. Want a free estimate? Tell me your town and roughly how many stories.";
+    return "Soft washing is the safe way to clean siding: low pressure, about like a garden hose, plus a gentle cleaning solution that lifts the grime. It's safe for vinyl, stucco and painted wood. Want a free estimate? Tell me your town and roughly how many stories.";
   if (/roof|streak|shingle|black/.test(t))
-    return "Those black streaks are algae. We soft wash roofs (never high pressure), which kills it at the root without loosening shingle granules. Is it the whole roof or one side? I can help you request a free estimate.";
+    return "Those black streaks are algae. We soft wash roofs with gentle, low pressure (never high pressure), so they come clean without loosening shingle granules. Is it the whole roof or one side? I can help you request a free estimate.";
   if (/window|screen|glass|track/.test(t))
     return "We clean windows inside and out, wash the screens and wipe the tracks and sills. Most homes book spring and fall. How many windows, roughly, and is it a one- or two-story home?";
   if (/driveway|patio|paver|walk|oil|concrete|power ?wash|pressure/.test(t))
@@ -203,7 +203,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
           Send
         </button>
       </form>
-      <p className="px-4 pb-3 text-[11px] text-white/45">Demo assistant. It can&apos;t book or send anything itself.</p>
+      <p className="px-4 pb-3 text-[11px] text-white/45">Demo website assistant. It answers questions and points you to the free quote form; it can&apos;t book or send anything itself.</p>
     </div>
   );
 }

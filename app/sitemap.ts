@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { SERVICE_SLUGS, INDUSTRY_SLUGS, AREA_SLUGS } from "@/lib/slugs";
+import { getPosts } from "@/lib/blog";
 
 export const dynamic = "force-static";
 
@@ -15,6 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...INDUSTRY_SLUGS.map((i) => `/industries/${i.slug}`),
     "/areas",
     ...AREA_SLUGS.map((a) => `/areas/${a.slug}`),
+    "/blog",
+    ...getPosts().map((p) => `/blog/${p.slug}`),
     "/privacy",
     "/terms",
   ];

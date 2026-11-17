@@ -25,7 +25,7 @@ export const SERVICES: { key: Exclude<ServiceKey, "mockup">; n: string; name: st
   {
     key: "ai",
     n: "04",
-    name: "AI That Never Misses",
+    name: "AI That Catches What You Miss",
     line: "AI Chat Bot, AI Call Receptionist and AI Agents catch the leads you can't get to.",
     anchor: "ai",
   },

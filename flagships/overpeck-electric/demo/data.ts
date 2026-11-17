@@ -40,7 +40,7 @@ export const data = {
   stats: [
     { value: 6, label: "electrical services" },
     { value: 10, label: "Bergen County towns" },
-    { text: "24/7", label: "emergency line" },
+    { text: "Priority", label: "emergency calls" },
     { text: "Free", label: "estimates" },
   ] as ({ value: number; label: string } | { text: string; label: string })[],
   whyUs: [
@@ -55,12 +55,12 @@ export const data = {
     { title: "Powered, safely", body: "We do the work to code, handle the permit and test everything before we leave." },
   ],
   receptionist: {
-    title: "Call our AI receptionist 24/7",
-    body: "No voicemail, no hold music. An AI receptionist picks up every call, day or night, spots emergencies and books your estimate.",
+    title: "Try our AI receptionist",
+    body: "When the crew is on a job or it's after hours, an AI receptionist can pick up, flag emergencies safety-first and book your estimate.",
     steps: [
-      { title: "Answers every call 24/7", body: "Picks up on the first ring, day or night, and asks what's going on." },
+      { title: "Picks up when you can't", body: "Answers while the electrician is on a job or after hours, and asks what's going on." },
       { title: "Handles questions and books the estimate", body: "Flags emergencies, answers common questions and books the visit on the calendar." },
-      { title: "Logs every call so nothing slips through", body: "Every call is logged with the caller's details and what they need." },
+      { title: "Texts the electrician a summary", body: "The caller's details and what they need go straight to the electrician." },
     ],
   },
   ev: {
@@ -69,6 +69,8 @@ export const data = {
     milesPerKwh: 3.5,
     installFrom: 1200,
   },
+  /** Sample review total shown in the rating row and structured data (the page shows 8 of them). */
+  reviewCount: 80,
   areaTowns: ["Ridgefield Park", "Teaneck", "Hackensack", "Paramus", "Fort Lee", "Englewood", "Ridgewood", "Fair Lawn", "River Edge", "Oradell"],
   reviews: [
     { name: "Kevin D.", town: "Teaneck", rating: 5, service: "Panel upgrade", text: "Upgraded our old 100-amp panel to 200 amps in one day. They pulled the permit, met the inspector and labeled every circuit. Night and day." },
@@ -90,7 +92,7 @@ export const data = {
     { q: "Why does my breaker keep tripping?", a: "Usually an overloaded circuit, a short, or a ground fault from a damaged device or wire. Repeated tripping is a warning, not a nuisance, so have it checked instead of resetting it over and over." },
     { q: "How much does an EV charger install cost?", a: "It depends on the distance from your panel and whether the panel has capacity. The estimate widget above shows a sample starting point; we confirm the exact price after a quick look.", sample: true },
     { q: "Can you add recessed lights without tearing up my ceiling?", a: "Usually yes. We fish wires through the ceiling between joists and use remodel housings, so patching is minimal." },
-    { q: "Do you offer emergency service?", a: "Yes, call any time for no power, sparking, burning smells or water near electrical equipment. For a downed line, call 911 and your utility first.", sample: true },
+    { q: "Do you offer emergency service?", a: "Yes. Call us for no power, sparking, burning smells or water near electrical equipment. For a downed line, call 911 and your utility first.", sample: true },
   ] satisfies Faq[],
   footerBlurb: "Panel upgrades, EV chargers, lighting, generators, troubleshooting and safety inspections across Bergen County, NJ.",
   photos: {

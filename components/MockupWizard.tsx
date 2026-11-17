@@ -38,7 +38,31 @@ const STYLES = [
   { key: "Friendly", d: "Warm, local, approachable" },
 ] as const;
 const IDEAL = ["Homeowners", "Businesses", "Property managers", "Contractors"];
-const EXTRAS = ["Online booking", "Quote request form", "Photo gallery", "Reviews", "Emergency / 24-7 banner", "Financing info", "Service area map", "Spanish version"];
+/** Shown on screen 6 as "Included with every site" (display only). */
+const INCLUDED = [
+  "Click-to-call buttons + sticky mobile call bar",
+  "Free estimate form",
+  "Services with photos",
+  "“How it works” steps",
+  "Service area",
+  "Trust signals + reviews section",
+  "FAQ",
+  "Mobile-first layout",
+  "SEO basics + fast loading",
+];
+/** Optional features (saved to mockup_requests.features). "Not sure" doesn't clear the others. */
+const FEATURES: { key: string; d?: string }[] = [
+  { key: "AI phone receptionist", d: "Picks up when you're on a job or after hours, books jobs, texts you a summary" },
+  { key: "Website AI chat assistant", d: "Answers customer questions on your site" },
+  { key: "Cost calculator", d: "e.g. EV charger, water heater or project estimate" },
+  { key: "Emergency / urgent-service section" },
+  { key: "“Before you go” estimate popup" },
+  { key: "Automations", d: "Instant follow-up texts and emails to new leads, missed-call auto-texts, confirmation texts and emails, appointment reminders, email drip campaigns" },
+  { key: "Custom animations and design touches" },
+  { key: "Not sure, recommend for me" },
+];
+/** Smaller extras (the estimate form, reviews and emergency section are covered above). */
+const EXTRAS = ["Online booking", "Photo gallery", "Financing info", "Service area map", "Spanish version"];
 const DIFFERENT = ["Fast response", "Family-owned", "Licensed & insured", "Fair pricing", "Warranty"];
 const JOB_VALUES = ["Under $250", "$250–$1,000", "$1,000–$5,000", "$5,000–$15,000", "$15,000+", "Not sure"];
 const METHODS = ["Call", "Text", "Email"];
@@ -56,6 +80,7 @@ const EMPTY: MockupRequest = {
   customers: { services: ["", "", ""], ideal: "", jobValue: "", different: "" },
   goals: { timeline: "", goals: [], headache: "" },
   look: { style: "", primary: "#1d6fe0", accent: "#f08c00", pickForMe: true, logo: null, likes: ["", ""] },
+  features: [],
   extras: [],
   contact: { name: "", phone: "", email: "", bestTime: "Anytime", method: "", consent: false },
 };
@@ -109,7 +134,7 @@ function answered(step: number, d: MockupRequest, ui: Ui): [boolean, boolean] {
     case 4:
       return [!!d.customers.services[0].trim(), ui.idealPicks.length > 0 || !!ui.idealText.trim()];
     case 5:
-      return [d.extras.length > 0, ui.diffPicks.length > 0 || !!ui.diffText.trim()];
+      return [d.features.length > 0 || d.extras.length > 0, ui.diffPicks.length > 0 || !!ui.diffText.trim()];
     default:
       return [!!c.name.trim(), (!!c.email.trim() || !!c.phone.trim()) && c.consent];
   }
@@ -218,6 +243,33 @@ function Choice({
 
 const chip = "min-h-12 px-4 py-2.5 text-[15px] font-semibold";
 
+/** A full-width checkbox row with a visible box, a title and an optional description (real input, keyboard-friendly). */
+function Check({ name, checked, onChange, title, desc }: { name: string; checked: boolean; onChange: () => void; title: string; desc?: string }) {
+  return (
+    <label
+      className={`flex cursor-pointer select-none items-start gap-3 rounded-2xl border-2 px-4 py-3.5 transition has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-teal/40 ${
+        checked ? "border-teal-ink bg-note-teal" : "border-ink/12 bg-white hover:border-ink/30"
+      }`}
+    >
+      <input type="checkbox" name={name} value={title} checked={checked} onChange={onChange} className="sr-only" />
+      <span
+        className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 ${checked ? "border-teal-ink bg-teal-ink text-white" : "border-ink/30 bg-white"}`}
+        aria-hidden
+      >
+        {checked && (
+          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12l5 5L20 7" />
+          </svg>
+        )}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[16px] font-semibold text-ink">{title}</span>
+        {desc && <span className="mt-0.5 block text-[14px] leading-snug text-ink/65">{desc}</span>}
+      </span>
+    </label>
+  );
+}
+
 function Icon({ d }: { d: string }) {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -290,6 +342,7 @@ export default function MockupWizard() {
           customers: { ...EMPTY.customers, ...saved.data.customers },
           goals: { ...EMPTY.goals, ...saved.data.goals },
           look: { ...EMPTY.look, ...saved.data.look, logo: null },
+          features: Array.isArray(saved.data.features) ? saved.data.features : [],
           extras: saved.data.extras ?? [],
           contact: { ...EMPTY.contact, ...saved.data.contact },
         };
@@ -624,9 +677,33 @@ export default function MockupWizard() {
       </Q>
     </>,
 
-    // 6. extras + differentiators + more details
+    // 6. included list + features + extras + differentiators + more details
     <>
-      <Q id={fid("extras")} title="Want any of these on your site?" hint="Pick any. All optional.">
+      <section aria-labelledby={fid("included")} className="rounded-3xl border-2 border-ink/10 bg-white p-5 sm:p-6">
+        <h2 id={fid("included")} className="font-display text-[1.45rem] font-bold leading-tight text-ink sm:text-[1.65rem]">
+          Included with every site
+        </h2>
+        <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+          {INCLUDED.map((x) => (
+            <li key={x} className="flex items-start gap-2.5 text-[15px] text-ink/85">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-teal-ink text-white" aria-hidden>
+                <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              </span>
+              {x}
+            </li>
+          ))}
+        </ul>
+      </section>
+      <Q id={fid("features")} title="Want any of these on your site?" hint="Pick any. All optional.">
+        <div className="grid gap-2.5">
+          {FEATURES.map((f) => (
+            <Check key={f.key} name={fid("features")} checked={data.features.includes(f.key)} onChange={() => setData((d) => ({ ...d, features: toggle(d.features, f.key) }))} title={f.key} desc={f.d} />
+          ))}
+        </div>
+      </Q>
+      <Q id={fid("extras")} title="Anything else you'd like?" hint="Pick any. All optional.">
         <div className="flex flex-wrap gap-2.5">
           {EXTRAS.map((x) => (
             <Choice key={x} type="checkbox" name={fid("extras")} checked={data.extras.includes(x)} onChange={() => setData((d) => ({ ...d, extras: toggle(d.extras, x) }))} className={chip}>

@@ -25,7 +25,7 @@ export const data = {
     { icon: "toilet", title: "Toilets & fixtures", body: "Running toilets, weak flushes, faucets and garbage disposals repaired or replaced the same day." },
     { icon: "pipe", title: "Sewer lines", body: "Sewer backups, root intrusion and broken lines diagnosed with a camera, then repaired the least invasive way." },
     { icon: "bath", title: "Kitchen & bath remodels", body: "New fixtures, re-piping and rough-in for remodels, done cleanly and on schedule." },
-    { icon: "siren", title: "24/7 emergency service", body: "Burst pipe or flooding at 2 a.m.? Call any time and a plumber heads your way." },
+    { icon: "siren", title: "Emergency service", body: "Burst pipe or flooding? Call and we get a plumber moving." },
   ] as { icon: string; title: string; body: string }[]),
   /** Above-the-fold lead capture. */
   lead: {
@@ -38,10 +38,10 @@ export const data = {
     bandBody: "Send a request in 20 seconds, or call and talk to a plumber.",
   },
   headline: "Burst pipe? Flooding? We're on the way.",
-  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Day or night, we pick up and get a plumber moving.",
+  subhead: "Fast, tidy, upfront plumbing for homes and businesses across Bergen County. Call and we'll get a plumber moving.",
   stats: ([
     { value: 7, label: "plumbing services" },
-    { text: "24/7", label: "emergency line" },
+    { text: "Priority", label: "emergency calls" },
     { value: 15, label: "Bergen County towns" },
     { text: "60 min", label: "typical emergency arrival", sample: true },
   ] as ({ value: number; label: string; sample?: boolean } | { text: string; label: string; sample?: boolean })[]),
@@ -66,7 +66,7 @@ export const data = {
     { name: "Chris L.", town: "Fair Lawn", rating: 4, service: "Drain cleaning", text: "Main line clog cleared quickly. Booking online took a minute and they showed up right on time." },
   ] satisfies Review[],
   faqs: [
-    { q: "Do you offer 24/7 emergency plumbing?", a: "Yes. Call any time, day or night, including weekends and holidays. For a burst pipe or flooding, call instead of using the form so we can talk you through shutting off the water while we're on the way." },
+    { q: "Do you offer emergency plumbing?", a: "Yes. For a burst pipe or flooding, call instead of using the form so we can talk you through shutting off the water while we're on the way." },
     { q: "What should I do if a pipe bursts?", a: "Shut off the main water valve (usually where the water line enters the house, near the meter), turn off the water heater, move valuables away from the water and call us. If water is near outlets or appliances, switch off power to that area at the breaker if it's safe to do so." },
     { q: "How fast can you get here?", a: "For emergencies we typically arrive within about an hour in most of Bergen County. Non-urgent visits can usually be booked same day or next day.", sample: true },
     { q: "How much does a plumber cost?", a: "It depends on the job. You'll get an upfront price before any work starts. The quote form above gives a sample estimated range for common jobs, and the plumber confirms the exact price on site.", sample: true },

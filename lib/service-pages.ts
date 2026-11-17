@@ -84,7 +84,7 @@ export const SERVICE_PAGES: ServicePage[] = [
     h1: "Automation that handles the busywork after every lead.",
     sub: "Follow-ups, booking confirmations, invoice reminders and review requests that run on their own, so nothing slips while you're on a job.",
     promise: "The follow-up work that happens after every lead, running on its own.",
-    bullets: ["Instant replies to every call, form and text", "Booking confirmations and invoice reminders", "Review requests after every finished job"],
+    bullets: ["Instant replies to new calls, forms and texts", "Booking confirmations and invoice reminders", "Review requests after every finished job"],
     cta: { label: "Get a Free Consultation", href: "#lead-form" },
     problems: [
       { t: "Leads go cold", d: "When nobody follows up the same day, the customer books whoever called back first." },
@@ -185,12 +185,12 @@ export const SERVICE_PAGES: ServicePage[] = [
     bullets: ["AI Chatbot answers questions and books from your site", "AI Call Receptionist picks up when you can't", "AI Agents handle quotes, scheduling and follow-ups"],
     cta: { label: "Get a Free Consultation", href: "#lead-form" },
     problems: [
-      { t: "Voicemail loses jobs", d: "When you're on a job and a call goes to voicemail, many callers simply try the next company." },
+      { t: "Missed calls lose jobs", d: "When you're on a job and a call goes unanswered, many callers simply try the next company." },
       { t: "After-hours visitors leave", d: "Someone browsing your site at 9 p.m. has questions and nobody to answer them." },
       { t: "Repetitive questions pile up", d: "Hours, pricing ranges and availability questions eat your team's day." },
     ],
     included: [
-      { t: "AI website chatbot", d: "Answers common questions and captures leads around the clock." },
+      { t: "AI website chatbot", d: "Answers common questions and captures leads, even after hours." },
       { t: "AI call receptionist", d: "Picks up missed and after-hours calls, then takes details or books." },
       { t: "Calendar booking", d: "Offers open times and books based on rules you set." },
       { t: "Missed-call text-back", d: "A quick text keeps the conversation going." },

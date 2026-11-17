@@ -109,7 +109,7 @@ export default function Hero() {
                 <br /> you work.
               </h1>
               <p className="mt-5 max-w-md text-base text-[#3a3a3c] sm:text-lg">
-                We build websites that win business, automate the busywork, track what&apos;s working and add AI that never misses a lead. For local plumbers, HVAC pros, electricians and remodelers.
+                We build websites that win business, automate the busywork, track what&apos;s working and add AI that catches the leads you miss. For local plumbers, HVAC pros, electricians and remodelers.
               </p>
 
               <div className="relative mt-8 flex flex-wrap items-center gap-3">

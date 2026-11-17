@@ -28,7 +28,7 @@ type Plan = {
 };
 
 const CTA = { label: "Get my free homepage design", href: "/free-mockup" };
-const RECEPTIONIST = "AI phone receptionist that answers every call 24/7, books jobs and texts you each lead";
+const RECEPTIONIST = "AI phone receptionist that picks up when you're on a job or after hours, books jobs and texts you each lead";
 
 // Array order = display order on every screen size (cards stack in this order on mobile).
 const PLANS: Plan[] = [
@@ -48,12 +48,12 @@ const PLANS: Plan[] = [
   {
     name: "Growth",
     el: { num: "02", sym: "Gr" },
-    tag: "Never miss a lead online",
+    tag: "Catch more leads online",
     blurb: "Everything in Starter, plus AI and alerts that turn visitors into jobs.",
     price: { setup: "$1,000", monthly: "$149" },
     items: [
       "Everything in Starter",
-      "AI website chat that answers questions and captures leads 24/7",
+      "AI website chat that answers questions and captures leads, even after hours",
       "Instant lead alerts by text",
       "Google Business Profile setup",
       "Monthly content updates",
@@ -69,7 +69,7 @@ const PLANS: Plan[] = [
   {
     name: "Pro",
     el: { num: "03", sym: "Pr" },
-    tag: "Every call answered",
+    tag: "Pick up more calls",
     blurb: "Everything in Growth, plus an AI receptionist on your phone line.",
     price: { setup: "$1,500", monthly: "$349" },
     items: ["Everything in Growth", RECEPTIONIST],

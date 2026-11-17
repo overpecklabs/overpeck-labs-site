@@ -39,6 +39,8 @@ export type MockupRequest = {
     logo: { name: string; type: string; size: number } | null;
     likes: [string, string];
   };
+  /** Optional features picked on the "Want any of these on your site?" list. */
+  features: string[];
   extras: string[];
   contact: {
     name: string;
@@ -116,6 +118,7 @@ export async function submitMockupRequest(payload: MockupRequest, logo: File | n
     brand_colors: l.pickForMe ? "Pick for me" : `${l.primary}, ${l.accent}`,
     logo_url: logoPath,
     inspiration_sites: blank(l.likes.filter((u) => u.trim()).join(", ")),
+    features: payload.features ?? [],
     extras: payload.extras,
     contact_name: ct.name.trim(),
     phone: ct.phone.trim(),
@@ -127,7 +130,14 @@ export async function submitMockupRequest(payload: MockupRequest, logo: File | n
     raw: { ...payload, logo_path: logoPath, logo_upload_failed: logoFailed, submitted_at: new Date().toISOString() },
   };
 
-  const { error } = await getSupabase().from("mockup_requests").insert(row);
+  let { error } = await getSupabase().from("mockup_requests").insert(row);
+  // Until the `features` column migration has run, PostgREST rejects the unknown column (PGRST204). Save the
+  // request anyway: the picks are still in `raw.features`.
+  if (error && error.code === "PGRST204" && /features/.test(error.message)) {
+    const { features: _skip, ...withoutFeatures } = row;
+    void _skip;
+    ({ error } = await getSupabase().from("mockup_requests").insert(withoutFeatures));
+  }
   if (error) {
     console.error("[mockup request] insert failed", error);
     return { ok: false, error: error.message };

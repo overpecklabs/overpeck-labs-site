@@ -81,7 +81,7 @@ export default function OverpeckPlumbing() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/80 motion-reduce:hidden" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
-            24/7 Emergency? Tap to call <span className="hidden sm:inline">{PHONE.display}</span>
+            Emergency? Tap to call <span className="hidden sm:inline">{PHONE.display}</span>
           </a>
         }
         barClassName="bg-[#050d1f]/60 border-b border-white/10"
@@ -143,7 +143,7 @@ export default function OverpeckPlumbing() {
               <div className="rounded-3xl border border-white/15 bg-white/[0.08] p-4 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl sm:p-6">
                 <div className="mb-4 hidden items-center justify-between md:flex">
                   <p className="text-lg font-extrabold text-white">{data.lead.title}</p>
-                  <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] font-bold text-emerald-300">Available 24/7</span>
+                  <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] font-bold text-emerald-300">Emergency help</span>
                 </div>
                 <HeroLeadForm slug={data.slug} source="hero" anchorId="lead" businessName={data.businessName} ask={data.lead.ask} cta={data.lead.cta} theme={GLASS} />
               </div>
@@ -378,7 +378,7 @@ export default function OverpeckPlumbing() {
           <div className="text-sm">
             <p className="font-bold text-white">Contact</p>
             <a href={PHONE.tel} className="mt-2 block hover:text-white">
-              Call {PHONE.display} (24/7)
+              Call {PHONE.display}
             </a>
             <LeadJump className="mt-1 block hover:text-white">Request service online</LeadJump>
           </div>

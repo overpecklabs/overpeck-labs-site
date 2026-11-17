@@ -59,13 +59,13 @@ export function Stars({ rating, color = "#f59e0b", size = 16 }: { rating: number
 
 export { averageRating };
 
-export function RatingSummary({ reviews, color, className = "" }: { reviews: Review[]; color?: string; className?: string }) {
+export function RatingSummary({ reviews, count, color, className = "" }: { reviews: Review[]; /** total shown (defaults to the reviews passed) */ count?: number; color?: string; className?: string }) {
   const avg = averageRating(reviews);
   return (
     <p className={`inline-flex flex-wrap items-center justify-center gap-2 text-sm font-semibold ${className}`}>
       <span className="text-2xl font-extrabold">{avg.toFixed(1)}</span>
       <Stars rating={avg} color={color} size={18} />
-      <span className="opacity-70">from {reviews.length} sample reviews</span>
+      <span className="opacity-70">from {count ?? reviews.length} sample reviews</span>
     </p>
   );
 }

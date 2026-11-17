@@ -2,7 +2,7 @@ import { fmtDateTime } from "@/lib/admin/format";
 import type { MockupRequest } from "@/lib/admin/types";
 
 const HIDDEN = new Set(["id", "client_id"]);
-const ORDER = ["created_at", "status", "business_name", "contact_name", "phone", "email", "industry", "town", "timeline", "goals", "extras", "style", "brand_colors", "logo_url", "source_page", "retell_call_id"];
+const ORDER = ["created_at", "status", "business_name", "contact_name", "phone", "email", "industry", "town", "timeline", "goals", "features", "extras", "style", "brand_colors", "logo_url", "source_page", "retell_call_id"];
 
 function humanize(k: string): string {
   const s = k.replace(/_/g, " ").replace(/\burl\b/i, "URL").replace(/\bid\b/i, "ID");

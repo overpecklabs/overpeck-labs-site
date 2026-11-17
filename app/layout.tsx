@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: { siteName: SITE_NAME, type: "website", locale: "en_US", url: "/" },
   title: "Overpeck Labs — Websites, leads & AI for Bergen County businesses",
   description:
-    "Overpeck Labs, Bergen County NJ: websites that win business, workflow automation, tracking & optimization, and AI that never misses a lead. Free website mockup before you pay anything.",
+    "Overpeck Labs, Bergen County NJ: websites that win business, workflow automation, tracking & optimization, and AI that catches the leads you miss. Free website mockup before you pay anything.",
 };
 
 export const viewport: Viewport = {

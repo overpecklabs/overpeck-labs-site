@@ -10,6 +10,7 @@ import WindowWipe from "./WindowWipe";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
 import { averageRating } from "@/components/demos/rating";
 import { CtaBand, ExitIntent, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
+import BusinessJsonLd from "@/components/demos/BusinessJsonLd";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, Parallax, StickyHeader } from "@/components/demos/motion";
 import { Reveal, Stagger, StaggerItem } from "./Appear";
 import AppearObserver from "./AppearObserver";
@@ -117,6 +118,17 @@ export default function OverpeckExteriorCare() {
   preload("/demos/overpeck-exterior-care/hero-828.webp", { as: "image", imageSrcSet: HERO_SRCSET, imageSizes: "100vw", fetchPriority: "high" });
   return (
     <MotionRoot className="relative bg-[#eef6f7] font-sans text-slate-800 antialiased">
+      <BusinessJsonLd
+        type="HomeAndConstructionBusiness"
+        slug={data.slug}
+        name={data.businessName}
+        description={data.footerBlurb}
+        phone={data.phone}
+        towns={data.areaTowns}
+        services={data.services.map((s) => s.title)}
+        reviews={data.reviews}
+        reviewCount={data.reviewCount}
+      />
       {/* soft background washes (static, no animation cost) */}
       <div className="pointer-events-none absolute inset-x-0 top-[700px] -z-0 h-[1400px] bg-[radial-gradient(40rem_30rem_at_10%_20%,rgba(56,189,248,0.18),transparent),radial-gradient(36rem_28rem_at_90%_60%,rgba(52,211,153,0.16),transparent)]" aria-hidden />
 
@@ -197,7 +209,7 @@ export default function OverpeckExteriorCare() {
               <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-white/90">
                 <Stars rating={RATING} color="#fbbf24" />
                 <span>
-                  {RATING.toFixed(1)} rating from {data.reviews.length} reviews
+                  {RATING.toFixed(1)} rating from {data.reviewCount} reviews
                   <SampleMark className="text-white/60" />
                 </span>
               </p>
@@ -364,11 +376,11 @@ export default function OverpeckExteriorCare() {
             <Reveal className="relative overflow-hidden rounded-3xl bg-[#06232a] p-6 text-white sm:p-8">
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#34d399]/20 blur-3xl" aria-hidden />
               <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[#6ee7b7]">AI assistant (demo)</p>
-              <h2 className="relative mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Questions? Ask anytime.</h2>
+              <h2 className="relative mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Questions? Ask here.</h2>
               <p className="relative mt-3 text-white/80">Our AI assistant explains soft washing vs. power washing, answers plant and pet questions, and gets your free estimate started.</p>
               <div className="relative mt-5 space-y-2 text-sm">
                 <p className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#0e7490] to-[#0ea5a4] px-3.5 py-2.5">Is soft washing safe for vinyl siding?</p>
-                <p className="max-w-[88%] rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5">Yes. It uses low pressure, about like a garden hose, and a solution that kills mildew at the root. Want a free estimate?</p>
+                <p className="max-w-[88%] rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5">Happy to help. Send your address and a good time, and we&apos;ll start your free estimate.</p>
               </div>
               <EventButton event={OPEN_CHAT} className="demo-lift relative mt-6 rounded-full px-6 py-3 font-extrabold text-[#06232a]" style={{ background: CTA_BG }}>
                 Try the assistant
@@ -413,7 +425,7 @@ export default function OverpeckExteriorCare() {
               </>
             }
           >
-            <RatingSummary reviews={data.reviews} color="#f59e0b" className="mt-4 text-[#06232a]" />
+            <RatingSummary reviews={data.reviews} count={data.reviewCount} color="#f59e0b" className="mt-4 text-[#06232a]" />
           </Head>
           <ReviewGrid reviews={data.reviews} color="#f59e0b" cardClassName="bg-white/80 border-white text-slate-800" />
         </section>

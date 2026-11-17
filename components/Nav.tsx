@@ -17,6 +17,7 @@ const GROUPS: Group[] = [
 ];
 const LINKS: Item[] = [
   { href: "/#pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
   { href: "/#contact", label: "Contact" },
 ];
 

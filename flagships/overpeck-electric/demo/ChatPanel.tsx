@@ -201,7 +201,12 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
           Send
         </button>
       </form>
-      <p className="px-4 pb-3 text-[11px] text-white/45">Demo assistant. It can&apos;t book or send anything; for emergencies, call.</p>
+      <p className="px-4 pb-3 text-[11px] text-white/45">This website assistant answers questions and points you to the free estimate form. To book by phone, call our AI receptionist demo line:{" "}
+        <a href={data.phone.tel} className="font-semibold text-white/70 underline">
+          {data.phone.display}
+        </a>
+        .
+      </p>
     </div>
   );
 }

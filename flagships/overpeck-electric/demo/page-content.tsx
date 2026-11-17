@@ -13,6 +13,7 @@ import CloseDialogOnClick from "@/components/demos/CloseDialogOnClick";
 import { PreviewNote, RatingSummary, ReviewGrid, SampleMark, SampleTag, Stars } from "@/components/demos/sample";
 import { averageRating } from "@/components/demos/rating";
 import { CtaBand, ExitIntent, LeadJump, MobileLeadBar, type LeadTheme } from "@/components/demos/lead";
+import BusinessJsonLd from "@/components/demos/BusinessJsonLd";
 import { CountUp, DemoImage, HeroImage, HeroIntro, HeroItem, MotionRoot, StickyHeader } from "@/components/demos/motion";
 
 /*
@@ -91,6 +92,17 @@ export default function OverpeckElectric() {
   preload("/demos/overpeck-electric/hero-828.webp", { as: "image", imageSrcSet: HERO_SRCSET, imageSizes: "100vw", fetchPriority: "high" });
   return (
     <MotionRoot className="bg-[#0b0f17] font-sans text-slate-200 antialiased [color-scheme:dark]">
+      <BusinessJsonLd
+        type="Electrician"
+        slug={data.slug}
+        name={data.businessName}
+        description={data.footerBlurb}
+        phone={data.phone}
+        towns={data.areaTowns}
+        services={data.services.map((s) => s.title)}
+        reviews={data.reviews}
+        reviewCount={data.reviewCount}
+      />
       <StickyHeader height={60} shrunk={52} barClassName="bg-[#0b0f17]/80 border-b border-white/10">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-semibold text-slate-300 lg:flex">
@@ -167,7 +179,7 @@ export default function OverpeckElectric() {
                 <Icon d={PHONE_D} className="h-5 w-5 text-[#facc15]" />
                 Call {PHONE.display}
               </a>
-              <p className="mt-2 text-center text-xs font-semibold text-slate-300 md:text-left">Call our AI receptionist, it&apos;s live 24/7 (demo line).</p>
+              <p className="mt-2 text-center text-xs font-semibold text-slate-300 md:text-left">Try our AI receptionist (demo line).</p>
             </div>
 
             <div className="md:col-start-1 md:row-start-2">
@@ -175,7 +187,7 @@ export default function OverpeckElectric() {
               <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
                 <Stars rating={RATING} color="#facc15" />
                 <span>
-                  {RATING.toFixed(1)} rating from {data.reviews.length} reviews
+                  {RATING.toFixed(1)} rating from {data.reviewCount} reviews
                   <SampleMark className="text-slate-400" />
                 </span>
               </p>
@@ -249,12 +261,12 @@ export default function OverpeckElectric() {
           <Reveal className={`mx-auto grid max-w-6xl items-center gap-8 p-6 sm:p-10 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-12 ${card}`}>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI receptionist</p>
-              <h2 className="el-h2 mt-3 text-[color:var(--fg)]">Busy on a job? After hours? We still pick up.</h2>
+              <h2 className="el-h2 mt-3 text-[color:var(--fg)]">Busy on a job? After hours? We can pick up.</h2>
               <p className="mt-4 text-lg leading-relaxed text-[color:var(--fg2)]">
-                An AI receptionist answers every call, 24/7. It handles emergencies safety-first, books the job and sends the lead straight to the electrician, so no call goes to voicemail.
+                An AI receptionist can pick up when you&apos;re on a job or after hours. It handles emergencies safety-first, books the job and texts the electrician a summary.
               </p>
               <ul className="mt-6 grid gap-2 sm:grid-cols-2">
-                {["Answers every call 24/7", "Emergencies handled safety-first", "Books the job", "Sends the lead straight to the electrician"].map((t) => (
+                {["Picks up after hours", "Emergencies handled safety-first", "Books the job", "Texts the electrician a summary"].map((t) => (
                   <li key={t} className="flex items-center gap-2.5 font-semibold text-[color:var(--fg)]">
                     <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#facc15]/15 text-[color:var(--accent-text)]" aria-hidden>
                       <Icon d={CHECK_D} className="h-3.5 w-3.5" />
@@ -328,7 +340,7 @@ export default function OverpeckElectric() {
             <Reveal className={`relative overflow-hidden p-6 sm:p-8 ${card}`}>
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#facc15]/10 blur-3xl" aria-hidden />
               <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent-text)]">AI assistant (demo)</p>
-              <h2 className="el-h3 relative mt-2 text-[color:var(--fg)]">Safety first, any hour</h2>
+              <h2 className="el-h3 relative mt-2 text-[color:var(--fg)]">Safety comes first</h2>
               <p className="relative mt-3 text-[color:var(--fg2)]">Our AI assistant spots emergencies and tells you what to do, answers questions about panels, EV chargers and lighting, and gets your estimate started.</p>
               <div className="relative mt-5 space-y-2 text-sm">
                 <p className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#b45309] to-[#d97706] px-3.5 py-2.5 text-white">An outlet in the kitchen smells like burning plastic.</p>
@@ -380,7 +392,7 @@ export default function OverpeckElectric() {
             }
           >
             <div data-circuit="stars" className="mt-4 inline-block">
-              <RatingSummary reviews={data.reviews} color="#facc15" className="text-[color:var(--fg)]" />
+              <RatingSummary reviews={data.reviews} count={data.reviewCount} color="#facc15" className="text-[color:var(--fg)]" />
             </div>
           </Head>
           <ReviewGrid reviews={data.reviews} color="#facc15" cardClassName="el-card el-review text-[color:var(--fg)]" />

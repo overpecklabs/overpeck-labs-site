@@ -115,7 +115,7 @@ function FrontLayer() {
         Booked!
       </text>
       <text className="sk-text" data-step="4" x="36" y="510" style={textStyle(INK.black, 18)}>
-        AI answers 24/7
+        AI picks up for you
       </text>
     </svg>
   );

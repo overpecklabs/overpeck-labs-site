@@ -66,7 +66,7 @@ export const INDUSTRIES: Industry[] = [
     industry: "Plumbing",
     name: "Bergen Flow Plumbing",
     mark: { icon: "drop" },
-    utility: { left: "24/7 Emergency Service", right: "(201) 555-0101 · Mon–Sat 7am–7pm" },
+    utility: { left: "Emergency Service", right: "(201) 555-0101 · Mon–Sat 7am–7pm" },
     nav: ["Services", "About", "Reviews", "Contact"],
     navCta: "Call Now",
     hero: {
@@ -128,7 +128,7 @@ export const INDUSTRIES: Industry[] = [
     industry: "Electrician",
     name: "Volt Line Electric",
     mark: { icon: "bolt" },
-    utility: { left: "Licensed Master Electricians", right: "(201) 555-0103 · 24/7" },
+    utility: { left: "Licensed Master Electricians", right: "(201) 555-0103 · Emergency calls" },
     nav: ["Residential", "Commercial", "EV Chargers"],
     navCta: "Get a Quote",
     hero: {

@@ -21,6 +21,7 @@ const COMPANY: LinkItem[] = [
   { label: "Industries", href: "/#industries" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Free Mockup", href: "/free-mockup" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/#contact" },
 ];
 const FOOTER_INDUSTRIES = ["plumbing", "hvac", "electricians", "roofing", "landscaping", "contractors"];

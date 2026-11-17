@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { getSupabase } from "@/lib/supabase";
 import { createClient as createSessionClient } from "@/lib/supabase/browser";
 
 const BOT = /bot|crawler|spider|preview/i;
@@ -39,10 +38,13 @@ export default function DemoViewTracker({ slug }: { slug: string }) {
         const ua = navigator.userAgent || "";
         if (BOT.test(ua)) return;
         // Signed in to /admin in this browser? Then it's us. (Local check only; nothing is sent.)
-        const { data } = await createSessionClient().auth.getSession();
+        // One client for both steps (a second auth client on the page triggers Supabase's
+        // "multiple GoTrueClient instances" warning). With no session it sends the public anon key.
+        const supabase = createSessionClient();
+        const { data } = await supabase.auth.getSession();
         if (data.session) return;
-        // Anon client, plain insert, no .select(): anon can INSERT but not read back.
-        await getSupabase()
+        // Plain insert, no .select(): anon can INSERT but not read back.
+        await supabase
           .from("demo_views")
           .insert({
             slug,

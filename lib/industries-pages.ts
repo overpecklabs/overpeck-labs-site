@@ -27,7 +27,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
     name: "Plumbing",
     pros: "plumbers",
     mockup: "Plumbing",
-    intro: "When a pipe bursts, homeowners call whoever answers first. We help Bergen County plumbers be that company, day or night.",
+    intro: "When a pipe bursts, homeowners call whoever answers first. We help Bergen County plumbers be that company.",
     pains: [
       { t: "Missed emergency calls", d: "A leak doesn't wait. If you're under a sink when the phone rings, that caller often dials the next plumber." },
       { t: "After-hours demand", d: "Many urgent calls come in evenings and weekends, when nobody is at the desk." },
@@ -40,7 +40,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       ai: "An AI receptionist answers urgent calls while you're on a job and flags emergencies.",
     },
     features: [
-      { t: "24/7 emergency banner", d: "Your number and an emergency message visible on every screen." },
+      { t: "Emergency banner", d: "Your number and an emergency message visible on every screen." },
       { t: "Service-area pages", d: "Clear pages for the towns you cover, so local searches find you." },
       { t: "Water heater and drain pages", d: "Dedicated pages for your most profitable jobs." },
       { t: "Missed-call text-back", d: "A quick text so emergency callers don't move on." },
@@ -53,13 +53,13 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { q: "How do review requests work after a repair?", a: "When you mark a job done, the customer gets a short text with a link to leave a review. It's timed while the fix is still fresh." },
     ],
     workflow: {
-      "title": "Never Miss an Emergency Call",
-      "promise": "Every call answered and every emergency triaged, day or night.",
+      "title": "Catch More Emergency Calls",
+      "promise": "Urgent calls picked up and triaged, even while you're on a job.",
       "steps": [
         {
           "icon": "phone",
-          "t": "AI answers 24/7",
-          "d": "Every call is picked up, even while you're under a sink."
+          "t": "AI picks up after hours",
+          "d": "It can pick up while you're under a sink."
         },
         {
           "icon": "alert",
@@ -88,7 +88,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
         }
       ],
       "saves": [
-        "Emergency calls lost to voicemail",
+        "Emergency calls that go unanswered",
         "Back-and-forth calls about arrival times",
         "Remembering to ask for reviews"
       ],
@@ -133,7 +133,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
     ],
     faqs: [
       { q: "Can you automate seasonal tune-up reminders?", a: "Yes. Customers get reminders before cooling and heating season, with a link to book a visit." },
-      { q: "How do we handle the call surge on the first hot day?", a: "An AI receptionist can pick up overflow calls, collect details and book or queue jobs so nobody hits voicemail." },
+      { q: "How do we handle the call surge on the first hot day?", a: "An AI receptionist can pick up overflow calls, collect details and book or queue jobs so fewer callers go unanswered." },
       { q: "Will a website help sell maintenance plans?", a: "A clear plan page with benefits and online signup makes it much easier for customers to say yes." },
       { q: "Can follow-ups help close replacement quotes?", a: "Yes. A short sequence after you send a quote keeps you in the conversation while the homeowner compares options." },
     ],
@@ -777,7 +777,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       websites: "Mobile-friendly menus, hours and reservations that are easy to update.",
       workflows: "Reservation confirmations and catering inquiry follow-ups.",
       tracking: "See how guests find you and which pages they use most.",
-      ai: "AI answers questions about hours, parking and dietary options, day or night.",
+      ai: "AI answers questions about hours, parking and dietary options, even after hours.",
     },
     features: [
       { t: "Mobile menu pages", d: "Readable menus instead of hard-to-zoom PDFs." },
@@ -967,7 +967,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
         {
           "icon": "message",
           "t": "AI replies in about a minute",
-          "d": "A personal-sounding first response, any time of day."
+          "d": "A personal-sounding first response, even after hours."
         },
         {
           "icon": "list",

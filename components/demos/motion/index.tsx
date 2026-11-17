@@ -10,7 +10,7 @@
  *   <Parallax>              fixed-size photo box whose image drifts gently on scroll (never wrap text/forms)
  *   <Reveal>                fade-and-rise when scrolled into view
  *   <Stagger> + <StaggerItem>  same, staggered for grids
- *   <CountUp to={21} />     counts up when visible (use only for TRUE numbers)
+ *   <CountUp to={21} />     server-renders 21, counts up when scrolled into view (use only for TRUE numbers)
  *   className="demo-lift"   hover lift for cards/buttons (CSS, see motion.css)
  *
  * All effects turn off under prefers-reduced-motion. Parallax is halved under 768px. Animations use
@@ -18,7 +18,7 @@
  */
 
 import { animate, motion, useInView, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { createElement, useEffect, useRef, useState, type ReactNode } from "react";
+import { createElement, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import "./motion.css";
 
 export { default as DemoImage } from "./DemoImage";
@@ -61,7 +61,7 @@ export function StickyHeader({
   shrunk?: number;
   className?: string;
   barClassName?: string;
-  /** Optional slim strip above the header bar (fixed height `topBarHeight`), e.g. "24/7 Emergency? Tap to call". */
+  /** Optional slim strip above the header bar (fixed height `topBarHeight`), e.g. "Emergency? Tap to call". */
   topBar?: ReactNode;
   topBarHeight?: number;
 }) {
@@ -263,9 +263,20 @@ export function CountUp({ to, duration = 1.4, prefix = "", suffix = "", classNam
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const reduce = useReducedMotion();
-  const [value, setValue] = useState(reduce ? to : 0);
+  // The server HTML (and no-JS visitors / crawlers) get the real number. After hydration, if the counter is
+  // still off screen, it resets to 0 before paint and counts up when it scrolls into view.
+  const [value, setValue] = useState(to);
+  const armed = useRef(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (reduce || !el) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) return; // already visible: keep the number, no flash
+    armed.current = true;
+    setValue(0);
+  }, [reduce]);
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || !armed.current) return;
     if (reduce) return setValue(to);
     const controls = animate(0, to, { duration, ease: "easeOut", onUpdate: (v) => setValue(Math.round(v)) });
     return () => controls.stop();
