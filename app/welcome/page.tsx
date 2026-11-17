@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
@@ -44,16 +45,11 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
           <ol className="mt-4 list-decimal space-y-3 pl-5 text-[15px] leading-relaxed text-ink/90">
             <li>Check your email. A welcome message from Overpeck Labs is on its way (check spam if you don&apos;t see it in a few minutes).</li>
             <li>
-              Send us your intake items: logo, photos, services list, service area, hours, license number, domain access if you already have a
-              domain, and links to your reviews. Reply to the welcome email with them
-              {intakeUrl ? (
-                <>
-                  , or use the{" "}
-                  <a href="#intake" className="font-semibold text-teal-ink underline">
-                    intake form link below
-                  </a>
-                </>
-              ) : null}
+              <strong>Check your email for your personal onboarding link.</strong> It takes about 10 to 15 minutes, saves as you go, and the link is just for you. Already finished onboarding, or need a new
+              link?{" "}
+              <Link href="/portal/login" className="font-semibold text-teal-ink underline">
+                Sign in to your client portal
+              </Link>
               .
             </li>
             <li>We start the build and stay in touch by email. You review the site before it goes live.</li>
@@ -61,7 +57,7 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
           </ol>
 
           <section id="intake" className="mt-12 scroll-mt-28 rounded-md border-2 border-ink/15 bg-white/60 px-5 py-6">
-            <h2 className="font-display text-xl font-bold text-ink">Your intake checklist</h2>
+            <h2 className="font-display text-xl font-bold text-ink">What to have handy</h2>
             <ul className="mt-4 list-disc space-y-1.5 pl-5 text-[15px] text-ink/90">
               {INTAKE_ITEMS.map((item) => (
                 <li key={item}>{item}</li>
@@ -72,7 +68,7 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
                 Open the intake form
               </a>
             ) : (
-              <p className="mt-6 text-[15px] text-ink/90">Reply to your welcome email with these items.</p>
+              <p className="mt-6 text-[15px] text-ink/90">Prefer email? Reply to your welcome email with these items instead.</p>
             )}
           </section>
 

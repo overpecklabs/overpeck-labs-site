@@ -111,6 +111,12 @@ export const TONE: Record<string, string> = {
   in_progress: "bg-note-teal",
   waiting_client: "bg-note-yellow",
   done: "bg-note-green",
+  not_started: "bg-ink/5",
+  submitted: "bg-[#ffe2c6]",
+  reopened: "bg-note-yellow",
+  complete: "bg-note-green",
+  canceled: "bg-ink/10",
+  invite_expired: "bg-[#ffd7c2]",
 };
 
 /** Pipeline order for the project status stepper (on_hold sits outside it). */

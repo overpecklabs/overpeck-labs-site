@@ -3,6 +3,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { isAllowedAdminEmail } from "./emails";
 
 export type AdminSession = {
   supabase: Awaited<ReturnType<typeof createClient>>;
@@ -21,6 +22,7 @@ export const requireAdmin = cache(async (): Promise<AdminSession> => {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
+  if (!isAllowedAdminEmail(user.email)) redirect("/auth/signout?error=not_authorized");
 
   const { data, error } = await supabase.from("admin_users").select("email").limit(1).overrideTypes<{ email: string }[], { merge: false }>();
   if (error || !data || data.length === 0) {

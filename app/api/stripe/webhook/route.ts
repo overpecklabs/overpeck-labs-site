@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { PLAN_NAMES, planKey, sendMail, SUPPORT_EMAIL, welcomeEmail } from "@/lib/mailer";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Stripe webhook: records new subscriptions, marks the CRM client as a client, and sends the welcome email.
@@ -11,6 +12,7 @@ import { PLAN_NAMES, planKey, sendMail, SUPPORT_EMAIL, welcomeEmail } from "@/li
  * (supabase/migrations/20261117130000_client_subscriptions.sql), called with the public anon key plus
  * BILLING_RPC_SECRET. anon can't touch the billing tables directly; the functions refuse a wrong secret.
  *
+ * The welcome email carries a personal onboarding link (portal_create_invite, same secret).
  * Env (server only): STRIPE_WEBHOOK_SECRET, BILLING_RPC_SECRET, ZOHO_SMTP_USER, ZOHO_SMTP_PASS
  *   (+ optional ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, NOTIFY_EMAIL, NEXT_PUBLIC_INTAKE_URL).
  * Public: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY.
@@ -62,6 +64,18 @@ export async function POST(req: Request) {
   }
 }
 
+/** Never throws: the onboarding invite must not be able to make a payment webhook fail. Never logs the token. */
+async function createOnboardingLink(db: Db, secret: string, subscriptionRowId: string): Promise<string | null> {
+  try {
+    const { data, error } = await db.rpc("portal_create_invite", { p_secret: secret, p_subscription_id: subscriptionRowId });
+    if (error || typeof data !== "string" || data.length < 20) throw new Error(error?.message ?? "no token returned");
+    return `${SITE_URL}/portal/onboarding?token=${encodeURIComponent(data)}`;
+  } catch (err) {
+    console.error("[stripe-webhook] could not create onboarding invite; sending the intake link instead", subscriptionRowId, err instanceof Error ? err.message : "unknown error");
+    return null;
+  }
+}
+
 const idOf = (v: string | { id: string } | null | undefined) => (typeof v === "string" ? v : v?.id ?? null);
 
 async function handleCheckoutCompleted(db: Db, secret: string, session: Stripe.Checkout.Session) {
@@ -93,8 +107,11 @@ async function handleCheckoutCompleted(db: Db, secret: string, session: Stripe.C
   const result = data as { id: string; send_welcome: boolean } | null;
   if (!result?.send_welcome) return;
 
+  // Personal onboarding link. Best effort: if the invite can't be created, log it and fall back to the old intake link.
+  const onboardingUrl = await createOnboardingLink(db, secret, result.id);
+
   try {
-    await sendMail({ to: email, ...welcomeEmail({ name, plan }) });
+    await sendMail({ to: email, ...welcomeEmail({ name, plan, onboardingUrl }) });
   } catch (err) {
     // Release the claim so Stripe's retry sends it.
     await db.rpc("billing_welcome_result", { p_secret: secret, p_id: result.id, p_sent: false });

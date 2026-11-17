@@ -8,6 +8,7 @@ const NAV = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/pipeline", label: "Pipeline" },
   { href: "/admin/clients", label: "Clients" },
+  { href: "/admin/onboarding", label: "Onboarding" },
   { href: "/admin/projects", label: "Projects" },
 ];
 
@@ -28,7 +29,7 @@ export default function AdminHeader({ email }: { email: string }) {
   const active = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/95 backdrop-blur">
+    <header className="sticky top-0 z-40 print:hidden border-b border-ink/10 bg-paper/95 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Link href="/admin" className="shrink-0 font-display text-base font-bold">
           Overpeck Labs <span className="text-teal-ink">Admin</span>
