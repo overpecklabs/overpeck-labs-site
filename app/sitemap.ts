@@ -3,7 +3,8 @@ import { SITE_URL } from "@/lib/site";
 import { SERVICE_SLUGS, INDUSTRY_SLUGS, AREA_SLUGS } from "@/lib/slugs";
 import { getPosts } from "@/lib/blog";
 
-export const dynamic = "force-static";
+// Hourly, so scheduled blog posts are added on their date.
+export const revalidate = 3600;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

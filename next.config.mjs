@@ -5,6 +5,12 @@ const nextConfig = {
   images: { unoptimized: true },
   transpilePackages: ["three"],
   reactStrictMode: true,
+  // The blog reads content/blog/*.md at request time when it revalidates; make sure the files ship with those routes.
+  outputFileTracingIncludes: {
+    "/blog": ["./content/blog/*.md"],
+    "/blog/*": ["./content/blog/*.md"],
+    "/sitemap.xml": ["./content/blog/*.md"],
+  },
   async redirects() {
     return [
       // No public index of demos: /demo alone goes home.

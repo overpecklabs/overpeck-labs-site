@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import { pageMeta } from "@/lib/site";
 import { formatDate, getPosts } from "@/lib/blog";
 
+// Re-check hourly so scheduled posts appear on their date (America/New_York).
+export const revalidate = 3600;
+
 export const metadata: Metadata = pageMeta({
   title: "Blog | Overpeck Labs",
   description: "Practical tips on websites, automations and AI tools for local trades in Bergen County, NJ, from Overpeck Labs.",
