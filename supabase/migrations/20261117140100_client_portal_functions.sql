@@ -51,11 +51,12 @@ language sql
 immutable
 set search_path = ''
 as $$
-  select case jsonb_typeof(v)
+  -- coalesce: jsonb_typeof(NULL) is NULL (a missing key), and a simple CASE never matches NULL, so it would fall to
+  -- "else true". Missing values must count as empty.
+  select case coalesce(jsonb_typeof(v), 'null')
     when 'string' then btrim(v #>> '{}') <> ''
     when 'array' then jsonb_array_length(v) > 0
     when 'null' then false
-    when null then false
     else true
   end
 $$;
