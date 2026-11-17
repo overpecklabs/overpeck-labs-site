@@ -27,8 +27,7 @@ type Plan = {
   demoItem?: string;
 };
 
-const CTA = { label: "Get my free homepage design", href: "/free-mockup" };
-// Stripe Payment Links (build-time env). A tier without a link shows no "Get started" button.
+// Each card has one CTA, "Get started": the tier's Stripe Payment Link (build-time env), or /free-mockup if unset.
 const CHECKOUT: Record<string, string | undefined> = {
   Starter: process.env.NEXT_PUBLIC_STRIPE_LINK_STARTER,
   Growth: process.env.NEXT_PUBLIC_STRIPE_LINK_GROWTH,
@@ -228,17 +227,14 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link href={CTA.href} className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7 text-center`}>
-                {CTA.label}
-              </Link>
-              {CHECKOUT[p.name] && (
-                <a
-                  href={CHECKOUT[p.name]}
-                  aria-label={`Get started with the ${p.name} plan`}
-                  className="mt-3 inline-flex items-center justify-center rounded-full border border-ink/30 px-4 py-2 text-center text-sm font-semibold text-ink/80 transition-colors hover:border-ink hover:bg-white/60 hover:text-ink"
-                >
+              {CHECKOUT[p.name] ? (
+                <a href={CHECKOUT[p.name]} aria-label={`Get started with the ${p.name} plan`} className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7 text-center`}>
                   Get started
                 </a>
+              ) : (
+                <Link href="/free-mockup" aria-label={`Get started with the ${p.name} plan`} className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7 text-center`}>
+                  Get started
+                </Link>
               )}
             </div>
           ))}
