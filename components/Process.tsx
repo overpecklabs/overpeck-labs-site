@@ -60,7 +60,7 @@ const STEPS = [
   {
     sym: "Ai",
     title: "AI Fills the Gaps",
-    line: "AI answers after hours, handles overflow and catches missed calls.",
+    line: "AI picks up after hours or when you're busy, and handles overflow.",
     liquid: "#ff8a65",
     tile: "#ffe1d6",
     ink: "#c2410c",

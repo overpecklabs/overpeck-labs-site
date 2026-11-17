@@ -20,8 +20,8 @@ export default function AIChapter() {
       <div className="mx-auto grid w-full max-w-6xl items-center gap-4 px-5 pt-[4.5rem] lg:grid-cols-[minmax(0,380px)_1fr] lg:gap-8 lg:pt-0">
         <ChapterCopy href="/services/ai" kicker="04 · AI Implementation" title={<>AI that catches what you miss.</>}>
           {/* the reaction */}
-          <div className="mt-4 flex flex-wrap items-center gap-1.5 rounded-md border border-dashed border-ink/25 bg-white/70 px-3 py-2.5 text-[12.5px] font-semibold text-ink" aria-label="Missed call plus AI receptionist yields booked job">
-            <span className="rounded border border-mk-red/50 bg-[#fde8e8] px-2 py-0.5">Missed call</span>
+          <div className="mt-4 flex flex-wrap items-center gap-1.5 rounded-md border border-dashed border-ink/25 bg-white/70 px-3 py-2.5 text-[12.5px] font-semibold text-ink" aria-label="Call during a job plus AI receptionist yields booked job">
+            <span className="rounded border border-mk-red/50 bg-[#fde8e8] px-2 py-0.5">Call during a job</span>
             <span aria-hidden>+</span>
             <span className="rounded border border-mk-blue/50 bg-note-blue px-2 py-0.5">AI receptionist</span>
             <svg width="34" height="12" viewBox="0 0 34 12" aria-hidden className="shrink-0">

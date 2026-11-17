@@ -57,7 +57,7 @@ const FEATURES: { key: string; d?: string }[] = [
   { key: "Cost calculator", d: "e.g. EV charger, water heater or project estimate" },
   { key: "Emergency / urgent-service section" },
   { key: "“Before you go” estimate popup" },
-  { key: "Automations", d: "Instant follow-up texts and emails to new leads, missed-call auto-texts, confirmation texts and emails, appointment reminders, email drip campaigns" },
+  { key: "Automations", d: "Instant follow-up texts and emails to new leads, auto text-backs when you can't pick up, confirmation texts and emails, appointment reminders, email drip campaigns" },
   { key: "Custom animations and design touches" },
   { key: "Not sure, recommend for me" },
 ];
@@ -829,7 +829,7 @@ export default function MockupWizard() {
               <label htmlFor={fid("headache")} className="mb-2 block text-[16px] font-semibold">
                 Biggest headache right now
               </label>
-              <textarea id={fid("headache")} rows={3} maxLength={400} className={`${inputCls} ${border()}`} value={data.goals.headache} onChange={(e) => set("goals", { headache: e.target.value })} placeholder="e.g. I miss calls while I'm on jobs" />
+              <textarea id={fid("headache")} rows={3} maxLength={400} className={`${inputCls} ${border()}`} value={data.goals.headache} onChange={(e) => set("goals", { headache: e.target.value })} placeholder="e.g. I can't get to the phone while I'm on jobs" />
             </div>
           </div>
         )}

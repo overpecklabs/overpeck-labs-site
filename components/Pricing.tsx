@@ -28,6 +28,12 @@ type Plan = {
 };
 
 const CTA = { label: "Get my free homepage design", href: "/free-mockup" };
+// Stripe Payment Links (build-time env). A tier without a link shows no "Get started" button.
+const CHECKOUT: Record<string, string | undefined> = {
+  Starter: process.env.NEXT_PUBLIC_STRIPE_LINK_STARTER,
+  Growth: process.env.NEXT_PUBLIC_STRIPE_LINK_GROWTH,
+  Pro: process.env.NEXT_PUBLIC_STRIPE_LINK_PRO,
+};
 const RECEPTIONIST = "AI phone receptionist that picks up when you're on a job or after hours, books jobs and texts you each lead";
 
 // Array order = display order on every screen size (cards stack in this order on mobile).
@@ -196,6 +202,7 @@ export default function Pricing() {
               </div>
               <div className="mt-5 min-h-[5rem]">
                 <PriceBlock price={p.price} />
+                <p className="mt-1.5 text-xs font-semibold text-ink/75">No contracts, cancel anytime.</p>
               </div>
               <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-ink/75">
                 {p.mol.length === 4 ? "The full formula" : p.mol.join(" + ")}
@@ -224,6 +231,15 @@ export default function Pricing() {
               <Link href={CTA.href} className={`${p.featured ? "btn-primary" : "btn-ghost"} mt-7 text-center`}>
                 {CTA.label}
               </Link>
+              {CHECKOUT[p.name] && (
+                <a
+                  href={CHECKOUT[p.name]}
+                  aria-label={`Get started with the ${p.name} plan`}
+                  className="mt-3 inline-flex items-center justify-center rounded-full border border-ink/30 px-4 py-2 text-center text-sm font-semibold text-ink/80 transition-colors hover:border-ink hover:bg-white/60 hover:text-ink"
+                >
+                  Get started
+                </a>
+              )}
             </div>
           ))}
         </div>

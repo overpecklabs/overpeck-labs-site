@@ -93,7 +93,7 @@ export const SERVICE_PAGES: ServicePage[] = [
     ],
     included: [
       { t: "Instant lead follow-up", d: "A text or email goes out within minutes of every new inquiry." },
-      { t: "Missed-call text-back", d: "Callers you couldn't answer get a quick text so they don't move on." },
+      { t: "Auto text-back", d: "Callers you couldn't answer get a quick text so they don't move on." },
       { t: "Booking confirmations", d: "Automatic confirmations and day-before reminders cut no-shows." },
       { t: "Quote follow-ups", d: "A friendly nudge a few days after you send a quote." },
       { t: "Invoice reminders", d: "Polite payment reminders, so you don't have to chase." },
@@ -160,7 +160,7 @@ export const SERVICE_PAGES: ServicePage[] = [
     connects: [
       { slug: "websites", why: "Tracking starts with a fast, well-built site." },
       { slug: "workflows-automation", why: "See which follow-ups turn leads into jobs." },
-      { slug: "ai", why: "Spot the missed calls AI can catch." },
+      { slug: "ai", why: "See which calls AI could pick up for you." },
     ],
     pricing: "quote",
     faqs: [
@@ -180,26 +180,26 @@ export const SERVICE_PAGES: ServicePage[] = [
     description:
       "AI website chatbots, AI call receptionists and AI agents for Bergen County, NJ businesses: answer after hours, handle overflow and book jobs from calls you'd otherwise miss.",
     h1: "AI that catches the leads you can't get to.",
-    sub: "An AI chatbot for your website, an AI receptionist for missed calls and AI agents for overflow tasks, set up around how your business actually runs.",
-    promise: "Calls, chats and overflow covered, day and night.",
+    sub: "An AI chatbot for your website, an AI receptionist for calls you can't get to and AI agents for overflow tasks, set up around how your business actually runs.",
+    promise: "Calls, chats and overflow handled while you work.",
     bullets: ["AI Chatbot answers questions and books from your site", "AI Call Receptionist picks up when you can't", "AI Agents handle quotes, scheduling and follow-ups"],
     cta: { label: "Get a Free Consultation", href: "#lead-form" },
     problems: [
-      { t: "Missed calls lose jobs", d: "When you're on a job and a call goes unanswered, many callers simply try the next company." },
+      { t: "Unanswered calls lose jobs", d: "When you're on a job and a call goes unanswered, many callers simply try the next company." },
       { t: "After-hours visitors leave", d: "Someone browsing your site at 9 p.m. has questions and nobody to answer them." },
       { t: "Repetitive questions pile up", d: "Hours, pricing ranges and availability questions eat your team's day." },
     ],
     included: [
       { t: "AI website chatbot", d: "Answers common questions and captures leads, even after hours." },
-      { t: "AI call receptionist", d: "Picks up missed and after-hours calls, then takes details or books." },
+      { t: "AI call receptionist", d: "Picks up when you're busy or after hours, then takes details or books." },
       { t: "Calendar booking", d: "Offers open times and books based on rules you set." },
-      { t: "Missed-call text-back", d: "A quick text keeps the conversation going." },
+      { t: "Auto text-back", d: "A quick text to callers you couldn't answer keeps the conversation going." },
       { t: "AI agents", d: "Help with quotes, scheduling and follow-up tasks." },
       { t: "Human handoff", d: "Anything complex gets passed to you with a summary." },
     ],
     subServices: [
       { name: "AI Chatbot", d: "A chat assistant on your website that answers questions in your words and turns visitors into booked jobs.", points: ["Trained on your services, areas and FAQs", "Collects name, number and job details", "Books or requests a callback"] },
-      { name: "AI Call Receptionist", d: "Answers when you can't, so a missed call doesn't become a missed job.", points: ["Picks up overflow and after-hours calls", "Asks the right questions for your trade", "Texts you a summary right away"] },
+      { name: "AI Call Receptionist", d: "Answers when you can't, takes the details and texts you a summary.", points: ["Picks up overflow and after-hours calls", "Asks the right questions for your trade", "Texts you a summary right away"] },
       { name: "AI Agents", d: "Behind-the-scenes helpers for the repetitive work that piles up.", points: ["Drafts quotes from job details", "Handles scheduling back-and-forth", "Keeps follow-ups moving"] },
     ],
     steps: [
@@ -225,7 +225,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       { q: "Do I need all three: chatbot, receptionist and agents?", a: "No. Many businesses start with one, often the call receptionist, and add the others later." },
     ],
     questions: [
-      { key: "missed_calls", label: "Calls missed per week", type: "select", options: ["0–5", "5–15", "15+", "Not sure"] },
+      { key: "missed_calls", label: "Calls you can't answer per week", type: "select", options: ["0–5", "5–15", "15+", "Not sure"] },
       { key: "after_hours", label: "After-hours coverage today", type: "select", options: ["Voicemail", "Answering service", "Calls forward to my cell", "Nothing"] },
       { key: "ai_interest", label: "Most interested in", type: "select", options: ["AI Chatbot", "AI Call Receptionist", "AI Agents", "Not sure yet"] },
     ],

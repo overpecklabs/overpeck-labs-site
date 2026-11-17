@@ -19,7 +19,7 @@ const SOURCES = [
 ];
 const FEED = [
   { text: "New quote request · Hackensack", time: "2m", color: "#1f6feb" },
-  { text: "AI answered missed call", time: "9m", color: "#f2a93b" },
+  { text: "AI took a call mid-job", time: "9m", color: "#f2a93b" },
   { text: "Review request sent", time: "21m", color: "#4caf6e" },
   { text: "Job booked · Thu 10 AM", time: "34m", color: "#12b5a6" },
 ];

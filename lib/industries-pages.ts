@@ -29,13 +29,13 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
     mockup: "Plumbing",
     intro: "When a pipe bursts, homeowners call whoever answers first. We help Bergen County plumbers be that company.",
     pains: [
-      { t: "Missed emergency calls", d: "A leak doesn't wait. If you're under a sink when the phone rings, that caller often dials the next plumber." },
+      { t: "Emergency calls during jobs", d: "A leak doesn't wait. If you're under a sink when the phone rings, that caller often dials the next plumber." },
       { t: "After-hours demand", d: "Many urgent calls come in evenings and weekends, when nobody is at the desk." },
       { t: "Price shoppers", d: "Callers compare several plumbers quickly, so the one who looks trustworthy online wins the job." },
     ],
     angles: {
       websites: "Emergency number at the top of every page, service pages for drains, water heaters and leaks.",
-      workflows: "Instant text-back on missed calls and a review request after every repair.",
+      workflows: "Instant text-back when you can't pick up, and a review request after every repair.",
       tracking: "See which searches, like “water heater repair,” actually turn into calls.",
       ai: "An AI receptionist answers urgent calls while you're on a job and flags emergencies.",
     },
@@ -43,7 +43,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
       { t: "Emergency banner", d: "Your number and an emergency message visible on every screen." },
       { t: "Service-area pages", d: "Clear pages for the towns you cover, so local searches find you." },
       { t: "Water heater and drain pages", d: "Dedicated pages for your most profitable jobs." },
-      { t: "Missed-call text-back", d: "A quick text so emergency callers don't move on." },
+      { t: "Auto text-back", d: "A quick text when you can't pick up, so emergency callers don't move on." },
       { t: "Financing callout", d: "Mention payment options for bigger installs, if you offer them." },
     ],
     faqs: [
@@ -102,7 +102,7 @@ export const INDUSTRY_PAGES: IndustryPage[] = [
     more: [
       "Water heater maintenance reminders",
       "Quote follow-ups for repipes and replacements",
-      "Missed-call text-back during jobs"
+      "Auto text-back while you're on a job"
     ],
     related: ["hvac", "electricians", "contractors"],
     areas: ["hackensack", "teaneck", "fair-lawn"],
