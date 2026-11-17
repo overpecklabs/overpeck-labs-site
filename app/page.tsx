@@ -3,6 +3,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import SceneLoader from "@/components/SceneLoader";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import CommercialVideo from "@/components/CommercialVideo";
 import MockupOffer from "@/components/MockupOffer";
 import Services from "@/components/Services";
 import Showcase from "@/components/Showcase";
@@ -43,6 +44,7 @@ export default function Page() {
         {/* Pinned 3D chapters (data-chapter) are transparent so the fixed canvas shows through; other sections are opaque board. */}
         {/* The journey: problem -> four building blocks -> the complete formula -> proof -> offer */}
         <S><Hero /></S>
+        <S><CommercialVideo /></S>
         <S><Websites /></S>
         <L><Workflows /></L>
         <L><Tracking /></L>
