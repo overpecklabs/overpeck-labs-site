@@ -7,6 +7,7 @@ import DemoPromptButton from "@/components/admin/DemoPromptButton";
 import DemoViews from "@/components/admin/DemoViews";
 import FilesPanel from "@/components/admin/FilesPanel";
 import IntakeDetail from "@/components/admin/IntakeDetail";
+import OnboardingTab from "@/components/admin/OnboardingTab";
 import Timeline from "@/components/admin/Timeline";
 import { ActionButton, AutoSaveSelect, ConfirmButton } from "@/components/admin/controls";
 import { Badge, Card, DbError, Empty, Field, PageHeader, Progress } from "@/components/admin/ui";
@@ -14,15 +15,17 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { externalHref, fmtDateTime, fmtDay, fmtDuration, nyLocalNow, telHref, todayNY } from "@/lib/admin/format";
 import { CLIENT_STATUS_LABEL, STAGE_LABEL, normalizeStage, DELIVERABLE_STATUS_LABEL, PROJECT_STATUS_LABEL, PROJECT_TYPE_LABEL } from "@/lib/admin/labels";
 import { CLIENT_STATUSES, type CallLog, type Client, type ContactMessage, type Deliverable, type MockupRequest, type Project } from "@/lib/admin/types";
+import { loadClientOnboarding } from "@/lib/admin/onboarding";
 import { loadDemoViews, loadFiles, loadTimeline, signLogos } from "@/lib/admin/views";
 
 export const metadata: Metadata = { title: "Client" };
 
 type ProjectRow = Project & { deliverables: Deliverable[] };
 
-export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ClientDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ [k: string]: string | string[] | undefined }> }) {
   const { supabase } = await requireAdmin();
   const { id } = await params;
+  const tab = (await searchParams).tab === "onboarding" ? "onboarding" : "overview";
 
   const { data: client, error } = await supabase.from("clients").select("*").eq("id", id).maybeSingle<Client>();
   if (error?.code === "22P02") notFound();
@@ -57,6 +60,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const openDeliverables = projectRows
     .flatMap((p) => p.deliverables.filter((d) => d.status !== "done").map((d) => ({ ...d, projectName: p.name })))
     .sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"));
+
+  const onboardingResult = tab === "onboarding" ? await loadClientOnboarding(supabase, id) : null;
+  if (onboardingResult?.error) return <DbError error={onboardingResult.error} />;
 
   const tel = telHref(client.phone);
   const site = externalHref(client.website);
@@ -108,6 +114,18 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         <DemoPromptButton clientId={client.id} />
       </div>
 
+      <nav aria-label="Client sections" className="mb-5 flex gap-2">
+        <Link href={`/admin/clients/${client.id}`} className="adm-chip" aria-current={tab === "overview" ? "true" : undefined}>
+          Overview
+        </Link>
+        <Link href={`/admin/clients/${client.id}?tab=onboarding`} className="adm-chip" aria-current={tab === "onboarding" ? "true" : undefined}>
+          Onboarding
+        </Link>
+      </nav>
+
+      {onboardingResult ? (
+        <OnboardingTab clientId={client.id} detail={onboardingResult.detail} />
+      ) : (
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card
@@ -291,6 +309,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           </Card>
         </div>
       </div>
+      )}
     </>
   );
 }
