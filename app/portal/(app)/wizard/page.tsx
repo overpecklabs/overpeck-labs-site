@@ -5,6 +5,7 @@ import Wizard from "@/components/portal/Wizard";
 import { Panel } from "@/components/portal/Shell";
 import { getPortalMe, getPortalUser, loadPortalFiles } from "@/lib/portal/server";
 import { getWizard } from "@/lib/portal/wizards";
+import { countUploads, firstIncompleteStep } from "@/lib/portal/schema";
 import { EDITABLE_STATUSES } from "@/lib/portal/types";
 import { SUPPORT_EMAIL } from "@/lib/mailer";
 import { PHONE_DISPLAY } from "@/lib/services";
@@ -28,9 +29,11 @@ export default async function WizardPage({ searchParams }: { searchParams: Promi
   }
 
   const sp = await searchParams;
-  const wanted = typeof sp.step === "string" ? sp.step : me.current_step;
-  const initialStep = wizard.steps.some((s) => s.id === wanted) ? (wanted as string) : wizard.steps[0].id;
   const [files, user] = await Promise.all([loadPortalFiles(), getPortalUser()]);
+  // An explicit ?step= (Edit links, the stepper) wins. Otherwise resume at the first incomplete step,
+  // not the last step visited, so skipped or empty steps aren't passed over.
+  const wanted = typeof sp.step === "string" ? sp.step : null;
+  const initialStep = wanted && wizard.steps.some((s) => s.id === wanted) ? wanted : firstIncompleteStep(wizard, me.answers, countUploads(files));
 
   return (
     <Wizard

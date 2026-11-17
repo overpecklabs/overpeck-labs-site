@@ -1,6 +1,6 @@
 import "server-only";
 import type { AdminSession } from "./auth";
-import { computeProgress } from "@/lib/portal/schema";
+import { computeProgress, countUploads } from "@/lib/portal/schema";
 import { getWizard } from "@/lib/portal/wizards";
 import type { Answers, OnboardingRow, OnboardingStatus, PortalFile, PortalPlan } from "@/lib/portal/types";
 
@@ -44,13 +44,14 @@ export async function loadOnboardingList(supabase: Sb): Promise<{ rows: Onboardi
   const ids = [...latest.keys()];
   if (!ids.length) return { rows: [], error: null };
 
-  const [clients, onboarding, invites, members] = await Promise.all([
+  const [clients, onboarding, invites, members, uploads] = await Promise.all([
     supabase.from("clients").select("id, business_name").in("id", ids).overrideTypes<{ id: string; business_name: string }[], { merge: false }>(),
     supabase.from("client_onboarding").select("*").in("client_id", ids).overrideTypes<OnboardingRow[], { merge: false }>(),
     supabase.from("onboarding_invites").select("client_id, expires_at, used_at, created_at").in("client_id", ids).order("created_at", { ascending: false }).overrideTypes<InviteRow[], { merge: false }>(),
     supabase.from("client_portal_members").select("client_id").in("client_id", ids).overrideTypes<{ client_id: string }[], { merge: false }>(),
+    supabase.from("client_files").select("client_id, label").in("client_id", ids).like("label", "Onboarding:%").overrideTypes<{ client_id: string; label: string | null }[], { merge: false }>(),
   ]);
-  const err = clients.error ?? onboarding.error ?? invites.error ?? members.error;
+  const err = clients.error ?? onboarding.error ?? invites.error ?? members.error ?? uploads.error;
   if (err) return { rows: [], error: err };
 
   const names = new Map((clients.data ?? []).map((c) => [c.id, c.business_name]));
@@ -78,7 +79,7 @@ export async function loadOnboardingList(supabase: Sb): Promise<{ rows: Onboardi
       payment: s.status,
       paidAt: s.created_at,
       status,
-      percent: wizard ? computeProgress(wizard, o?.answers ?? {}, status).percent : 0,
+      percent: wizard ? computeProgress(wizard, o?.answers ?? {}, countUploads((uploads.data ?? []).filter((f) => f.client_id === id))).percent : 0,
       lastActivity: o?.updated_at ?? null,
       attention: status === "submitted" ? "submitted" : expired ? "invite_expired" : null,
       hasPortal,

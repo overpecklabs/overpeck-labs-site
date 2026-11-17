@@ -3,7 +3,7 @@ import OnboardingProfile from "./OnboardingProfile";
 import { Badge, Card, Empty, Field } from "./ui";
 import { fmtDateTime, fmtRelative } from "@/lib/admin/format";
 import type { ClientOnboardingDetail } from "@/lib/admin/onboarding";
-import { computeProgress } from "@/lib/portal/schema";
+import { computeProgress, countUploads } from "@/lib/portal/schema";
 import { getWizard } from "@/lib/portal/wizards";
 import { STATUS_LABEL } from "@/lib/portal/types";
 
@@ -12,7 +12,7 @@ export default function OnboardingTab({ clientId, detail }: { clientId: string; 
   const { onboarding: ob, files, members, invite, subscription } = detail;
   const wizard = getWizard(ob?.plan);
   const status = ob?.status ?? "not_started";
-  const percent = ob && wizard ? computeProgress(wizard, ob.answers, ob.status).percent : 0;
+  const percent = ob && wizard ? computeProgress(wizard, ob.answers, countUploads(files)).percent : 0;
   const inviteState = !invite ? "No link sent" : invite.used_at ? `Used ${fmtDateTime(invite.used_at)}` : new Date(invite.expires_at) < new Date() ? `Expired ${fmtDateTime(invite.expires_at)}` : `Valid until ${fmtDateTime(invite.expires_at)}`;
 
   return (

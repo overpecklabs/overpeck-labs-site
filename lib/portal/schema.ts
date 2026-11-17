@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Answers, Field, OnboardingStatus, RepeaterField, StepDef, WizardDef } from "./types";
+import type { Answers, Field, RepeaterField, StepDef, WizardDef } from "./types";
 
 // zod schemas generated from the step specs.
 //   stepFormatSchema: only checks the shape and format of what's filled in. Used on Next and when saving (autosave).
@@ -131,21 +131,53 @@ export function cleanStep(step: StepDef, values: Values): { ok: true; data: Valu
   return r.success ? { ok: true, data: r.data as Values } : { ok: false, error: r.error.issues[0]?.message ?? "Please check your answers." };
 }
 
-export type StepState = "complete" | "partial" | "empty";
+/** How many onboarding files are uploaded per slot (logo / photos). Uploads live in client_files, not the answers. */
+export type UploadCounts = { logo: number; photos: number };
 
-export function stepIsComplete(step: StepDef, answers: Answers): boolean {
+export function countUploads(files: { label: string | null }[]): UploadCounts {
+  return {
+    logo: files.filter((f) => f.label === "Onboarding: logo").length,
+    photos: files.filter((f) => f.label === "Onboarding: photo").length,
+  };
+}
+
+/** True when the step has at least one real answer. Yes/no toggles and notes don't count; uploads do. */
+function hasContent(step: StepDef, values: Values, uploads?: UploadCounts): boolean {
+  for (const f of step.fields) {
+    if (!isVisible(f, values)) continue;
+    if (f.kind === "upload") {
+      if ((uploads?.[f.slot] ?? 0) > 0) return true;
+      continue;
+    }
+    if (f.kind === "toggle" || f.kind === "note") continue;
+    if (!isEmpty(f, values[f.key])) return true;
+  }
+  return false;
+}
+
+/**
+ * A step is complete (shows a check mark, counts toward progress) only when every required field is filled, the
+ * answers are well formed, and something was actually answered. Visiting a step, or saving it empty, isn't enough.
+ */
+export function stepIsComplete(step: StepDef, answers: Answers, uploads?: UploadCounts): boolean {
   if (step.review) return false;
-  const saved = answers[step.id];
-  if (!saved) return false;
-  return stepCompleteSchema(step).safeParse(saved).success;
+  const values = (answers[step.id] ?? {}) as Values;
+  if (missingRequired(step, values).length > 0) return false;
+  if (!stepFormatSchema(step).safeParse(values).success) return false;
+  return hasContent(step, values, uploads);
+}
+
+/** Where "Continue onboarding" resumes: the first data-entry step that isn't complete, else the review step. */
+export function firstIncompleteStep(wizard: WizardDef, answers: Answers, uploads?: UploadCounts): string {
+  const step = wizard.steps.find((s) => !s.review && !stepIsComplete(s, answers, uploads));
+  return (step ?? wizard.steps[wizard.steps.length - 1]).id;
 }
 
 export type Progress = { done: number; total: number; percent: number };
 
-/** Share of the data-entry steps (everything except the review step) that are saved and complete. */
-export function computeProgress(wizard: WizardDef, answers: Answers, status: OnboardingStatus): Progress {
+/** Completed data-entry steps (everything except the review step) out of the total. Counts completed steps only. */
+export function computeProgress(wizard: WizardDef, answers: Answers, uploads?: UploadCounts): Progress {
   const steps = wizard.steps.filter((s) => !s.review);
-  const done = steps.filter((s) => stepIsComplete(s, answers)).length;
-  const complete = status === "submitted" || status === "complete";
-  return { done: complete ? steps.length : done, total: steps.length, percent: complete ? 100 : Math.round((done / Math.max(1, steps.length)) * 100) };
+  const done = steps.filter((s) => stepIsComplete(s, answers, uploads)).length;
+  return { done, total: steps.length, percent: Math.round((done / Math.max(1, steps.length)) * 100) };
 }

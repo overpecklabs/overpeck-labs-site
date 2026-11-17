@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Panel, ProgressBar } from "@/components/portal/Shell";
-import { getPortalMe } from "@/lib/portal/server";
-import { computeProgress } from "@/lib/portal/schema";
+import { getPortalMe, loadPortalUploadLabels } from "@/lib/portal/server";
+import { computeProgress, countUploads } from "@/lib/portal/schema";
 import { getWizard } from "@/lib/portal/wizards";
 import { STATUS_LABEL } from "@/lib/portal/types";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/services";
@@ -13,6 +13,7 @@ export default async function PortalHome() {
   const me = await getPortalMe();
   if (!me) return null; // the layout already showed "No portal found"
   const wizard = getWizard(me.plan);
+  const uploads = countUploads(wizard ? await loadPortalUploadLabels() : []);
   const locked = me.onboarding_status === "submitted" || me.onboarding_status === "complete";
 
   return (
@@ -60,7 +61,7 @@ export default async function PortalHome() {
             <h2 className="font-display text-xl font-bold">{wizard.introTitle}</h2>
             <p className="mt-2 text-sm text-ink/75">{wizard.intro}</p>
             <div className="mt-5">
-              <ProgressBar percent={computeProgress(wizard, me.answers, me.onboarding_status).percent} label="Onboarding progress" />
+              <ProgressBar percent={computeProgress(wizard, me.answers, uploads).percent} label="Onboarding progress" />
             </div>
             {locked && (
               <p className="mt-4 text-sm text-ink/75">

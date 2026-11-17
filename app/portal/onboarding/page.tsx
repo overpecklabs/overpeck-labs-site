@@ -67,6 +67,11 @@ export default async function OnboardingTokenPage({ searchParams }: { searchPara
         <p className="mt-2 text-sm text-ink/70">
           We&apos;ll email a one-time sign-in link to <strong>{status.masked_email ?? "the email you signed up with"}</strong>. It takes about 10 to 15 minutes, saves as you go, and you can come back to finish.
         </p>
+        {sp.error === "link_invalid" && (
+          <p role="alert" className="mt-4 rounded-lg border border-mk-red/30 bg-mk-red/5 px-3 py-2 text-sm text-mk-red">
+            That sign-in link didn&apos;t work (it may have expired or already been used). Send yourself a new one below.
+          </p>
+        )}
         <InviteLinkForm token={token} maskedEmail={status.masked_email ?? null} />
         <p className="mt-6 text-sm text-ink/60">Questions? Call {PHONE_DISPLAY}.</p>
       </Panel>

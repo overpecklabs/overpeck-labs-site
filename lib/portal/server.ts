@@ -22,6 +22,13 @@ export const getPortalMe = cache(async (): Promise<PortalMe | null> => {
   return data as PortalMe;
 });
 
+/** Just the labels of the client's onboarding uploads (for counting toward progress; no signed URLs). */
+export async function loadPortalUploadLabels(): Promise<{ label: string | null }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("client_files").select("label").like("label", "Onboarding:%").overrideTypes<{ label: string | null }[], { merge: false }>();
+  return data ?? [];
+}
+
 /** The client's onboarding uploads with 1-hour signed URLs. RLS limits this to their own clients/{id}/onboarding/ files. */
 export async function loadPortalFiles(): Promise<PortalFile[]> {
   const supabase = await createClient();

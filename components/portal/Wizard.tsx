@@ -6,7 +6,7 @@ import { saveStep, submitOnboarding } from "@/app/portal/actions";
 import { FieldInput } from "./Fields";
 import Uploader from "./Uploader";
 import { Panel, ProgressBar } from "./Shell";
-import { formatErrors, isVisible, missingRequired, stepIsComplete, computeProgress, type Values } from "@/lib/portal/schema";
+import { countUploads, formatErrors, isVisible, missingRequired, stepIsComplete, computeProgress, type Values } from "@/lib/portal/schema";
 import { stepRows } from "@/lib/portal/format";
 import { getWizard } from "@/lib/portal/wizards";
 import type { Answers, OnboardingStatus, PortalFile, PortalPlan, StepDef } from "@/lib/portal/types";
@@ -157,7 +157,8 @@ export default function Wizard({
     } else setSubmitError({ error: r.error, missing: r.missing });
   }
 
-  const progress = computeProgress(wizard, answers, submitted ? "submitted" : status);
+  const uploads = countUploads(files);
+  const progress = computeProgress(wizard, answers, uploads);
   const values = (answers[step.id] ?? {}) as Values;
 
   if (submitted) {
@@ -183,7 +184,7 @@ export default function Wizard({
         </div>
         <ol className="mt-3 flex gap-1.5 overflow-x-auto pb-1" aria-label="Steps">
           {steps.map((s, i) => {
-            const done = stepIsComplete(s, answers);
+            const done = stepIsComplete(s, answers, uploads);
             return (
               <li key={s.id}>
                 <button

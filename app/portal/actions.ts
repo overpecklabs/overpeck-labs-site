@@ -45,7 +45,9 @@ export async function sendInviteSignIn(token: string): Promise<LinkState> {
   const supabase = await createClient();
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email: data,
-    options: { shouldCreateUser: true, emailRedirectTo: callbackUrl(`/portal/onboarding?token=${token}`) },
+    // The token goes in the path, not a query string, so nothing in `next` can collide with the parameters the
+    // email template appends (&token_hash=…&type=email) or that Supabase adds (?code=…).
+    options: { shouldCreateUser: true, emailRedirectTo: callbackUrl(`/portal/onboarding/claim/${token}`) },
   });
   if (otpError) {
     console.error("[portal] sign-in link failed", otpError.status ?? "", otpError.code ?? "");
@@ -119,12 +121,12 @@ export async function submitOnboarding(): Promise<SubmitResult> {
     const business = result?.business_name || (portal.answers.basics?.business_name as string | undefined) || "A client";
     const basics = STEP_LIBRARY.basics.fields;
     const val = (k: string) => formatValue(basics.find((f) => f.key === k)!, portal.answers.basics?.[k]);
-    const progress = computeProgress(wizard, portal.answers, "submitted");
+    const progress = computeProgress(wizard, portal.answers);
     const lines = [
       `Contact: ${[val("contact_name"), val("phone")].filter(Boolean).join(", ") || "not given"}`,
       `Trade: ${val("trade") || "not given"}`,
       `Area: ${val("service_area").split("\n")[0] || "not given"}`,
-      `${progress.total} steps answered`,
+      `${progress.done} of ${progress.total} steps complete`,
     ];
     if (result?.client_id) {
       await sendMail({
